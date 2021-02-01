@@ -10,7 +10,6 @@
       - debian10
       - ubuntu1804
     version:
-      - '2.2'
       - '2.3'
       - '2.4'
     action:
