@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: '3'
       - name: Restore pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-{{ runner.python-version }}-pip-${{ hashFiles('**/requirements*.txt') }}
