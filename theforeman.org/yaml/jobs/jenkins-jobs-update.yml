@@ -1,10 +1,10 @@
 - job:
-    name: foreman-infra-jenkins-jobs-update
+    name: jenkins-jobs-update
     project-type: 'pipeline'
     sandbox: true
     properties:
       - github:
-          url: https://github.com/theforeman/foreman-infra
+          url: https://github.com/theforeman/jenkins-jobs
     dsl:
       !include-raw:
         - pipelines/infra/updateJobs.groovy

@@ -2,7 +2,15 @@ void git_clone_foreman_infra(args = [:]) {
     target_dir = args.target_dir ?: ''
 
     dir(target_dir) {
-        git url: 'https://github.com/theforeman/foreman-infra', poll: false
+        git url: 'https://github.com/theforeman/foreman_infra', poll: false
+    }
+}
+
+void git_clone_jenkins_jobs(args = [:]) {
+    target_dir = args.target_dir ?: ''
+
+    dir(target_dir) {
+        git url: 'https://github.com/theforeman/jenkins-jobs', poll: false
     }
 }
 
@@ -44,7 +52,7 @@ def runIndividualCicoJob(job_name, number = 0, job_parameters = null, job_extra_
     try {
         withCredentials([string(credentialsId: 'centos-jenkins', variable: 'PASSWORD')]) {
             runPlaybook(
-                playbook: 'ci/centos.org/ansible/jenkins_job.yml',
+                playbook: 'centos.org/ansible/jenkins_job.yml',
                 extraVars: extra_vars,
                 sensitiveExtraVars: ["jenkins_password": "${env.PASSWORD}"]
             )
@@ -67,7 +75,7 @@ def runIndividualCicoJob(job_name, number = 0, job_parameters = null, job_extra_
 
 def runCicoJob(job_name, job_parameters = null, job_extra_vars = null) {
     script {
-        git_clone_foreman_infra()
+        git_clone_jenkins_jobs()
         try {
             runIndividualCicoJob(job_name, 0, job_parameters, job_extra_vars)
         } finally {
@@ -86,7 +94,7 @@ def runCicoJobsInParallel(jobs) {
     }
 
     script {
-        git_clone_foreman_infra()
+        git_clone_jenkins_jobs()
         try {
             parallel branches
         } finally {

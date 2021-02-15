@@ -15,11 +15,11 @@ pipeline {
         stage('Run simple ci.centos.org test') {
             steps {
                 deleteDir()
-                git_clone_foreman_infra()
+                git_clone_jenkins_jobs()
 
                 withCredentials([string(credentialsId: 'centos-jenkins', variable: 'PASSWORD')]) {
                     runPlaybook(
-                        playbook: 'ci/centos.org/ansible/jenkins_job.yml',
+                        playbook: 'centos.org/ansible/jenkins_job.yml',
                         extraVars: [
                             "jenkins_job_name": "${env.cico_job_name}",
                             "jenkins_username": "foreman",
@@ -31,7 +31,7 @@ pipeline {
 
                 withCredentials([string(credentialsId: 'centos-jenkins', variable: 'PASSWORD')]) {
                     runPlaybook(
-                        playbook: 'ci/centos.org/ansible/jenkins_job.yml',
+                        playbook: 'centos.org/ansible/jenkins_job.yml',
                         extraVars: [
                             "jenkins_job_name": "${env.cico_job_name}",
                             "jenkins_username": "foreman",

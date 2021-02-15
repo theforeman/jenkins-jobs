@@ -1,8 +1,8 @@
 def provision() {
     fix_ansible_config()
-    git_clone_foreman_infra(target_dir: 'foreman-infra')
+    git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')
 
-  	dir('foreman-infra/ci/centos.org/ansible') {
+  	dir('jenkins-jobs/centos.org/ansible') {
         runPlaybook(playbook: 'provision.yml')
         archiveArtifacts artifacts: 'cico_data.json'
         archiveArtifacts artifacts: 'cico_inventory'
@@ -15,19 +15,19 @@ def fix_ansible_config() {
 }
 
 def deprovision() {
-    if (fileExists('foreman-infra')) {
-        dir('foreman-infra/ci/centos.org/ansible') {
+    if (fileExists('jenkins-jobs')) {
+        dir('jenkins-jobs/centos.org/ansible') {
             runPlaybook(playbook: 'deprovision.yml')
       	}
     }
 }
 
 def cico_inventory(relative_dir = '') {
-    return relative_dir + 'foreman-infra/ci/centos.org/ansible/cico_inventory'
+    return relative_dir + 'centos.org/ansible/cico_inventory'
 }
 
 def ssh_config(relative_dir = '') {
-    return relative_dir + 'foreman-infra/ci/centos.org/ansible/ssh_config'
+    return relative_dir + 'centos.org/ansible/ssh_config'
 }
 
 def color_shell(command = '', returnStdout = false) {
