@@ -22,6 +22,11 @@ pipeline {
                 run_test(ruby: '2.5', puppet: '6.3')
             }
         }
+        stage("test ruby 2.7 & puppet 7") {
+            steps {
+                run_test(ruby: '2.7', puppet: '7')
+            }
+        }
         stage('Build and Archive Source') {
             steps {
                 dir(project_name) {

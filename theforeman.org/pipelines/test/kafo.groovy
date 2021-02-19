@@ -11,11 +11,43 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.4', '2.5', '2.6'
+                        values '2.4', '2.5', '2.7'
                     }
                     axis {
                         name 'PUPPET_VERSION'
-                        values '5.0', '6.0'
+                        values '5.0', '6.0', '7.0'
+                    }
+                }
+                excludes {
+                    exclude {
+                        axis {
+                            name 'ruby'
+                            notValues '2.4'
+                        }
+                        axis {
+                            name 'PUPPET_VERSION'
+                            notValues '5.0'
+                        }
+                    }
+                    exclude {
+                        axis {
+                            name 'ruby'
+                            notValues '2.5'
+                        }
+                        axis {
+                            name 'PUPPET_VERSION'
+                            notValues '6.0'
+                        }
+                    }
+                    exclude {
+                        axis {
+                            name 'ruby'
+                            notValues '2.7'
+                        }
+                        axis {
+                            name 'PUPPET_VERSION'
+                            notValues '7.0'
+                        }
                     }
                 }
                 stages {
