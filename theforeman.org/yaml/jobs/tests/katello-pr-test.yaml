@@ -16,3 +16,19 @@
         - pipelines/lib/rvm.groovy
         - pipelines/lib/git.groovy
         - pipelines/lib/foreman.groovy
+
+- job:
+    name: katello-pr-test-ehelms
+    project-type: pipeline
+    sandbox: true
+    concurrent: true
+    properties:
+      - github:
+          url: https://github.com/Katello/katello
+      - tfm-pull-request-build-discarder
+    dsl:
+      !include-raw:
+        - pipelines/test/testKatello.groovy
+        - pipelines/lib/rvm.groovy
+        - pipelines/lib/git.groovy
+        - pipelines/lib/foreman.groovy
