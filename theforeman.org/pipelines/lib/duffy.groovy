@@ -23,11 +23,11 @@ def deprovision() {
 }
 
 def cico_inventory(relative_dir = '') {
-    return relative_dir + 'centos.org/ansible/cico_inventory'
+    return relative_dir + 'jenkins-jobs/centos.org/ansible/cico_inventory'
 }
 
 def ssh_config(relative_dir = '') {
-    return relative_dir + 'centos.org/ansible/ssh_config'
+    return relative_dir + 'jenkins-jobs/centos.org/ansible/ssh_config'
 }
 
 def color_shell(command = '', returnStdout = false) {
