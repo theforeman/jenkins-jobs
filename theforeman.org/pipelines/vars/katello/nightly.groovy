@@ -9,6 +9,7 @@ def pipelines = [
         'centos8'
     ],
     'upgrade': [
-        'centos7'
+        'centos7',
+        'centos8',
     ]
 ]
