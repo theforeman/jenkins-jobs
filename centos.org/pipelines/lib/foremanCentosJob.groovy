@@ -24,9 +24,7 @@ pipeline {
             steps {
                 script {
                     if (params.type == 'pulpcore') {
-                        setup_extra_vars = ['forklift_install_pulp_from_galaxy': true]
-                    } else {
-                        setup_extra_vars = []
+                        setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false]
                     }
                     runPlaybook(
                         playbook: 'playbooks/setup_forklift.yml',
