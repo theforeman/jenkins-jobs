@@ -87,31 +87,6 @@ pipeline {
                             }
                         }
                     }
-                    stage('Install Foreman npm packages') {
-                        steps {
-                            dir('foreman') {
-                                withRVM(["bundle exec npm install"], ruby)
-                            }
-                        }
-                    }
-                    stage('react-ui') {
-                        steps {
-                            sh "npm install"
-                            sh 'npm test'
-                        }
-                    }
-                    stage('angular-ui') {
-                        steps {
-                            dir('engines/bastion') {
-                                sh "npm install"
-                                sh "grunt ci"
-                            }
-                            dir('engines/bastion_katello') {
-                                sh "npm install"
-                                sh "grunt ci"
-                            }
-                        }
-                    }
                     stage('tests') {
                         steps {
                             dir('foreman') {
@@ -122,6 +97,7 @@ pipeline {
                     stage('assets-precompile') {
                         steps {
                             dir('foreman') {
+                                withRVM(["bundle exec npm install"], ruby)
                                 withRVM(['bundle exec rake plugin:assets:precompile[katello] RAILS_ENV=production DATABASE_URL=nulldb://nohost --trace'], ruby)
                             }
                         }
@@ -138,6 +114,18 @@ pipeline {
 
                             }
 
+                        }
+                    }
+                    stage('angular-ui') {
+                        steps {
+                            dir('engines/bastion') {
+                                sh "npm install"
+                                sh "grunt ci"
+                            }
+                            dir('engines/bastion_katello') {
+                                sh "npm install"
+                                sh "grunt ci"
+                            }
                         }
                     }
                 }
