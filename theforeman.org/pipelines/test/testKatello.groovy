@@ -134,6 +134,10 @@ pipeline {
                         dir('foreman') {
                             archiveArtifacts artifacts: "log/test.log"
                             junit keepLongStdio: true, testResults: 'jenkins/reports/unit/*.xml'
+                        }
+                    }
+                    cleanup {
+                        dir('foreman') {
                             cleanup(ruby)
                         }
                         deleteDir()
