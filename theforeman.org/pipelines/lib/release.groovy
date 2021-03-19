@@ -29,6 +29,10 @@ void push_pulpcore_rpms(version, distro) {
     push_rpms("pulpcore-${version}", "pulpcore", version, distro, true)
 }
 
+void push_katello_rpms(version, distro) {
+    push_rpms("katello-${version}", "katello", version, distro, true)
+}
+
 void mash(collection, version) {
     sshagent(['mash']) {
         sh "ssh -o 'BatchMode yes' root@koji.katello.org collection-mash-split.py ${collection} ${version}"
