@@ -35,7 +35,7 @@
 
     - name: 'Write cico data locally'
       copy:
-        content: "{{ cico_data.results | to_json }}"
+        content: "{{ cico_data.results | combine({'ssid': cico_get_data.results.ssid}) | to_json }}"
         dest: "{{ playbook_dir }}/cico_data.json"
 
     - name: 'Write cico inventory'
