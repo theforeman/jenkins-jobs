@@ -30,8 +30,9 @@ void push_pulpcore_rpms(version, distro) {
 }
 
 void push_katello_rpms(version, distro) {
-    push_rpms("katello-${version}/katello", "katello/katello", version, distro, true)
-    push_rpms("katello-${version}/candlepin", "katello/candlepin", version, distro, true)
+    keep_old = version != 'nightly'
+    push_rpms("katello-${version}/katello", "katello/katello", version, distro, keep_old)
+    push_rpms("katello-${version}/candlepin", "katello/candlepin", version, distro, keep_old)
 }
 
 void mash(collection, version) {
