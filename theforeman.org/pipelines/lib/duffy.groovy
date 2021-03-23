@@ -15,7 +15,7 @@ def fix_ansible_config() {
 }
 
 def deprovision() {
-    if (fileExists('jenkins-jobs')) {
+    if (fileExists('jenkins-jobs/centos.org/ansible/cico_data.json')) {
         dir('jenkins-jobs/centos.org/ansible') {
             runPlaybook(playbook: 'deprovision.yml')
       	}
