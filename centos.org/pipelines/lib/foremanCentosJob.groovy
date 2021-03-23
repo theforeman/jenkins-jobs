@@ -78,6 +78,9 @@ pipeline {
             step([$class: "TapPublisher", testResults: "debug/**/*.tap"])
             junit testResults: "debug/**/*.xml", allowEmptyResults: true
 
+        }
+
+        cleanup {
             deprovision()
             deleteDir()
         }
