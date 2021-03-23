@@ -8,4 +8,4 @@
       cico:
         action: done
         api_key: "{{ api_key }}"
-        ssid: cico_data.ssid
+        ssid: "{{ cico_data.ssid }}"
