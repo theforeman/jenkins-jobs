@@ -21,10 +21,12 @@ def list_files(glob = '') {
 def set_job_build_description(job_name, status, file_name) {
     def build_description = ""
 
+    build_description += "<a href=\"${env.BUILD_URL}/artifact/artifacts/${job_name}/\">${job_name}</a> (${status})"
     if (fileExists(file_name)) {
        link = readFile(file_name)
-       build_description += "<a href=\"${link}\">${job_name}</a> (${status})<br/>"
+       build_description += " (<a href=\"${link}\">remote job</a>)"
     }
+    build_description += "<br/>"
 
     if (currentBuild.description == null) {
         currentBuild.description = ''
