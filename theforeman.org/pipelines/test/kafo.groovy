@@ -26,7 +26,7 @@ pipeline {
                         }
                         axis {
                             name 'PUPPET_VERSION'
-                            notValues '5.0'
+                            values '5.0'
                         }
                     }
                     exclude {
@@ -36,7 +36,7 @@ pipeline {
                         }
                         axis {
                             name 'PUPPET_VERSION'
-                            notValues '6.0'
+                            values '6.0'
                         }
                     }
                     exclude {
@@ -46,7 +46,7 @@ pipeline {
                         }
                         axis {
                             name 'PUPPET_VERSION'
-                            notValues '7.0'
+                            values '7.0'
                         }
                     }
                 }
