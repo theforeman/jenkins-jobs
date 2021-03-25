@@ -12,24 +12,14 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.4', '2.5', '2.7'
+                        values '2.5', '2.7'
                     }
                     axis {
                         name 'PUPPET_VERSION'
-                        values '5.0', '6.0', '7.0'
+                        values '6.0', '7.0'
                     }
                 }
                 excludes {
-                    exclude {
-                        axis {
-                            name 'ruby'
-                            notValues '2.4'
-                        }
-                        axis {
-                            name 'PUPPET_VERSION'
-                            values '5.0'
-                        }
-                    }
                     exclude {
                         axis {
                             name 'ruby'
