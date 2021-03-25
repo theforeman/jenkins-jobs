@@ -70,15 +70,12 @@ pipeline {
                     }
                     stage('Test installer configuration') {
                         steps {
-                            script {
-                              install_dir = "${ruby}-${PUPPET_VERSION}"
-                            }
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec rake install PREFIX=${install_dir} --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${install_dir}/sbin/foreman-installer --help --scenario foreman --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${install_dir}/sbin/foreman-installer --help --scenario foreman-proxy-content --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${install_dir}/sbin/foreman-installer --help --scenario katello --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${install_dir}/sbin/foreman-proxy-certs-generate --help --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${install_dir}/sbin/foreman-proxy-certs-generate --help|grep -q certs-update-server"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec rake install PREFIX=${ruby}-${PUPPET_VERSION} --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman-proxy-content --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario katello --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help|grep -q certs-update-server"], ruby, "${ruby}-${PUPPET_VERSION}")
                         }
                     }
                 }
