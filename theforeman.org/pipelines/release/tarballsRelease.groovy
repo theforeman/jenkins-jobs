@@ -45,6 +45,11 @@ pipeline {
             }
         }
     }
+    post {
+        cleanup {
+            deleteDir()
+        }
+    }
 }
 
 void verify_tag(project, version) {

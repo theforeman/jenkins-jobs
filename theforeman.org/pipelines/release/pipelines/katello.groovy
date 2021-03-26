@@ -56,5 +56,8 @@ pipeline {
         failure {
             notifyDiscourse(env, 'Katello nightly pipeline failed:', currentBuild.description)
         }
+        cleanup {
+            deleteDir()
+        }
     }
 }

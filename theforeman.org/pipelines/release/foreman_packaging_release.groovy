@@ -74,5 +74,8 @@ pipeline {
               "Foreman packaging release job failed: ${env.BUILD_URL}"
             )
         }
+        cleanup {
+            deleteDir()
+        }
     }
 }

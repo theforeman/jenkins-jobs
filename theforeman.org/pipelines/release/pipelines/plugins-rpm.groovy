@@ -24,5 +24,8 @@ pipeline {
         failure {
             notifyDiscourse(env, "Foreman ${foreman_version} Plugins RPM Test pipeline failed:", currentBuild.description)
         }
+        cleanup {
+            deleteDir()
+        }
     }
 }

@@ -76,7 +76,7 @@ pipeline {
         failure {
             notifyDiscourse(env, "${project_name} package release pipeline failed:", currentBuild.description)
         }
-        always {
+        cleanup {
             echo "Cleaning up workspace"
             deleteDir()
         }

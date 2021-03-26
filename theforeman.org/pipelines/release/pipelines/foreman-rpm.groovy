@@ -51,6 +51,9 @@ pipeline {
         failure {
             notifyDiscourse(env, 'Foreman RPM nightly pipeline failed:', currentBuild.description)
         }
+        cleanup {
+            deleteDir()
+        }
     }
 }
 

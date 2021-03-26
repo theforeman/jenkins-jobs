@@ -33,5 +33,8 @@ pipeline {
         failure {
             notifyDiscourse(env, 'Foreman DEB nightly pipeline failed:', currentBuild.description)
         }
+        cleanup {
+            deleteDir()
+        }
     }
 }
