@@ -54,7 +54,7 @@ pipeline {
             notifyDiscourse(env, "${project_name} source release pipeline failed:", currentBuild.description)
         }
 
-        always {
+        cleanup {
             deleteDir()
         }
     }

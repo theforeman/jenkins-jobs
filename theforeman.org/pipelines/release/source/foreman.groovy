@@ -37,8 +37,10 @@ pipeline {
                     }
                     post {
                         always {
-                            cleanup(env.RUBY_VER, env.GEMSET)
                             junit(testResults: 'jenkins/reports/unit/*.xml')
+                        }
+                        cleanup {
+                            cleanup(env.RUBY_VER, env.GEMSET)
                             deleteDir()
                         }
                     }
@@ -69,8 +71,10 @@ pipeline {
                     }
                     post {
                         always {
-                            cleanup(env.RUBY_VER, env.GEMSET)
                             junit(testResults: 'jenkins/reports/unit/*.xml')
+                        }
+                        cleanup {
+                            cleanup(env.RUBY_VER, env.GEMSET)
                             deleteDir()
                         }
                     }
@@ -98,8 +102,10 @@ pipeline {
                     }
                     post {
                         always {
-                            cleanup(env.RUBY_VER, env.GEMSET)
                             junit(testResults: 'jenkins/reports/unit/*.xml')
+                        }
+                        cleanup {
+                            cleanup(env.RUBY_VER, env.GEMSET)
                             deleteDir()
                         }
                     }
@@ -129,8 +135,10 @@ pipeline {
                     }
                     post {
                         always {
-                            cleanup(env.RUBY_VER, env.GEMSET)
                             junit(testResults: 'jenkins/reports/unit/*.xml')
+                        }
+                        cleanup {
+                            cleanup(env.RUBY_VER, env.GEMSET)
                             deleteDir()
                         }
                     }
@@ -158,7 +166,7 @@ pipeline {
                         }
                     }
                     post {
-                        always {
+                        cleanup {
                             cleanup(env.RUBY_VER, env.GEMSET)
                             deleteDir()
                         }
@@ -192,7 +200,7 @@ pipeline {
             notifyDiscourse(env, "${project_name} source release pipeline failed:", currentBuild.description)
         }
 
-        always {
+        cleanup {
             deleteDir()
         }
     }
