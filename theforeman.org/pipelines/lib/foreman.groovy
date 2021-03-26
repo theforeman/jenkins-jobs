@@ -23,7 +23,9 @@ def configureDatabase(ruby, name = '') {
 def cleanup(ruby, name = '') {
     try {
 
-        withRVM(['bundle exec rake db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true'], ruby, name)
+        withRVM(['bundle exec rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true'], ruby, name)
+        withRVM(['bundle exec rake db:drop RAILS_ENV=test DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true'], ruby, name)
+        withRVM(['bundle exec rake db:drop RAILS_ENV=development DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true'], ruby, name)
 
     } finally {
 
