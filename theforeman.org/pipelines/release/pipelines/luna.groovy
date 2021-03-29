@@ -22,8 +22,5 @@ pipeline {
         failure {
             notifyDiscourse(env, 'Luna nightly pipeline failed:', currentBuild.description)
         }
-        cleanup {
-            deleteDir()
-        }
     }
 }

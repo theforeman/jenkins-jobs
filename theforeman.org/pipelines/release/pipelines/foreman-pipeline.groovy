@@ -75,8 +75,5 @@ pipeline {
           build job: "foreman-plugins-${foreman_version}-rpm-test-pipeline", wait: false
           build job: "foreman-plugins-${foreman_version}-deb-test-pipeline", wait: false
         }
-        cleanup {
-            deleteDir()
-        }
     }
 }

@@ -56,9 +56,4 @@ pipeline {
             }
         }
     }
-    post {
-        cleanup {
-            deleteDir()
-        }
-    }
 }

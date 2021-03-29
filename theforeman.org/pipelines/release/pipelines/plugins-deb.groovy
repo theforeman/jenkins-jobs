@@ -24,8 +24,5 @@ pipeline {
         failure {
             notifyDiscourse(env, "Foreman ${foreman_version} Plugins DEB Test pipeline failed:", currentBuild.description)
         }
-        cleanup {
-            deleteDir()
-        }
     }
 }
