@@ -1,7 +1,7 @@
 def katello_versions = [
     'master': [
         'foreman': 'develop',
-        'ruby': ['2.5', '2.7']
+        'ruby': ['2.7']
     ],
     'KATELLO-4.0': [
         'foreman': '2.4-stable',
