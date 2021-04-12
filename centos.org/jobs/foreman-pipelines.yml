@@ -30,6 +30,7 @@
       - centos8
       - debian10
       - ubuntu1804
+      - ubuntu2020
     version:
       - nightly
     action:
