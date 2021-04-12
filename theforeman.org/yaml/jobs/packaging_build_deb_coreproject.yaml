@@ -14,6 +14,7 @@
           values:
           - buster
           - bionic
+          - focal
       - axis:
           type: slave
           name: arch
@@ -25,7 +26,7 @@
           values:
           - debian
     execution-strategy:
-      combination-filter: '(onlyos == "all" || onlyos == os)'
+      combination-filter: '(onlyos == "all" || onlyos == os) && !((version == "2.4" || version == "2.3" || version == "2.2") && os == "focal")'
     builders:
       - build_deb_coreproject
     publishers:
