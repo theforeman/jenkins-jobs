@@ -43,8 +43,10 @@ pipeline {
             agent { label 'admin && sshkey' }
 
             steps {
-                push_rpms_katello(katello_version)
                 script {
+                    if (katello_version in ['3.17', '3.18', '4.0']) {
+                        push_rpms_katello(katello_version)
+                    }
                     foreman_el_releases.each { distro ->
                         push_katello_rpms(katello_version, distro)
                     }
