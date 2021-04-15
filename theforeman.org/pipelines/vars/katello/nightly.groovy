@@ -7,7 +7,8 @@ def foreman_el_releases = [
 def pipelines = [
     'install': [
         'centos7',
-        'centos8'
+        'centos8',
+        'centos8-stream',
     ],
     'upgrade': [
         'centos7',
