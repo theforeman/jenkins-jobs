@@ -29,6 +29,7 @@ def pipelines_el = [
     'install': [
         'centos7',
         'centos8',
+        'centos8-stream',
     ],
     'upgrade': [
         'centos7',
