@@ -9,6 +9,7 @@
     distro:
       - centos7
       - centos8
+      - centos8-stream
     action:
       - install
     type:
@@ -23,6 +24,7 @@
       - nightly
     distro:
       - centos7
+      - centos8
     action:
       - upgrade
     type:
