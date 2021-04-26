@@ -25,7 +25,7 @@ elif [[ $BUILD_TYPE == "ansible-collection" ]];
   wget "https://galaxy.ansible.com/download/${COLLECTION}-${VERSION}.tar.gz"
   mv "${COLLECTION}-${VERSION}.tar.gz" "${project}_${VERSION}.orig.tar.gz"
   cp -r ../${project} ./
-  tar -x -C "${project}" --strip-components=1 -f "${project}_${VERSION}.orig.tar.gz"
+  tar -x -C "${project}" -f "${project}_${VERSION}.orig.tar.gz"
   cd ${project}
 else
   echo "Unsupported build type: ${BUILD_TYPE}"
