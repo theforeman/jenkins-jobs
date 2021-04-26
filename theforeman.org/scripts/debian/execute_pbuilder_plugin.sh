@@ -20,7 +20,7 @@ if [[ $BUILD_TYPE == "gem" ]]; then
   cp -r ../${project} ./
   cd ${project}
   ../../download_gems
-elif [[ $BUILD_TYPE == "ansible-collection" ]];
+elif [[ $BUILD_TYPE == "ansible-collection" ]]; then
   COLLECTION=${project#ansible-collection-}
   wget "https://galaxy.ansible.com/download/${COLLECTION}-${VERSION}.tar.gz"
   mv "${COLLECTION}-${VERSION}.tar.gz" "${project}_${VERSION}.orig.tar.gz"
