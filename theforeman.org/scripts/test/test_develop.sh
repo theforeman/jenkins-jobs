@@ -48,7 +48,7 @@ fi
 bundle exec rake db:drop || true
 bundle exec rake db:create db:migrate --trace
 
-tasks="pkg:generate_source jenkins:unit"
+tasks="pkg:generate_source jenkins:unit jenkins:syntax"
 [ "${UI}" = "true" ] && tasks="jenkins:integration"
 bundle exec rake $tasks TESTOPTS="-v" --trace
 
