@@ -57,7 +57,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.5', '2.6', '2.7'
+                        values '2.5', '2.7'
                     }
                 }
                 environment {
