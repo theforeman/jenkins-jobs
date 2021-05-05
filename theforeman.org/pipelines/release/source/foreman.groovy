@@ -76,14 +76,14 @@ pipeline {
                         }
                     }
                 }
-                stage('ruby-2.5-postgres-integrations') {
+                stage('ruby-2.7-postgres-integrations') {
                     agent { label 'fast' }
                     environment {
-                        RUBY_VER = '2.5'
-                        GEMSET = 'ruby2.5-ui'
+                        RUBY_VER = '2.7'
+                        GEMSET = 'ruby2.7-ui'
                     }
                     stages {
-                        stage("setup-2.5-postgres-ui") {
+                        stage("setup-2.7-postgres-ui") {
                             steps {
                                 git url: git_url, branch: git_ref
                                 configureRVM(env.RUBY_VER, env.GEMSET)
@@ -93,7 +93,7 @@ pipeline {
                                 archiveArtifacts(artifacts: 'package-lock.json')
                             }
                         }
-                        stage("integration-tests-2.5-postgres-ui") {
+                        stage("integration-tests-2.7-postgres-ui") {
                             steps {
                                 withRVM(['bundle exec rake jenkins:integration TESTOPTS="-v" --trace'], env.RUBY_VER, env.GEMSET)
                             }
@@ -109,14 +109,14 @@ pipeline {
                         }
                     }
                 }
-                stage('ruby-2.5-nulldb-assets') {
+                stage('ruby-2.7-nulldb-assets') {
                     agent { label 'fast' }
                     environment {
-                        RUBY_VER = '2.5'
-                        GEMSET = 'ruby2.5-assets'
+                        RUBY_VER = '2.7'
+                        GEMSET = 'ruby2.7-assets'
                     }
                     stages {
-                        stage("setup-2.5-nulldb") {
+                        stage("setup-2.7-nulldb") {
                             steps {
                                 git url: git_url, branch: git_ref
                                 configureRVM(env.RUBY_VER, env.GEMSET)
@@ -125,7 +125,7 @@ pipeline {
                                 withRVM(['npm install'], env.RUBY_VER, env.GEMSET)
                             }
                         }
-                        stage("assets-precompile-2.5-nulldb") {
+                        stage("assets-precompile-2.7-nulldb") {
                             steps {
                                 withRVM(['bundle exec rake assets:precompile RAILS_ENV=production DATABASE_URL=nulldb://nohost'], env.RUBY_VER, env.GEMSET)
                             }

@@ -34,7 +34,7 @@
             - fast
     execution-strategy:
       combination-filter: >
-        (database == 'postgresql') || ((database == 'postgresql-integrations') && (ruby == '2.5'))
+        (database == 'postgresql') || ((database == 'postgresql-integrations') && (ruby == '2.7'))
     builders:
       - shell: !include-raw: scripts/test/test_develop.sh
     publishers:
