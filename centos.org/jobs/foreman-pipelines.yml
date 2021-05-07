@@ -7,8 +7,10 @@
     distro:
       - centos7
       - centos8
+      - centos8-stream
       - debian10
       - ubuntu1804
+      - ubuntu2004
     version:
       - '2.3'
       - '2.4'
