@@ -1,6 +1,6 @@
 ---
 - project:
-    name: katello-release-3.17-3.18
+    name: katello-release-3.18
     jobs:
       - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
     empty: ''
@@ -39,6 +39,22 @@
     distro:
       - centos7
     action:
+      - upgrade
+    type:
+      - katello
+
+- project:
+    name: katello-release-4.1
+    jobs:
+      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
+    empty: ''
+    version:
+      - '4.1'
+    distro:
+      - centos7
+      - centos8
+    action:
+      - install
       - upgrade
     type:
       - katello
