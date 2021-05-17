@@ -56,7 +56,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, 'Katello nightly pipeline failed:', currentBuild.description)
+            notifyDiscourse(env, "Katello ${katello_version} pipeline failed:", currentBuild.description)
         }
     }
 }
