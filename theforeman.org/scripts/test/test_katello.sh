@@ -45,7 +45,6 @@ gem install bundler -v '< 2.0' --no-document
 
 # Now let's introduce the plugin
 echo "gemspec :path => '${PLUGIN_ROOT}', :development_group => :katello_dev" >> bundler.d/Gemfile.local.rb
-echo "gem 'psych'" >> bundler.d/Gemfile.local.rb
 
 # Install dependencies
 bundle update --jobs=5 --retry=5
