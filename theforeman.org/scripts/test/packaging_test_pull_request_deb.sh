@@ -72,6 +72,7 @@ for p in $(git diff --name-only HEAD $merge_base plugins | cut -d/ -f2 | sort -u
 project=${p}
 repoowner=${ghprbPullAuthorLogin}
 repo=${pr_git_short_ref}
+version=${branch_version}
 EOF
 done
 
