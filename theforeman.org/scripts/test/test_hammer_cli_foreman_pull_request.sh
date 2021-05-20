@@ -10,7 +10,6 @@ rvm use ruby-${ruby}@${gemset} --create
 rvm gemset empty --force
 set -x
 
-gem update --no-document
 gem install bundler -v '< 2.0' --no-document
 
 # Link hammer_cli from github
