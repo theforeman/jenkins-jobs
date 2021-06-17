@@ -15,7 +15,7 @@ def obal(args) {
     }
 
     if (args.action == 'release' || args.action == 'scratch' || args.action == 'nightly') {
-        cmd = "${cmd} --skip-koji-whitelist-check"
+        cmd = "${cmd} --skip-koji-tag-check"
     }
 
     wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
