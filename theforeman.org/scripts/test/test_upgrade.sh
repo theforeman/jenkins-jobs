@@ -20,7 +20,7 @@ set -x
 gem install bundler -v '< 2.0' --no-document
 
 # Retry as rubygems (being external to us) can be intermittent
-bundle install --without=development --jobs=5 --retry=5
+bundle install --without development mysql --jobs=5 --retry=5
 
 # Database environment
 (
