@@ -21,7 +21,8 @@ def pipelines_deb = [
     ],
     'upgrade': [
         'debian10',
-        'ubuntu1804'
+        'ubuntu1804',
+        'ubuntu2004'
     ]
 ]
 
