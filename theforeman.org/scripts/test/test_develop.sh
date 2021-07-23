@@ -54,6 +54,8 @@ bundle exec rake $tasks TESTOPTS="-v" --trace
 
 # Test asset precompile
 if [ "${UI}" = "true" ]; then
+  rm -f db/schema.rb
+  cp db/schema.rb.nulldb db/schema.rb
   bundle exec rake assets:precompile RAILS_ENV=production DATABASE_URL=nulldb://nohost
   bundle exec rake webpack:compile RAILS_ENV=production DATABASE_URL=nulldb://nohost
 fi
