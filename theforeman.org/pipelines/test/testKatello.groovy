@@ -97,6 +97,7 @@ pipeline {
                     stage('assets-precompile') {
                         steps {
                             dir('foreman') {
+                                sh "cp db/schema.rb.nulldb db/schema.rb"
                                 withRVM(["bundle exec npm install"], ruby)
                                 withRVM(['bundle exec rake plugin:assets:precompile[katello] RAILS_ENV=production DATABASE_URL=nulldb://nohost --trace'], ruby)
                             }
