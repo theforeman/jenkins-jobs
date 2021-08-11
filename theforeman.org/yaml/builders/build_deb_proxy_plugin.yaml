@@ -3,4 +3,4 @@
     builders:
       - shell: !include-raw: scripts/debian/configure_pbuilder.sh
       - shell: !include-raw: scripts/debian/execute_pbuilder_proxy_plugin.sh
-      - shell: !include-raw: scripts/debian/stage_packages_plugin.sh
+      - shell: !include-raw: scripts/debian/stage_packages.sh
