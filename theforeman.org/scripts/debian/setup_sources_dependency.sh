@@ -1,8 +1,9 @@
 #!/bin/bash
 set -xe
 
+echo "--Setting Up Sources"
+
 # Create the package - assumes new gem2deb is in the packaging repo
-git checkout origin/deb/${repo} -b local
 cd dependencies/${os}
 mkdir build-${project}
 cd build-${project}
@@ -53,17 +54,3 @@ if [ x$gitrelease = xtrue ]; then
   cat debian/changelog.tmp >> debian/changelog
   rm -f debian/changelog.tmp
 fi
-
-# Build the package for the OS using pbuilder
-# needs sudo as pedebuild uses loop and bind mounts
-if [ $arch = x86 ]; then
-  sudo pdebuild-${os}64
-else
-  # Only build on non-x86 arches when the binary differs
-  if grep -qe "Architecture:\s\+any" debian/control; then
-    sudo pdebuild-${os}
-  fi
-fi
-
-# Cleanup, pdebuild uses root
-sudo chown -R jenkins:jenkins $WORKSPACE
