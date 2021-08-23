@@ -102,7 +102,7 @@ pipeline {
                         steps {
                             dir('foreman') {
                                 sh "cp db/schema.rb.nulldb db/schema.rb"
-                                withRVM(["bundle exec npm install"], ruby)
+                                withRVM(["bundle exec npm install --no-audit"], ruby)
                                 withRVM(['bundle exec rake plugin:assets:precompile[katello] RAILS_ENV=production DATABASE_URL=nulldb://nohost --trace'], ruby)
                             }
                         }
@@ -124,11 +124,11 @@ pipeline {
                     stage('angular-ui') {
                         steps {
                             dir('engines/bastion') {
-                                sh "npm install"
+                                sh "npm install --no-audit"
                                 sh "grunt ci"
                             }
                             dir('engines/bastion_katello') {
-                                sh "npm install"
+                                sh "npm install --no-audit"
                                 sh "grunt ci"
                             }
                         }

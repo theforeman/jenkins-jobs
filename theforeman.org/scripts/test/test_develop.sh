@@ -41,7 +41,7 @@ fi
 
 # we need to install node modules for integration tests (which only run on postgresql)
 if [ "${UI}" = "true" ]; then
-  npm install
+  npm install --no-audit
 fi
 
 # Create DB first in development as migrate behaviour can change

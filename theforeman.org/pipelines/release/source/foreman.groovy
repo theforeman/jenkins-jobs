@@ -89,7 +89,7 @@ pipeline {
                                 configureRVM(env.RUBY_VER, env.GEMSET)
                                 databaseFile(gemset(env.GEMSET))
                                 configureDatabase(env.RUBY_VER, env.GEMSET)
-                                withRVM(['npm install'], env.RUBY_VER, env.GEMSET)
+                                withRVM(['npm install --no-audit'], env.RUBY_VER, env.GEMSET)
                                 archiveArtifacts(artifacts: 'package-lock.json')
                             }
                         }
@@ -122,7 +122,7 @@ pipeline {
                                 configureRVM(env.RUBY_VER, env.GEMSET)
                                 withRVM(['bundle install --without=development --jobs=5 --retry=5'], env.RUBY_VER, env.GEMSET)
                                 sh "cp db/schema.rb.nulldb db/schema.rb"
-                                withRVM(['npm install'], env.RUBY_VER, env.GEMSET)
+                                withRVM(['npm install --no-audit'], env.RUBY_VER, env.GEMSET)
                             }
                         }
                         stage("assets-precompile-2.7-nulldb") {

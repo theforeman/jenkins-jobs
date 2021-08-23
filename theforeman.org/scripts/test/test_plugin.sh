@@ -63,7 +63,7 @@ tasks="jenkins:unit"
 # If the plugin contains integration tests or triggers core integration tests,
 # we need to install node modules and compile webpack
 if [ -d "${PLUGIN_ROOT}/test/integration" ] || [ ${database} = postgresql ]; then
-  npm install
+  npm install --no-audit
   tasks="webpack:compile $tasks"
 fi
 

@@ -51,7 +51,7 @@ pipeline {
         stage('Install Foreman npm packages') {
             steps {
                 dir('foreman') {
-                    withRVM(["bundle exec npm install"], ruby)
+                    withRVM(["bundle exec npm install --no-audit"], ruby)
                 }
             }
         }
@@ -76,7 +76,7 @@ pipeline {
                         expression { fileExists('package.json') }
                     }
                     steps {
-                        sh "npm install"
+                        sh "npm install --no-audit"
                         sh 'npm test'
                     }
                 }
@@ -84,11 +84,11 @@ pipeline {
                     steps {
                         script {
                             dir('engines/bastion') {
-                                sh "npm install"
+                                sh "npm install --no-audit"
                                 sh "grunt ci"
                             }
                             dir('engines/bastion_katello') {
-                                sh "npm install"
+                                sh "npm install --no-audit"
                                 sh "grunt ci"
                             }
                         }
