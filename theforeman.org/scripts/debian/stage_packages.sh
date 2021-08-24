@@ -30,7 +30,7 @@ if [[ "$DEB_PATH" == *"plugins"* ]];then
   # Plugins aren't staged.
   # Builds from the main (theforeman) repo are uploaded directly to deb.tfm.o.
   # Only user (PR) builds are uploaded to stagingdeb.tfm.o.
-  if [[ $repoowner == theforeman ]] && [[ -z $pr_number ]]; then
+  if [[ $repoowner == theforeman ]] && [[ -z ${pr_number:-} ]]; then
     echo "Built from main repo, uploading to deb/plugins/main"
     export RSYNC_RSH="ssh -i /home/jenkins/workspace/deb_key/rsync_freight_key"
     USER=freight
