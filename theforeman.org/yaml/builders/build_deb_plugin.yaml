@@ -1,7 +1,9 @@
 - builder:
     name: build_deb_plugin
     builders:
-      - shell: !include-raw: scripts/debian/configure_pbuilder.sh
-      - shell: !include-raw: scripts/debian/setup_sources_plugin.sh
-      - shell: !include-raw: scripts/debian/execute_pbuilder.sh
-      - shell: !include-raw: scripts/debian/stage_packages.sh
+      - shell:
+          !include-raw:
+            - scripts/debian/configure_pbuilder.sh
+            - scripts/debian/setup_sources_plugin.sh
+            - scripts/debian/execute_pbuilder.sh
+            - scripts/debian/stage_packages.sh
