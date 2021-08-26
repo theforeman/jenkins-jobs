@@ -5,7 +5,7 @@ set -xe
 echo "--Setting Up Sources"
 
 # Setup the debian files, figure out the version
-echo `git log -n1 --oneline`
+echo $(git log -n1 --oneline)
 cd debian/${os}/
 VERSION=$(head -n1 ${project}/changelog|awk '{print $2}'|sed 's/(//;s/)//'|cut -f1 -d-)
 
@@ -22,9 +22,9 @@ if [[ x$repo =~ ^xdevelop ]]; then
   mv archive/pkg/*bz2 ${project}_${VERSION}.orig.tar.bz2
 
   # Set this in case we need it
-  LAST_COMMIT=`curl "${job_url}/api/json" | jq -r '.actions[].lastBuiltRevision.SHA1 | values'`
+  LAST_COMMIT=$(curl "${job_url}/api/json" | jq -r '.actions[].lastBuiltRevision.SHA1 | values')
 else
-  VERSION=`echo ${VERSION} | tr '~rc' '-rc'`
+  VERSION=$(echo ${VERSION} | tr '~rc' '-rc')
   # Download sources
   wget https://downloads.theforeman.org/${project}/${project}-${VERSION}.tar.bz2 https://downloads.theforeman.org/${project}/${project}-${VERSION}.tar.bz2.sig
 
