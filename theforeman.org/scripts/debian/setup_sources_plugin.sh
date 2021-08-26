@@ -45,7 +45,7 @@ else
 fi
 
 # Add changelog entry if this is a git/nightly build
-if [[ $gitrelease == true ]] || [[ -z $pr_number ]]; then
+if [[ $gitrelease == true ]] || [[ -n $pr_number ]]; then
   PACKAGE_NAME=$(head -n1 debian/changelog|awk '{print $1}')
   LAST_COMMIT=$(git rev-list HEAD|/usr/bin/head -n 1)
   DATE=$(date -R)
