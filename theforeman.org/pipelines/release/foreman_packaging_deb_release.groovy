@@ -1,7 +1,12 @@
 def packages_to_build
+def build_steps = [
+    setup_sources: [:],
+    executes: [:],
+    rsync_packages: [:]
+]
 
 pipeline {
-    agent { label 'rpmbuild' }
+    agent { label 'debian' }
 
     options {
         timestamps()
@@ -14,7 +19,7 @@ pipeline {
         stage('Clone Packaging') {
             steps {
                 script {
-                    foreman_branch = foreman_version == 'nightly' ? "rpm/develop" : "rpm/${foreman_version}"
+                    foreman_branch = foreman_version == 'nightly' ? "deb/develop" : "deb/${foreman_version}"
                 }
 
                 checkout([
@@ -28,6 +33,7 @@ pipeline {
 
             }
         }
+
         stage('Find packages') {
             steps {
                 copyArtifacts(projectName: env.JOB_NAME, optional: true)
@@ -37,28 +43,35 @@ pipeline {
                     if (fileExists('commit')) {
 
                         commit = readFile(file: 'commit').trim()
-                        packages_to_build = find_changed_packages("${commit}..HEAD")
-
-                    } else {
-
-                        packages_to_build = []
+                        packages_to_build = find_changed_debs("${commit}..HEAD")
+                        build_steps = build_deb_package_steps(packages_to_build, foreman_version, 'theforeman', false)
 
                     }
                 }
             }
         }
-        stage('Release Build Packages') {
-            when {
-                expression { packages_to_build != [] }
-            }
+
+        stage('Setup sources') {
             steps {
+                script {
+                    parallel build_steps.setup_sources
+                }
+            }
+        }
 
-                setup_obal()
-                obal(
-                    action: 'release',
-                    packages: packages_to_build
-                )
+        stage('Execute pbuilder') {
+            steps {
+                script {
+                    parallel build_steps.executes
+                }
+            }
+        }
 
+        stage('Stage packages') {
+            steps {
+                script {
+                    parallel build_steps.rsync_packages
+                }
             }
         }
     }
@@ -71,7 +84,7 @@ pipeline {
             notifyDiscourse(
               env,
               "${env.JOB_NAME} failed for ${packages_to_build.join(',')}",
-              "Foreman packaging release job failed: ${env.BUILD_URL}"
+              "Foreman Debian packaging release job failed: ${env.BUILD_URL}"
             )
         }
         cleanup {

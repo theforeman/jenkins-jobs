@@ -1,9 +1,10 @@
 ---
 - job-template:
-    name: 'foreman-packaging-rpm-{version}-release'
+    name: 'foreman-packaging-deb-{version}-release'
     project-type: pipeline
     sandbox: true
     concurrent: false
+    disabled: true
     properties:
       - github:
           url: https://github.com/theforeman/foreman-packaging
@@ -12,7 +13,7 @@
     dsl:
       !include-raw:
         - 'pipelines/vars/foreman/{version}.groovy'
-        - 'pipelines/release/foreman_packaging_rpm_release.groovy{empty}'
+        - 'pipelines/release/foreman_packaging_deb_release.groovy{empty}'
         - 'pipelines/lib/git.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
         - 'pipelines/lib/obal.groovy{empty}'
@@ -20,17 +21,17 @@
         - 'pipelines/lib/foreman_infra.groovy{empty}'
 
 - project:
-    name: foreman-packaging-rpm
+    name: foreman-packaging-deb
     jobs:
-      - 'foreman-packaging-rpm-{version}-release'
+      - 'foreman-packaging-deb-{version}-release'
     empty: ''
     version:
       !include: ../../includes/foreman_versions.yaml.inc
 
 - project:
-    name: foreman-packaging-rpm-nightly
+    name: foreman-packaging-deb-nightly
     jobs:
-      - 'foreman-packaging-rpm-{version}-release'
+      - 'foreman-packaging-deb-{version}-release'
     empty: ''
     version:
       - 'nightly'
