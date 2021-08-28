@@ -9,7 +9,7 @@
         - 'pipelines/lib/release.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
         - 'pipelines/lib/foreman_infra.groovy{empty}'
-        - 'pipelines/lib/rpm_packaging.groovy{empty}'
+        - 'pipelines/lib/packaging.groovy{empty}'
         - 'pipelines/lib/obal.groovy{empty}'
 
 - project:
