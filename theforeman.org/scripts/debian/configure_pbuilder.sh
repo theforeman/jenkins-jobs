@@ -23,10 +23,5 @@ fi
 echo "echo deb http://deb.theforeman.org/ ${os} ${version} >> /etc/apt/sources.list" | sudo tee -a ${pbuilder_hooksdir}/F60addforemanrepo > /dev/null
 echo "echo deb http://deb.theforeman.org/ plugins ${version} >> /etc/apt/sources.list" | sudo tee -a ${pbuilder_hooksdir}/F60addforemanrepo > /dev/null
 
-# Read Foreman package installation logs on failure
-echo "cat /var/log/foreman-install.log || true" | sudo tee ${pbuilder_hooksdir}/C10foremanlog
-
-echo "tail -n 100 /etc/apt/sources.list /etc/apt/sources.list.d/*.list" | sudo tee ${pbuilder_hooksdir}/F99printrepos
-
 # Make executable
 sudo chmod 0775 ${pbuilder_hooksdir}/*
