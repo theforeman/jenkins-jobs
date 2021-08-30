@@ -5,23 +5,16 @@ set -xe
 echo "--Apt Hook Setup"
 
 pbuilder_hooksdir=/etc/pbuilder/${os}64/hooks
+local_hooksdir=$(PWD)/hooks-${os}-${version}-${BUILD_ID}
 
-# Cleanup any old hooks
-sudo rm -f ${pbuilder_hooksdir}/F60addforemanrepo
+# pbuilder doesn't accept multiple hookdirs, so we need to compose the real set of hooks
+# from the static ones in /etc and the dynamic one we generate below
+cp --recursive --preserve=mode ${pbuilder_hooksdir} ${local_hooksdir}
 
-if [[ $repoowner != theforeman ]]; then
-  # Add a stagingdeb repo to the sources too, if it exists
-  if wget -O/dev/null -q http://stagingdeb.theforeman.org/dists/${os}/${repoowner}-${version} ; then
-    echo "echo deb http://stagingdeb.theforeman.org/ ${os} ${repoowner}-${version} >> /etc/apt/sources.list" | sudo tee -a ${pbuilder_hooksdir}/F60addforemanrepo > /dev/null
-  fi
-  if wget -O/dev/null -q http://stagingdeb.theforeman.org/dists/plugins/${repoowner} ; then
-    echo "echo deb http://stagingdeb.theforeman.org/ plugins ${repoowner} >> /etc/apt/sources.list" | sudo tee -a ${pbuilder_hooksdir}/F60addforemanrepo > /dev/null
-  fi
-fi
+reposetup_hook = ${local_hooksdir}/F60addforemanrepo
 
-# Use tee to get around sudo/redirection problems, with /dev/null to drop the stdout
-echo "echo deb http://deb.theforeman.org/ ${os} ${version} >> /etc/apt/sources.list" | sudo tee -a ${pbuilder_hooksdir}/F60addforemanrepo > /dev/null
-echo "echo deb http://deb.theforeman.org/ plugins ${version} >> /etc/apt/sources.list" | sudo tee -a ${pbuilder_hooksdir}/F60addforemanrepo > /dev/null
+echo "echo deb http://deb.theforeman.org/ ${os} ${version} >> /etc/apt/sources.list" > ${reposetup_hook}
+echo "echo deb http://deb.theforeman.org/ plugins ${version} >> /etc/apt/sources.list" >> ${reposetup_hook}
 
 # Make executable
-sudo chmod 0775 ${pbuilder_hooksdir}/*
+chmod 0755 ${reposetup_hook}
