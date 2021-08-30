@@ -3,7 +3,6 @@
     builders:
       - shell:
           !include-raw:
-            - scripts/debian/configure_pbuilder.sh
             - scripts/debian/setup_sources_dependency.sh
             - scripts/debian/execute_pbuilder.sh
       - shell: !include-raw: scripts/debian/stage_packages.sh
