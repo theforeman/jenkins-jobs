@@ -52,24 +52,10 @@ fi
 cp -r ../${project} ./${project}-${VERSION}/debian
 cd ${project}-${VERSION}
 
-# Add changelog entry if this is a git/nightly build
+# rename orig tarball to stop lintian complaining
 if [[ $gitrelease == true ]] || [[ -n $pr_number ]]; then
-  PACKAGE_NAME=$(head -n1 debian/changelog|awk '{print $1}')
-  DATE=$(date -R)
-  RELEASE="9999-${os}+scratchbuild+${BUILD_TIMESTAMP}"
-  MAINTAINER="${repoowner} <no-reply@theforeman.org>"
-  mv debian/changelog debian/changelog.tmp
-  echo "$PACKAGE_NAME ($RELEASE) UNRELEASED; urgency=low
-
-  * Automatically built package based on the state of
-    foreman-packaging at commit $LAST_COMMIT
-
- -- $MAINTAINER  $DATE
-" > debian/changelog
-
-  cat debian/changelog.tmp >> debian/changelog
-  rm -f debian/changelog.tmp
-
-  # rename orig tarball to stop lintian complaining
   mv ../${project}_${VERSION}.orig.tar.bz2 ../${project}_9999.orig.tar.bz2
 fi
+
+# Set the suite to be used by things like adding a custom changelog
+suite=${os}
