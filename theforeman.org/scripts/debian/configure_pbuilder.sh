@@ -15,6 +15,7 @@ reposetup_hook = ${local_hooksdir}/F60addforemanrepo
 
 echo "echo deb http://deb.theforeman.org/ ${os} ${version} >> /etc/apt/sources.list" > ${reposetup_hook}
 echo "echo deb http://deb.theforeman.org/ plugins ${version} >> /etc/apt/sources.list" >> ${reposetup_hook}
+echo "echo deb http://stagingdeb.theforeman.org/ ${os} theforeman-${version} >> /etc/apt/sources.list" >> ${reposetup_hook}
 
 # Make executable
 chmod 0755 ${reposetup_hook}
