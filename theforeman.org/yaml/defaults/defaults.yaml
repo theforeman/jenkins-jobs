@@ -13,4 +13,4 @@
       - tfm-build-discarder
     wrappers:
       - timestamps
-
+    folder: internal-folder
