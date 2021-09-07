@@ -37,9 +37,9 @@ def find_changed_packages(diff_range) {
 def find_changed_debs(diff_range) {
     def changed_debs = []
 
-    def changed_dependencies = find_added_or_changed_files(diff_range, 'dependencies/*/*/changelog').split()
-    def changed_plugins = find_added_or_changed_files(diff_range, 'plugins/*/changelog').split()
-    def changed_core = find_added_or_changed_files(diff_range, 'debian/*/*/changelog').split()
+    def changed_dependencies = find_added_or_changed_files(diff_range, 'dependencies/*/*').split()
+    def changed_plugins = find_added_or_changed_files(diff_range, 'plugins/*).split()
+    def changed_core = find_added_or_changed_files(diff_range, 'debian/*/*').split()
 
     for(core in changed_core) {
         (folder, os, project) = core.split('/')
