@@ -17,7 +17,7 @@ def git_hash(ref = 'HEAD') {
 
 def archive_git_hash(ref = 'HEAD') {
     def hash = git_hash(ref)
-    writeFile('commit', hash)
+    writeFile(file: 'commit', text: hash)
     archiveArtifacts(artifacts: 'commit')
     return hash
 }
