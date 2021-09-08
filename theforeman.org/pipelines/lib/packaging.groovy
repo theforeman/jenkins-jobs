@@ -208,7 +208,7 @@ def setup_sources_deb(type, project, os, version, repoowner, pull_request) {
 
 }
 
-def setup_sources_core(os, project, version, repoowner, pull_request = false) {
+def setup_sources_core(project, os, version, repoowner, pull_request = false) {
     def package_version = debian_package_version("debian/${os}/${project}/changelog")
     def build_dir = deb_build_dir('core', project, os)
 
