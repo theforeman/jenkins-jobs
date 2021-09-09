@@ -379,7 +379,7 @@ def add_debian_changelog(suite, package_version, repoowner, last_commit) {
 def execute_pbuilder(build_dir, os, version) {
     dir(build_dir) {
         sh "sudo FOREMAN_VERSION=${version} pdebuild-${os}64"
-        sh "sudo chown -R jenkins:jenkins ${WORKSPACE}"
+        sh "sudo chown -R jenkins:jenkins ../"
     }
 }
 
