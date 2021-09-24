@@ -1,0 +1,5 @@
+- publisher:
+    name: discourse
+    publishers:
+    - email:
+        recipients: ci@community.theforeman.org

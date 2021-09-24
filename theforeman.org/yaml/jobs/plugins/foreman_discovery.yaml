@@ -9,4 +9,7 @@
       - 18.0-stable:
           foreman_branch: 3.0-stable
     jobs:
-      - 'test_plugin_{name}_{branch}'
+      - 'test_plugin_{name}_{branch}':
+          publishers:
+            - ircbot_freenode
+            - discourse
