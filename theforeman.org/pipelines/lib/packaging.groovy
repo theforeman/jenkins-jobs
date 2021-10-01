@@ -357,23 +357,7 @@ def setup_sources_plugin(project, os, version, repoowner, pull_request = false) 
 }
 
 def add_debian_changelog(suite, package_version, repoowner, last_commit) {
-    sh """
-      PACKAGE_NAME=\$(head -n1 debian/changelog|awk '{print \$1}')
-      DATE=\$(date -R)
-      RELEASE="9999-${package_version}-${suite}+scratchbuild\${BUILD_TIMESTAMP}"
-      MAINTAINER="${repoowner} <no-reply@theforeman.org>>"
-      mv debian/changelog debian/changelog.tmp
-      echo "\$PACKAGE_NAME (\$RELEASE) UNRELEASED; urgency=low
-
-      * Automatically built package based on the state of
-        foreman-packaging at commit ${last_commit}
-
-     -- \$MAINTAINER  \$DATE
-    " > debian/changelog
-
-      cat debian/changelog.tmp >> debian/changelog
-      rm -f debian/changelog.tmp
-    """
+    sh "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${repoowner} <no-reply@theforeman.org>' --version '9999-${package_version}-${suite}+scratchbuild${BUILD_TIMESTAMP}' --message 'Automatically built package based on the state of foreman-packaging at commit ${last_commit}'"
 }
 
 def execute_pbuilder(build_dir, os, version) {
