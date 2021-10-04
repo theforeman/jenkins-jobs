@@ -242,7 +242,7 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
         sh """
             # Unpack
             tar xf ${project}_${package_version}.orig.tar.bz2
-            if [[ -d ${project}-${package_version}-develop ]] ; then
+            if [ -d "${project}-${package_version}-develop" ] ; then
               mv ${project}-${package_version}-develop ${project}-${package_version}
             fi
 
@@ -274,13 +274,13 @@ def setup_sources_dependency(project, os, version, repoowner, pull_request = fal
               . ../${project}/build_vars.sh
             fi
 
-            if [[ \$BUILD_TYPE == "python" ]]; then
+            if [ "\$BUILD_TYPE" = "python" ]; then
               pip download --no-deps --no-binary=:all: "${project}==${package_version}"
               mkdir "${project}-${package_version}"
               tar -x -C "${project}-${package_version}" --strip-components=1 -f "${project}-${package_version}.tar.gz"
               mv "${project}-${package_version}.tar.gz" "${project}_${package_version}.orig.tar.gz"
               cp -r ../${project} "${project}-${package_version}/debian"
-            elif [[ \$BUILD_TYPE == "gem" ]]; then
+            elif [ "\$BUILD_TYPE" = "gem" ]; then
               gem fetch ${project} -v "=${package_version}"
               ../../gem2deb ${project}-${package_version}.gem --debian-subdir ../${project} --only-source-dir
             else
