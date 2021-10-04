@@ -268,6 +268,7 @@ def setup_sources_dependency(project, os, version, repoowner, pull_request = fal
 
     dir(build_dir) {
         sh """
+            BUILD_TYPE=gem
             # Import variables from the project, allowing it to override behaviour
             if [ -e ../${project}/build_vars.sh ]; then
               . ../${project}/build_vars.sh
