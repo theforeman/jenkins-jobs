@@ -33,7 +33,7 @@
           type: user-defined
           name: old_branch
           values:
-            - 1.17-stable
+            - 1.21-stable
     builders:
       - shell: !include-raw: scripts/test/test_upgrade.sh
     publishers:
