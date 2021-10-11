@@ -13,6 +13,7 @@ pipeline {
                     ]
                 ])
 
+                virtEnv('jjb-venv', 'pip install pbr')
                 virtEnv('jjb-venv', 'pip install jenkins-job-builder')
             }
         }
