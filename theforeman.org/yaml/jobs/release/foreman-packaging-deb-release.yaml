@@ -4,7 +4,6 @@
     project-type: pipeline
     sandbox: true
     concurrent: false
-    disabled: true
     properties:
       - github:
           url: https://github.com/theforeman/foreman-packaging
