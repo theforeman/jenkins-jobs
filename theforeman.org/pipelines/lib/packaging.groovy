@@ -377,7 +377,7 @@ def rsync_to_debian_stage(suite, component, deb_paths) {
 
 def rsync_to_debian_release(suite, component, deb_paths) {
     def user = 'freight'
-    def ssh_key = '/home/jenkins/workspace/staging_key/rsync_freight_key'
+    def ssh_key = '/home/jenkins/workspace/deb_key/rsync_freight_key'
 
     rsync_debian(user, ssh_key, suite, component, deb_paths)
 }
