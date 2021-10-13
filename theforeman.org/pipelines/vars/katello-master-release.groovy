@@ -1,6 +1,6 @@
 def git_url = 'https://github.com/Katello/katello'
 def git_ref = 'master'
-def obal_package_name = 'rubygem-katello'
+def rpm_source_package_name = 'rubygem-katello'
 def project_name = 'katello'
 def build_rpm = true
 def build_deb = false
