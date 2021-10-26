@@ -29,7 +29,7 @@
           values:
           - debian
     execution-strategy:
-      combination-filter: '(onlyos == "all" || onlyos == os) && !((version == "2.4" || version == "2.3") && os == "focal")'
+      combination-filter: '(onlyos == "all" || onlyos == os) && !((version == "2.4" || version == "2.3") && os == "focal") && !((version == "3.1" || version == "nightly") && os == "bionic")'
     builders:
       - build_deb_dependency
     publishers:
