@@ -186,11 +186,25 @@ def deb_build_dir(type, project, os = null) {
     } else if (type == 'plugin') {
         build_dir = "plugins/build-${project}"
     } else {
-        echo "Unsupported type specified: ${type}"
-        exit 1
+        error message: "Unsupported type specified: ${type}"
     }
 
     return build_dir
+}
+
+def read_build_vars(project) {
+    def data = [:]
+
+    dir("../${project}") {
+        if (fileExists('build_vars.sh')) {
+            readFile('build_vars.sh').split("\n").each { line ->
+              split_line = line.split('=', 2)
+              data[split_line[0]] = split_line[1]
+            }
+        }
+    }
+
+    return data
 }
 
 def setup_sources_deb(type, project, os, version, repoowner, pull_request) {
@@ -202,8 +216,7 @@ def setup_sources_deb(type, project, os, version, repoowner, pull_request) {
     } else if (type == 'plugin') {
         setup_sources_plugin(project, os, version, repoowner, pull_request)
     } else {
-        echo "Unsupported type specified: ${type}"
-        exit 1
+        error message: "Unsupported type specified: ${type}"
     }
 
 }
@@ -217,17 +230,15 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
 
     dir(build_dir) {
         if (version == 'nightly') {
+            def build_vars = read_build_vars(project)
             def url_base = 'https://ci.theforeman.org'
-            def job_name = nightly_jenkins_job
-            def job_id = nightly_jenkins_job_id
-            def job_url = "${url_base}/job/${job_name}/${job_id}"
+            def job_id = 'lastSuccessfulBuild'
+            def job_url = "${url_base}/job/${build_vars['source_location']}/${job_id}"
 
             sh """
               wget "${job_url}/artifact/*zip*/archive.zip"
               unzip archive.zip
               mv archive/pkg/*bz2 ${project}_${package_version}.orig.tar.bz2
-
-              # Set this in case we need it
             """
 
             last_commit = sh(returnStdout: true, script: "curl \"${job_url}/api/json\" | jq -r '.actions[].lastBuiltRevision.SHA1 | values'").trim()
@@ -267,27 +278,25 @@ def setup_sources_dependency(project, os, version, repoowner, pull_request = fal
     def package_dir
 
     dir(build_dir) {
-        sh """
-            BUILD_TYPE=gem
-            # Import variables from the project, allowing it to override behaviour
-            if [ -e ../${project}/build_vars.sh ]; then
-              . ../${project}/build_vars.sh
-            fi
+        def build_vars = read_build_vars(project)
+        def build_type = build_vars.get('BUILD_TYPE', 'gem')
 
-            if [ "\$BUILD_TYPE" = "python" ]; then
-              pip download --no-deps --no-binary=:all: "${project}==${package_version}"
-              mkdir "${project}-${package_version}"
-              tar -x -C "${project}-${package_version}" --strip-components=1 -f "${project}-${package_version}.tar.gz"
-              mv "${project}-${package_version}.tar.gz" "${project}_${package_version}.orig.tar.gz"
-              cp -r ../${project} "${project}-${package_version}/debian"
-            elif [ "\$BUILD_TYPE" = "gem" ]; then
+        if (build_type == "python") {
+            sh """
+                pip download --no-deps --no-binary=:all: "${project}==${package_version}"
+                mkdir "${project}-${package_version}"
+                tar -x -C "${project}-${package_version}" --strip-components=1 -f "${project}-${package_version}.tar.gz"
+                mv "${project}-${package_version}.tar.gz" "${project}_${package_version}.orig.tar.gz"
+                cp -r ../${project} "${project}-${package_version}/debian"
+            """
+        } else if (build_type == "gem") {
+            sh """
               gem fetch ${project} -v "=${package_version}"
               ../../gem2deb ${project}-${package_version}.gem --debian-subdir ../${project} --only-source-dir
-            else
-              echo "Unsupported build type: \${BUILD_TYPE}"
-              exit 1
-            fi
-        """
+            """
+        } else {
+            error message: "Unsupported build type: ${build_type}"
+        }
 
         package_dir = sh(returnStdout: true, script: "find -maxdepth 1 -type d -not -name '.'").trim()
     }
@@ -318,30 +327,28 @@ def setup_sources_plugin(project, os, version, repoowner, pull_request = false) 
 
             package_dir = sh(returnStdout: true, script: "find -maxdepth 1 -type d -not -name '.'").trim()
         } else {
+            def build_vars = read_build_vars(project)
+            def build_type = build_vars.get('BUILD_TYPE', 'gem')
+
             package_version = debian_package_version("../${project}/debian/changelog")
 
-            sh """
-                BUILD_TYPE=gem
-                # Import variables from the project, allowing it to override behaviour
-                if [ -e ../${project}/build_vars.sh ]; then
-                  . ../${project}/build_vars.sh
-                fi
-
-                if [ "\$BUILD_TYPE" = "gem" ]; then
+            if (build_type == "gem") {
+                sh """
                     cp -r ../${project} ./
                     cd ${project}
                     ../../download_gems
-                elif [ "\$BUILD_TYPE" = "ansible-collection" ]; then
+                """
+            } else if (build_type == "ansible-collection") {
+                sh """
                     COLLECTION=${project.replace('ansible-collection-', '')}
                     wget "https://galaxy.ansible.com/download/\${COLLECTION}-${package_version}.tar.gz"
                     mv "\${COLLECTION}-${package_version}.tar.gz" "${project}_${package_version}.orig.tar.gz"
                     cp -r ../${project} ./
                     tar -x -C "${project}" -f "${project}_${package_version}.orig.tar.gz"
-                else
-                    echo "Unsupported build type: \${BUILD_TYPE}"
-                    exit 1
-                fi
-            """
+                """
+            } else {
+                error message: "Unsupported build type: ${build_type}"
+            }
 
             package_dir = project
         }
