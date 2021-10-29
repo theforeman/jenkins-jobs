@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'foreman' }
+    agent { label 'cico-workspace' }
 
     environment {
         proxy_repository = env.getProperty('proxy_repository')

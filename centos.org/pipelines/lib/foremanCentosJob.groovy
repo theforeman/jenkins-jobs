@@ -1,7 +1,7 @@
 playBook = pipelineVars(action: params.action, type: params.type, version: params.version, os: params.distro, extra_vars: ['foreman_expected_version': params.expected_version ?: ''])
 
 pipeline {
-    agent { label 'foreman' }
+    agent { label 'cico-workspace' }
 
     options {
         timestamps()

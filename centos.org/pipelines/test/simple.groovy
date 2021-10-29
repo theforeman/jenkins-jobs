@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'foreman' }
+    agent { label 'cico-workspace' }
 
     stages {
         stage('Echo') {
