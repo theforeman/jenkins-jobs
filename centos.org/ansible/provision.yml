@@ -8,21 +8,21 @@
       register: cico_get_data
       retries: 2
       delay: 310
-      until: cico_get_data.results is defined
+      until: cico_get_data.ansible_module_results is defined
 
     - name: 'Fail if no SSID returned'
       fail:
         msg: 'No SSID returned from ci.centos.org when getting new node'
-      when: not cico_get_data.results.ssid
+      when: not cico_get_data.ansible_module_results.ssid
 
     - name: 'Retry geting list of nodes'
       cico:
         action: list
-        ssid: "{{ cico_get_data.results.ssid }}"
+        ssid: "{{ cico_get_data.ansible_module_results.ssid }}"
       register: cico_data
       retries: 5
       delay: 5
-      until: cico_data.results.hosts|length == 1
+      until: cico_data.ansible_module_results.hosts|length == 1
 
     - debug:
         msg: "{{ cico_data }}"
@@ -30,17 +30,17 @@
     - name: 'Fail if no hosts returned'
       fail:
         msg: 'Could not get hosts from ci.centos.org'
-      when: cico_data.results.hosts|length == 0
+      when: cico_data.ansible_module_results.hosts|length == 0
 
     - name: 'Write cico data locally'
       copy:
-        content: "{{ cico_data.results | combine({'ssid': cico_get_data.results.ssid}) | to_json }}"
+        content: "{{ cico_data.ansible_module_results | combine({'ssid': cico_get_data.ansible_module_results.ssid}) | to_json }}"
         dest: "{{ playbook_dir }}/cico_data.json"
 
     - name: 'Write cico inventory'
       copy:
         content: |
-          {% for host, value in cico_data.results.hosts.items() %}
+          {% for host, value in cico_data.ansible_module_results.hosts.items() %}
           {{ value.hostname }} ansible_fqdn={{ value.hostname }} ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_host={{ value.ip_address }}
           {% endfor %}
         dest: "{{ playbook_dir }}/cico_inventory"
