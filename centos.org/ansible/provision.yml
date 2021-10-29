@@ -41,7 +41,7 @@
       copy:
         content: |
           {% for host, value in cico_data.ansible_module_results.hosts.items() %}
-          {{ value.hostname }} ansible_fqdn={{ value.hostname }} ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_host={{ value.ip_address }}
+          {{ value.hostname }} ansible_fqdn={{ value.hostname }} ansible_user=root ansible_host={{ value.ip_address }}
           {% endfor %}
         dest: "{{ playbook_dir }}/cico_inventory"
 
