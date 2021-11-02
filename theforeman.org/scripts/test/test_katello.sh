@@ -40,7 +40,7 @@ rvm use ruby-${ruby}@${gemset} --create
 rvm gemset empty --force
 set -x
 
-gem install bundler -v '< 2.0' --no-document
+gem install bundler --no-document
 
 # Now let's introduce the plugin
 echo "gemspec :path => '${PLUGIN_ROOT}', :development_group => :katello_dev" >> bundler.d/Gemfile.local.rb

@@ -15,7 +15,7 @@ def gemset(name = null) {
 
 def configureRVM(ruby, name = '') {
     emptyGemset(ruby, name)
-    withRVM(["gem install bundler -v '< 2.0'"], ruby, name)
+    withRVM(["gem install bundler --no-document"], ruby, name)
 }
 
 def emptyGemset(ruby, name = '') {

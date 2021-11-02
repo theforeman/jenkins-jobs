@@ -6,7 +6,7 @@
 gemset=$(echo ${JOB_NAME} | cut -d/ -f1)-${EXECUTOR_NUMBER}
 rvm use ruby-${ruby}@${gemset} --create
 rvm gemset empty --force
-gem install bundler -v '< 2.0' --no-document
+gem install bundler --no-document
 
 # Link hammer_cli from github
 echo 'gem "hammer_cli", :github => "theforeman/hammer-cli"' > Gemfile.local

@@ -10,7 +10,7 @@ rvm use ruby-${ruby}@${gemset} --create
 rvm gemset empty --force
 set -x
 
-gem install bundler -v '< 2.0' --no-document
+gem install bundler --no-document
 
 bundle install --without development --jobs=5 --retry=5
 bundle exec rake ci:setup:minitest test TESTOPTS="-v"
