@@ -365,7 +365,7 @@ def setup_sources_plugin(project, os, version, repoowner, pull_request = false) 
 }
 
 def add_debian_changelog(suite, package_version, repoowner, last_commit) {
-    sh "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${repoowner} <no-reply@theforeman.org>' --version '9999-${package_version}-${suite}+scratchbuild${BUILD_TIMESTAMP}' --message 'Automatically built package based on the state of foreman-packaging at commit ${last_commit}' debian/changelog"
+    sh "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${repoowner} <no-reply@theforeman.org>' --version '9999-${package_version}-${suite}+scratchbuild+${BUILD_TIMESTAMP}' --message 'Automatically built package based on the state of foreman-packaging at commit ${last_commit}' debian/changelog"
 }
 
 def execute_pbuilder(build_dir, os, version) {
