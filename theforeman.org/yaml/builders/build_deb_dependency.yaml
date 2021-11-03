@@ -1,9 +1,0 @@
-- builder:
-    name: build_deb_dependency
-    builders:
-      - shell:
-          !include-raw:
-            - scripts/debian/setup_sources_dependency.sh
-            - scripts/debian/add_changelog.sh
-            - scripts/debian/execute_pbuilder.sh
-      - shell: !include-raw: scripts/debian/stage_packages.sh
