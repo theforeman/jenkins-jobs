@@ -231,17 +231,9 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
     dir(build_dir) {
         if (version == 'nightly') {
             def build_vars = read_build_vars(project)
-            def url_base = 'https://ci.theforeman.org'
-            def job_id = 'lastSuccessfulBuild'
-            def job_url = "${url_base}/job/${build_vars['source_location']}/${job_id}"
-
-            sh """
-              wget "${job_url}/artifact/*zip*/archive.zip"
-              unzip archive.zip
-              mv archive/pkg/*bz2 ${project}_${package_version}.orig.tar.bz2
-            """
-
-            last_commit = sh(returnStdout: true, script: "curl \"${job_url}/api/json\" | jq -r '.actions[].lastBuiltRevision.SHA1 | values'").trim()
+            copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json')
+            sh "mv *.tar.bz2 ${project}_${package_version}.orig.tar.bz2"
+            last_commit = readFile('commit').trim()
         } else {
             sh """
               # Download sources
