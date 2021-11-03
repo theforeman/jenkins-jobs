@@ -90,22 +90,28 @@ pipeline {
                         }
                         stage('Setup sources') {
                             steps {
-                                script {
-                                    parallel deb_build_steps.setup_sources
+                                dir('foreman-packaging') {
+                                    script {
+                                        parallel deb_build_steps.setup_sources
+                                    }
                                 }
                             }
                         }
                         stage('Execute pbuilder') {
                             steps {
-                                script {
-                                    parallel deb_build_steps.executes
+                                dir('foreman-packaging') {
+                                    script {
+                                        parallel deb_build_steps.executes
+                                    }
                                 }
                             }
                         }
                         stage('Stage packages') {
                             steps {
-                                script {
-                                    parallel deb_build_steps.rsync_packages
+                                dir('foreman-packaging') {
+                                    script {
+                                        parallel deb_build_steps.rsync_packages
+                                    }
                                 }
                             }
                         }
