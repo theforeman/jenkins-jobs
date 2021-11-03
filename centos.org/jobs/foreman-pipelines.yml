@@ -33,7 +33,6 @@
       - centos8
       - centos8-stream
       - debian10
-      - ubuntu1804
       - ubuntu2004
     version:
       - nightly
