@@ -1,6 +1,6 @@
 def commit_hash = ''
 def source_project_name = "${project_name}-${git_ref}-source-release"
-def deb_packages_to_build
+def deb_packages_to_build = []
 def deb_build_steps = [
     setup_sources: [:],
     executes: [:],
@@ -75,7 +75,7 @@ pipeline {
                         stage('Generate build config') {
                             steps {
                                 script {
-                                    for(os in foreman_debian_releases) {
+                                    for (os in foreman_debian_releases) {
                                         deb_packages_to_build.add([
                                             type: 'core',
                                             name: deb_source_package_name,

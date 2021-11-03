@@ -19,3 +19,4 @@
         - pipelines/lib/obal.groovy
         - pipelines/lib/git.groovy
         - pipelines/lib/nightly_packaging.groovy
+        - pipelines/lib/packaging.groovy
