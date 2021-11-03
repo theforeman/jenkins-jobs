@@ -262,7 +262,7 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
         """
 
         dir("${project}-${package_version}") {
-            if (pull_request) {
+            if (pull_request || version == 'nightly') {
                 add_debian_changelog(os, package_version, repoowner, last_commit)
                 sh "mv ../${project}_${package_version}.orig.tar.bz2 ../${project}_9999.orig.tar.bz2"
             }
