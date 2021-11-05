@@ -241,7 +241,7 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
               mv archive/pkg/*bz2 ${project}_${package_version}.orig.tar.bz2
             """
 
-            last_commit = sh(returnStdout: true, script: "curl \"${job_url}/api/json\" | jq -r '.actions[].lastBuiltRevision.SHA1 | values'").trim()
+            last_commit = sh(returnStdout: true, script: "curl --silent \"${job_url}/api/json\" | jq -r '.actions | map(select(has(\"lastBuiltRevision\"))) | .[-1].lastBuiltRevision.SHA1'").trim()
         } else {
             sh """
               # Download sources
