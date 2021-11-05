@@ -116,6 +116,11 @@ pipeline {
                             }
                         }
                     }
+                    post {
+                        cleanup {
+                            deleteDir()
+                        }
+                    }
                 }
             }
         }
