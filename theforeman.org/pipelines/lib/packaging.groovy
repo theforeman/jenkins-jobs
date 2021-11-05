@@ -231,7 +231,7 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
     dir(build_dir) {
         if (version == 'nightly') {
             def build_vars = read_build_vars(project)
-            copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json')
+            copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json', flatten: true)
             sh "mv *.tar.bz2 ${project}_${package_version}.orig.tar.bz2"
             last_commit = readFile('commit').trim()
         } else {
