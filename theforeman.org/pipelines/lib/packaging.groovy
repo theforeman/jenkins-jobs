@@ -155,12 +155,13 @@ def build_deb_package_steps(packages_to_build, version, repoowner = 'theforeman'
             echo "scratch build: uploading to stagingdeb/${suite}/${component}"
         }
 
-        if (!repos.containsKey("${suite}-${component}")) {
+        if (!repos["${suite}-${component}"]) {
             repos["${suite}-${component}"] = [suite: suite, component: component, deb_paths: [], type: release_type]
         }
         repos["${suite}-${component}"].deb_paths.add("${deb_path}/*deb")
     }
 
+    echo "Repos to rsync: ${repos}"
     repos.each { key, value ->
         if (value.type == 'stage') {
             steps.rsync_packages[key] = {
