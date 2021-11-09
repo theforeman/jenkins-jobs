@@ -16,6 +16,7 @@
       - '2.4'
       - '2.5'
       - '3.0'
+      - '3.1'      
     action:
       - install
       - upgrade
