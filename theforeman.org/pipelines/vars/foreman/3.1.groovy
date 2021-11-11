@@ -2,8 +2,6 @@ def foreman_version = '3.1'
 def foreman_client_distros = [
     'el8',
     'el7',
-    'el6',
-    'fc29',
     'sles12',
     'sles11'
 ]
