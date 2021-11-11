@@ -16,6 +16,25 @@
       - '2.4'
       - '2.5'
       - '3.0'
+    action:
+      - install
+      - upgrade
+    type:
+      - foreman
+      - plugins
+
+- project:
+    name: foreman-release-test-31
+    jobs:
+      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
+    empty: ''
+    distro:
+      - centos7
+      - centos8
+      - centos8-stream
+      - debian10
+      - ubuntu2004
+    version:
       - '3.1'      
     action:
       - install
