@@ -3,7 +3,7 @@
   tasks:
     - name: 'Find any files from debug'
       find:
-        paths: '/tmp'
+        paths: "/tmp/debug-{{ pipeline_type }}-{{ pipeline_version }}-{{ pipeline_os }}"
         recurse: yes
       register: debug_files
     - name: 'Fetch debug files'

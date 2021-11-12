@@ -64,7 +64,7 @@ pipeline {
                 runPlaybook(
                     playbook: 'jenkins-jobs/centos.org/ansible/fetch_debug_files.yml',
                     inventory: cico_inventory('./'),
-                    extraVars: ["workspace": "${env.WORKSPACE}/debug"],
+                    extraVars: ["workspace": "${env.WORKSPACE}/debug"] + playBook['extraVars'],
                     commandLineExtraVars: true,
                     options: ['-b']
                   )
