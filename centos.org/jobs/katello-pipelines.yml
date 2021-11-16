@@ -75,6 +75,22 @@
     type:
       - katello
 
+- project:
+    name: katello-release-4.3
+    jobs:
+      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
+    empty: ''
+    version:
+      - '4.3'
+    distro:
+      - centos7
+      - centos8
+      - centos8-stream
+    action:
+      - install
+      - upgrade
+    type:
+      - katello
 
 - project:
     name: katello-nightly
