@@ -40,6 +40,7 @@ def find_changed_debs(diff_range) {
     def changed_dependencies = find_added_or_changed_files(diff_range, 'dependencies/*/*/changelog').split()
     def changed_plugins = find_added_or_changed_files(diff_range, 'plugins/*/changelog').split()
     def changed_core = find_added_or_changed_files(diff_range, 'debian/*/*/changelog').split()
+    def changed_client = find_added_or_changed_files(diff_range, 'client/*/*/changelog').split()
 
     for(core in changed_core) {
         (folder, os, project) = core.split('/')
@@ -71,6 +72,17 @@ def find_changed_debs(diff_range) {
             name: project,
             path: "${folder}/${project}",
             operating_system: 'buster'
+        ])
+    }
+
+    for(client in changed_client) {
+        (folder, os, project) = client.split('/')
+
+        changed_debs.add([
+            type: 'client',
+            name: project,
+            path: "${folder}/${os}/${project}",
+            operating_system: os
         ])
     }
 
@@ -148,6 +160,16 @@ def build_deb_package_steps(packages_to_build, version, repoowner = 'theforeman'
             component = repoowner
             release_type = 'stage'
             echo "scratch build: uploading to stagingdeb/${suite}/${component}"
+        } else if (type == 'client' && !pull_request) {
+            suite = os
+            component = "${version}-client"
+            release_type = 'release'
+            echo "plugin build without PR: uploading directly to deb/${suite}/${component}"
+        } else if (type == 'client' && pull_request) {
+            suite = os
+            component = "${repoowner}-${version}-client"
+            release_type = 'stage'
+            echo "scratch build: uploading to stagingdeb/${suite}/${component}"
         } else {
             suite = os
             component = "${repoowner}-${version}"
@@ -186,6 +208,8 @@ def deb_build_dir(type, project, os = null) {
         build_dir = "dependencies/${os}/build-${project}"
     } else if (type == 'plugin') {
         build_dir = "plugins/build-${project}"
+    } else if (type == 'client') {
+        build_dir = "client/build-${project}"
     } else {
         error message: "Unsupported type specified: ${type}"
     }
@@ -216,6 +240,8 @@ def setup_sources_deb(type, project, os, version, repoowner, pull_request) {
         setup_sources_dependency(project, os, version, repoowner, pull_request)
     } else if (type == 'plugin') {
         setup_sources_plugin(project, os, version, repoowner, pull_request)
+    } else if (type == 'client') {
+        setup_sources_client(project, os, version, repoowner, pull_request)
     } else {
         error message: "Unsupported type specified: ${type}"
     }
@@ -265,9 +291,17 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
     return "${build_dir}/${project}-${package_version}"
 }
 
+def setup_sources_client(project, os, version, repoowner, pull_request = false) {
+    return setup_sources_os_dependent('client', 'client', project, os, version, repoowner, pull_request)
+}
+
 def setup_sources_dependency(project, os, version, repoowner, pull_request = false) {
-    def package_version = debian_package_version("dependencies/${os}/${project}/changelog")
-    def build_dir = deb_build_dir('dependency', project, os)
+    return setup_sources_os_dependent('dependencies', 'dependency', project, os, version, repoowner, pull_request)
+}
+
+def setup_sources_os_dependent(source_dir, main_build_dir, project, os, version, repoowner, pull_request = false) {
+    def package_version = debian_package_version("${source_dir}/${os}/${project}/changelog")
+    def build_dir = deb_build_dir(main_build_dir, project, os)
     def package_dir
 
     dir(build_dir) {
