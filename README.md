@@ -1,6 +1,6 @@
 # Foreman's Jenkins Jobs
 
-This repository contains all the job definitions and supporting code used in Jenkins jobs used by the Foreman project on it's own ci system [ci.theforeman.org](https://ci.theforeman.org) and [ci.centos.org](https://ci.centos.org).
+This repository contains all the job definitions and supporting code used in Jenkins jobs used by the Foreman project on it's own ci system [ci.theforeman.org](https://ci.theforeman.org) and [ci.centos.org](https://jenkins-foreman.apps.ocp.ci.centos.org/).
 
 CentOS CI is used to provision VMs for end to end testing of installations.
 

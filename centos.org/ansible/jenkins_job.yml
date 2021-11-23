@@ -2,7 +2,7 @@
 - hosts: localhost
   gather_facts: no
   vars:
-    jenkins_host: 'https://ci.centos.org'
+    jenkins_host: 'https://jenkins-foreman.apps.ocp.ci.centos.org/'
     jenkins_job_name: ''
     jenkins_username: ''
     jenkins_password: ''
