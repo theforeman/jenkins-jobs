@@ -24,7 +24,7 @@
       - nightly
     distro:
       - centos7
-      - centos8
+      - centos8-stream
     action:
       - upgrade
     type:
