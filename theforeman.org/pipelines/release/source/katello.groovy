@@ -77,7 +77,7 @@ pipeline {
                     }
                     steps {
                         sh "npm install --no-audit"
-                        sh 'npm test'
+                        sh 'JEST_TIMEOUT=300000 npm test'
                     }
                 }
                 stage('angular-ui') {
