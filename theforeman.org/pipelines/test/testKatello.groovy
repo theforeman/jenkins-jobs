@@ -15,10 +15,6 @@ def katello_versions = [
         'foreman': '2.5-stable',
         'ruby': ['2.7']
     ],
-    'KATELLO-4.0': [
-        'foreman': '2.4-stable',
-        'ruby': ['2.5']
-    ],
 ]
 
 def ruby_versions = katello_versions[ghprbTargetBranch]['ruby']
