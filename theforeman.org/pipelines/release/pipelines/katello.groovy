@@ -44,7 +44,7 @@ pipeline {
 
             steps {
                 script {
-                    if (katello_version in ['3.17', '3.18', '4.0']) {
+                    if (katello_version in ['4.0']) {
                         push_rpms_katello(katello_version)
                     }
                     foreman_el_releases.each { distro ->
