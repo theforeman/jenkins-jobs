@@ -19,6 +19,12 @@
       - string:
           name: type
           default: '{type}'
+    properties:
+      - build-discarder:
+          days-to-keep: 3
+          num-to-keep: 3
+          artifact-days-to-keep: 3
+          artifact-num-to-keep: 3
     dsl:
       !include-raw:
         - pipelines/lib/foremanCentosJob.groovy{empty}
