@@ -32,9 +32,9 @@ pipeline {
             steps {
                 script {
                     duffy_ssh("git clone https://github.com/theforeman/foreman-discovery-image/ --branch ${env.branch}", 'duffy_box', './')
-                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant up el7", 'duffy_box', './')
-                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant ssh -c \"sudo chmod +rx /root\" el7", 'duffy_box', './')
-                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant scp el7:/root/foreman-discovery-image/ ./result", 'duffy_box', './')
+                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant up fdi-builder", 'duffy_box', './')
+                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant ssh -c \"sudo chmod +rx /root\" fdi-builder", 'duffy_box', './')
+                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant scp fdi-builder:foreman-discovery-image/ ./result", 'duffy_box', './')
                     duffy_scp('foreman-discovery-image/aux/vagrant-build/result/', '.', 'duffy_box', './')
                 }
             }
@@ -43,8 +43,8 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts artifacts: 'result/*tar', allowEmptyArchive: true
-            archiveArtifacts artifacts: 'result/*iso', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'result/fdi*tar', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'result/fdi*iso', allowEmptyArchive: true
         }
 
         cleanup {
