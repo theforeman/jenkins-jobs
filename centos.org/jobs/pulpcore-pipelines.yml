@@ -8,7 +8,7 @@
       !include: ../../theforeman.org/yaml/includes/pulpcore_versions.yaml.inc
     distro:
       - centos7
-      - centos8
+      - centos8-stream
     action:
       - pulpcore
     type:

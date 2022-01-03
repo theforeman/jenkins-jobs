@@ -4,6 +4,6 @@ def packaging_branch = 'rpm/{version}'
 def pipelines = [
     'pulpcore': [
         'centos7',
-        'centos8'
+        'centos8-stream'
     ]
 ]
