@@ -73,6 +73,7 @@
       - 'devel'
     distro:
       - centos7
+      - centos8-stream
     action:
       - katello_devel
     type:
