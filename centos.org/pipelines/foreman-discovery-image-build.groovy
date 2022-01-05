@@ -4,6 +4,7 @@ pipeline {
     environment {
         proxy_repository = env.getProperty('proxy_repository')
         branch = env.getProperty('branch')
+        repo_owner = env.getProperty('repo_owner')
     }
 
     stages {
@@ -31,8 +32,8 @@ pipeline {
         stage('Run Build') {
             steps {
                 script {
-                    duffy_ssh("git clone https://github.com/theforeman/foreman-discovery-image/ --branch ${env.branch}", 'duffy_box', './')
-                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant up fdi-builder", 'duffy_box', './')
+                    duffy_ssh("git clone https://github.com/${env.repo_owner}/foreman-discovery-image/ --branch ${env.branch}", 'duffy_box', './')
+                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && repoowner='${env.repo_owner}' branch='${env.branch}' proxy_repo='${env.proxy_repository}' vagrant up fdi-builder", 'duffy_box', './')
                     duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant ssh -c \"sudo chmod +rx /root\" fdi-builder", 'duffy_box', './')
                     duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant scp fdi-builder:foreman-discovery-image/ ./result", 'duffy_box', './')
                     duffy_scp('foreman-discovery-image/aux/vagrant-build/result/', '.', 'duffy_box', './')
@@ -45,6 +46,7 @@ pipeline {
         success {
             archiveArtifacts artifacts: 'result/fdi*tar', allowEmptyArchive: true
             archiveArtifacts artifacts: 'result/fdi*iso', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'result/*log', allowEmptyArchive: true
         }
 
         cleanup {

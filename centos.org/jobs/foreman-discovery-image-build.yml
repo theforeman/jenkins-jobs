@@ -12,6 +12,10 @@
           name: branch
           default: master
           description: 'Name of the branch to use.'
+      - string:
+          name: repo_owner
+          default: theforeman
+          description: 'Name of the repository owner to use.'
     dsl:
       !include-raw:
         - pipelines/foreman-discovery-image-build.groovy
