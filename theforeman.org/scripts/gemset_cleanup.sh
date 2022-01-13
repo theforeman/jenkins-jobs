@@ -17,8 +17,8 @@ rvm use ruby-${ruby}@${gemset}
 set -x
 
 # Env var works around Rails issue #28001 if DB migrations fail
-bundle exec rake db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true
-bundle exec rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true
+bundle exec rake db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true
+bundle exec rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true
 
 echo "Delete gemset"
 set +x

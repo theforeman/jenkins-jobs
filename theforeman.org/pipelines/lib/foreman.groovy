@@ -14,7 +14,7 @@ def addSettings(settings) {
 def configureDatabase(ruby, name = '') {
     withRVM(['bundle install --without=development --jobs=5 --retry=5'], ruby, name)
     archiveArtifacts(artifacts: 'Gemfile.lock')
-    withRVM(['bundle exec rake db:drop || true'], ruby, name)
+    withRVM(['bundle exec rake db:drop >/dev/null 2>/dev/null || true'], ruby, name)
     withRVM(['bundle exec rake db:create --trace'], ruby, name)
     withRVM(['RAILS_ENV=production bundle exec rake db:create --trace'], ruby, name)
     withRVM(['bundle exec rake db:migrate --trace'], ruby, name)
@@ -23,9 +23,9 @@ def configureDatabase(ruby, name = '') {
 def cleanup(ruby, name = '') {
     try {
 
-        withRVM(['bundle exec rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true'], ruby, name)
-        withRVM(['bundle exec rake db:drop RAILS_ENV=test DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true'], ruby, name)
-        withRVM(['bundle exec rake db:drop RAILS_ENV=development DISABLE_DATABASE_ENVIRONMENT_CHECK=true || true'], ruby, name)
+        withRVM(['bundle exec rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true'], ruby, name)
+        withRVM(['bundle exec rake db:drop RAILS_ENV=test DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true'], ruby, name)
+        withRVM(['bundle exec rake db:drop RAILS_ENV=development DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true'], ruby, name)
 
     } finally {
 

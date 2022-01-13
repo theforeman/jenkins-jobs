@@ -45,7 +45,7 @@ if [ "${UI}" = "true" ]; then
 fi
 
 # Create DB first in development as migrate behaviour can change
-bundle exec rake db:drop || true
+bundle exec rake db:drop >/dev/null 2>/dev/null || true
 bundle exec rake db:create db:migrate --trace
 
 tasks="pkg:generate_source jenkins:unit"

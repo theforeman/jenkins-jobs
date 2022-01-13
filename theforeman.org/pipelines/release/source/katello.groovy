@@ -116,7 +116,7 @@ pipeline {
 
                 dir('foreman') {
 
-                    withRVM(['bundle exec rake db:drop RAILS_ENV=test || true'], ruby)
+                    withRVM(['bundle exec rake db:drop RAILS_ENV=test >/dev/null 2>/dev/null || true'], ruby)
                     withRVM(['bundle exec rake db:create RAILS_ENV=test'], ruby)
                     withRVM(['bundle exec rake db:migrate RAILS_ENV=test'], ruby)
                     withRVM(['bundle exec rake db:seed RAILS_ENV=test'], ruby)

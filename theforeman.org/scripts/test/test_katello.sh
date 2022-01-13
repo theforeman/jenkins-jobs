@@ -57,7 +57,7 @@ bundle update --jobs=5 --retry=5
 
 # First try to drop the DB, but ignore failure as it might happen with Rails 5
 # when there is really no DB yet.
-bundle exec rake db:drop || true
+bundle exec rake db:drop >/dev/null 2>/dev/null || true
 
 # Create DB first in development as migrate behaviour can change
 bundle exec rake db:create --trace
@@ -70,10 +70,10 @@ bundle exec rake db:migrate --trace
 bundle exec rake jenkins:katello TESTOPTS="-v" --trace
 
 # Run the DB seeds to verify they work
-bundle exec rake db:drop RAILS_ENV=test || true
+bundle exec rake db:drop RAILS_ENV=test >/dev/null 2>/dev/null || true
 bundle exec rake db:create RAILS_ENV=test
 bundle exec rake db:migrate --trace RAILS_ENV=test
 bundle exec rake db:seed --trace RAILS_ENV=test
 
 # Clean up the database after use
-bundle exec rake db:drop || true
+bundle exec rake db:drop >/dev/null 2>/dev/null || true
