@@ -209,7 +209,7 @@ def deb_build_dir(type, project, os = null) {
     } else if (type == 'plugin') {
         build_dir = "plugins/build-${project}"
     } else if (type == 'client') {
-        build_dir = "client/build-${project}"
+        build_dir = "client/${os}/build-${project}"
     } else {
         error message: "Unsupported type specified: ${type}"
     }
