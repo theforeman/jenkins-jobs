@@ -5,6 +5,7 @@
       find:
         paths: "/tmp/debug-{{ pipeline_type }}-{{ pipeline_version }}-{{ pipeline_os }}"
         recurse: yes
+        hidden: yes
       register: debug_files
     - name: 'Fetch debug files'
       fetch:
