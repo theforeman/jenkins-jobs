@@ -52,8 +52,6 @@
 - project:
     name: foreman-plugin-pull-request
     plugin:
-      - foreman_ansible:
-          repo: 'https://github.com/theforeman/foreman_ansible'
       - foreman_bootdisk:
           repo: 'https://github.com/theforeman/foreman_bootdisk'
       - foreman_default_hostgroup:
@@ -66,8 +64,6 @@
           repo: 'https://github.com/theforeman/foreman_host_extra_validator'
       - foreman_openscap:
           repo: 'https://github.com/theforeman/foreman_openscap'
-      - foreman_salt:
-          repo: 'https://github.com/theforeman/foreman_salt'
       - foreman_setup:
           repo: 'https://github.com/theforeman/foreman_setup'
       - foreman_templates:
