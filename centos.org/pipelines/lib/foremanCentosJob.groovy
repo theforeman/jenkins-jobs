@@ -26,6 +26,9 @@ pipeline {
                 script {
                     if (params.type == 'pulpcore') {
                         setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false]
+                        if (params.version == '3.17') {
+                            writeYaml file: 'requirements-pulp.yaml', data: [ 'collections': [ 'name': 'pulp.pulp_installer', 'version': '3.17.2'] ]
+                        }
                     } else {
                         setup_extra_vars = []
                     }
