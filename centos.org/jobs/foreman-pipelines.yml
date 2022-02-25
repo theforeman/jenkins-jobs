@@ -6,7 +6,6 @@
     empty: ''
     distro:
       - centos7
-      - centos8
       - centos8-stream
       - debian10
       - ubuntu1804
@@ -27,7 +26,6 @@
     empty: ''
     distro:
       - centos7
-      - centos8
       - centos8-stream
       - debian10
       - ubuntu2004
