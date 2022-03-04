@@ -78,17 +78,3 @@
       - upgrade
     type:
       - katello
-
-- project:
-    name: katello-devel-pulpcore-integration
-    jobs:
-      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
-    empty: ''
-    version:
-      - 'devel'
-    distro:
-      - centos7
-    action:
-      - katello_devel
-    type:
-      - katello_devel
