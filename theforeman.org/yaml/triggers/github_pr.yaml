@@ -3,6 +3,8 @@
     org-list:
       - theforeman
       - katello
+    white-list:
+      - 'github-actions[bot]'
     cron: 'H * * * *'
     trigger-phrase: '.*\[test {context}\].*'
     github-hooks: true
