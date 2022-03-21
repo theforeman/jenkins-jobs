@@ -64,6 +64,7 @@
       - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
     empty: ''
     distro:
+      - almalinux8
       - centos7
       - centos8-stream
       - debian10
