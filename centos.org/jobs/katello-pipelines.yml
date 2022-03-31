@@ -55,6 +55,7 @@
     version:
       - '4.4'
     distro:
+      - almalinux8
       - centos7
       - centos8-stream
     action:
