@@ -24,10 +24,12 @@ def pipelines_deb = [
 
 def pipelines_el = [
     'install': [
+        'almalinux8',
         'centos7',
         'centos8-stream',
     ],
     'upgrade': [
+        'almalinux8',
         'centos7',
         'centos8-stream',
     ]

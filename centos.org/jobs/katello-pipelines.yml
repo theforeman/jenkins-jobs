@@ -39,6 +39,7 @@
     version:
       - '4.3'
     distro:
+      - almalinux8
       - centos7
       - centos8
     action:

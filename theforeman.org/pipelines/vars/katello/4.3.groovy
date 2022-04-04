@@ -6,10 +6,12 @@ def foreman_el_releases = [
 ]
 def pipelines = [
     'install': [
+        'almalinux8',
         'centos7',
         'centos8-stream',
     ],
     'upgrade': [
+        'almalinux8',
         'centos7',
         'centos8-stream',
     ]
