@@ -4,9 +4,9 @@
     branch:
       - develop:
           foreman_branch: develop
-      - 17.1-stable:
-          foreman_branch: 2.5-stable
-      - 18.0-stable:
-          foreman_branch: 3.0-stable
+      - 19.0-stable:
+          foreman_branch: 3.1-stable
+      - 20.0-stable:
+          foreman_branch: 3.2-stable
     jobs:
       - 'test_plugin_{name}_{branch}'
