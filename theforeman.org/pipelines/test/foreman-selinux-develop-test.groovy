@@ -16,10 +16,10 @@ pipeline {
                 }
             }
         }
-        stage("Build for rhel7") {
+        stage("Build for RHEL8") {
             steps {
                 script {
-                    distro = 'rhel7'
+                    distro = 'rhel8'
                     instprefix = pwd(tmp: true)
                 }
                 sh "make INSTPREFIX=${instprefix}/${distro} DISTRO=${distro}"
