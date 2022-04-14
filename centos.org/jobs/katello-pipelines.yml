@@ -8,7 +8,6 @@
       - '4.2'
     distro:
       - centos7
-      - centos8
       - centos8-stream
     action:
       - install
@@ -26,7 +25,6 @@
     distro:
       - almalinux8
       - centos7
-      - centos8
       - centos8-stream
     action:
       - install
