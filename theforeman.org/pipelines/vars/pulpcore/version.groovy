@@ -9,9 +9,10 @@ def pipelines = [
 ]
 
 if (pulpcore_version == '3.18') {{
-    pulpcore_distros = ['el8', 'el9']
+    pulpcore_distros = ['el7', 'el8', 'el9']
     pipelines = [
         'pulpcore': [
+            'centos7',
             'centos8-stream',
             'centos9-stream'
         ]
