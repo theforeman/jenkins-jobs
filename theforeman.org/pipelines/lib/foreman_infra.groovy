@@ -40,7 +40,6 @@ def runIndividualCicoJob(job_name, number = 0, job_parameters = null, job_extra_
     def link_file_name = "${env.WORKSPACE}/jobs/${job_name}-${number}"
     def extra_vars = [
         "jenkins_job_name": "${job_name}",
-        "jenkins_username": "foreman",
         "jenkins_job_link_file": link_file_name
     ]
     if (job_parameters) {
@@ -52,11 +51,11 @@ def runIndividualCicoJob(job_name, number = 0, job_parameters = null, job_extra_
 
     sleep(number * 5) //See https://bugs.centos.org/view.php?id=14920
     try {
-        withCredentials([string(credentialsId: 'centos-jenkins', variable: 'PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             runPlaybook(
                 playbook: 'centos.org/ansible/jenkins_job.yml',
                 extraVars: extra_vars,
-                sensitiveExtraVars: ["jenkins_password": "${env.PASSWORD}"]
+                sensitiveExtraVars: ["jenkins_username": "${env.USERNAME}", "jenkins_password": "${env.PASSWORD}"]
             )
         }
         status = 'passed'

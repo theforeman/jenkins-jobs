@@ -17,28 +17,25 @@ pipeline {
                 deleteDir()
                 git_clone_jenkins_jobs()
 
-                withCredentials([string(credentialsId: 'centos-jenkins', variable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     runPlaybook(
                         playbook: 'centos.org/ansible/jenkins_job.yml',
                         extraVars: [
                             "jenkins_job_name": "${env.cico_job_name}",
-                            "jenkins_username": "foreman",
                             "jenkins_job_link_file": "${env.WORKSPACE}/jobs/${cico_job_name}"
                         ],
-                        sensitiveExtraVars: ["jenkins_password": "${env.PASSWORD}"]
+                        sensitiveExtraVars: ["jenkins_username": "${env.USERNAME}", "jenkins_password": "${env.PASSWORD}"]
                     )
                 }
 
-                withCredentials([string(credentialsId: 'centos-jenkins', variable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     runPlaybook(
                         playbook: 'centos.org/ansible/jenkins_job.yml',
                         extraVars: [
                             "jenkins_job_name": "${env.cico_job_name}",
-                            "jenkins_username": "foreman",
-                            "jenkins_password": "${env.PASSWORD}",
                             "jenkins_job_link_file": "${env.WORKSPACE}/jobs/${env.cico_job_name}-2"
                         ],
-                        sensitiveExtraVars: ["jenkins_password": "${env.PASSWORD}"]
+                        sensitiveExtraVars: ["jenkins_username": "${env.USERNAME}", "jenkins_password": "${env.PASSWORD}"]
                     )
                 }
             }
