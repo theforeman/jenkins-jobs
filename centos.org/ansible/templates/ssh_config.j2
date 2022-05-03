@@ -1,3 +1,5 @@
+{{ ssh_config_base }}
+
 {% for host, value in cico_data.ansible_module_results.hosts.items() %}
 Host duffy_box
   HostName {{ value.hostname  }}

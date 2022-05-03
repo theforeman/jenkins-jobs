@@ -45,7 +45,14 @@
           {% endfor %}
         dest: "{{ playbook_dir }}/cico_inventory"
 
+    - name: 'Fetch default ssh_config'
+      slurp:
+        src: /etc/ssh/ssh_config
+      register: etc_ssh_config
+
     - name: 'Write cico ssh config file'
       template:
         src: templates/ssh_config.j2
         dest: "{{ playbook_dir }}/ssh_config"
+      vars:
+        ssh_config_base: "{{ etc_ssh_config['content'] | b64decode }}"
