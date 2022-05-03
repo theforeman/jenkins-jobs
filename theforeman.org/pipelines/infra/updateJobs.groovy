@@ -26,10 +26,10 @@ pipeline {
             }
         }
 
-        stage('Update ci.centos.org jobs') {
+        stage('Update jenkins-foreman.apps.ocp.ci.centos.org jobs') {
             steps {
-                withCredentials([string(credentialsId: 'centos-jenkins', variable: 'PASSWORD')]) {
-                    virtEnv('jjb-venv', "cd ./centos.org && REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem jenkins-jobs --conf ./centos_jenkins.ini --user 'foreman' --password '${env.PASSWORD}' update --delete-old -r ./jobs")
+                withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    virtEnv('jjb-venv', "cd ./centos.org && REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem jenkins-jobs --conf ./centos_jenkins.ini --user ${env.USERNAME} --password '${env.PASSWORD}' update --delete-old -r ./jobs")
                 }
             }
         }
