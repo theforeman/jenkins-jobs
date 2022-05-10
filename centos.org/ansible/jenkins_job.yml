@@ -10,38 +10,19 @@
     jenkins_download_artifacts: false
     jenkins_artifacts_directory: './artifacts'
   tasks:
-    - name: "Query Jenkins job queue until job has started"
-      uri:
-        force_basic_auth: yes
-        headers:
-          Content-Type: "application/json"
-        method: GET
-        return_content: yes
-        timeout: 3
-        user: "{{ jenkins_username }}"
-        password: "{{ jenkins_password }}"
-        url: "{{ jenkins_host }}/crumbIssuer/api/json"
-      register: crumb
-
-    - debug:
-        msg: "{{ crumb.json.crumb }}"
-
-    - name: "Set facts for parametrized build"
-      set_fact:
-        jenkins_build_url: "{{ jenkins_host }}/job/{{ jenkins_job_name }}/buildWithParameters?TOKEN={{ jenkins_job_token }}&{{ jenkins_job_parameters|default('')|urlencode }}"
-
     - name: "Start Jenkins job"
       uri:
         force_basic_auth: yes
         headers:
           Content-Type: "application/json"
-          Jenkins-Crumb: "{{ crumb.json.crumb }}"
         method: POST
         return_content: yes
         status_code: 201
         user: "{{ jenkins_username }}"
         password: "{{ jenkins_password }}"
         url: "{{ jenkins_build_url }}"
+      vars:
+        jenkins_build_url: "{{ jenkins_host }}/job/{{ jenkins_job_name }}/buildWithParameters?TOKEN={{ jenkins_job_token }}&{{ jenkins_job_parameters|default('')|urlencode }}"
       register: start_job_result
 
     - debug:
