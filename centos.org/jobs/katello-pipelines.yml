@@ -50,6 +50,23 @@
       - katello
 
 - project:
+    name: katello-release-4.5
+    jobs:
+      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
+    empty: ''
+    version:
+      - '4.5'
+    distro:
+      - almalinux8
+      - centos7
+      - centos8-stream
+    action:
+      - install
+      - upgrade
+    type:
+      - katello
+
+- project:
     name: katello-nightly
     jobs:
       - 'foreman-pipeline-{type}-{version}-{distro}-{action}'

@@ -3,6 +3,10 @@ def katello_versions = [
         'foreman': 'develop',
         'ruby': ['2.7']
     ],
+    'KATELLO-4.5': [
+        'foreman': '3.3-stable',
+        'ruby': ['2.7']
+    ],
     'KATELLO-4.4': [
         'foreman': '3.2-stable',
         'ruby': ['2.7']
