@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     if (params.type == 'pulpcore') {
-                        setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false]
+                        setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false, 'pipeline_version': params.version]
                     } else {
                         setup_extra_vars = []
                     }
