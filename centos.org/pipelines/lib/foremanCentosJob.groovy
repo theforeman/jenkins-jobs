@@ -25,14 +25,15 @@ pipeline {
             steps {
                 script {
                     if (params.type == 'pulpcore') {
-                        if (pulpcore_version >= '3.18'){
+                        if (params.version >= '3.18'){
                             setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false, 'pipeline_version' : '3.18']
                         } else {
-                            setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false, 'pipeline_version' : '3.17']
-                    } else {
+                            setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false, 'pipeline_version' : '3.17']]
+                        }
+                        else {
                         setup_extra_vars = []
-                    }
-                    }
+                        }
+                        }
                     runPlaybook(
                         playbook: 'playbooks/setup_forklift.yml',
                         inventory: cico_inventory('./'),
