@@ -1,5 +1,6 @@
 def foreman_version = 'nightly'
 def foreman_client_distros = [
+    'el9',
     'el8',
     'el7',
     'sles12',
