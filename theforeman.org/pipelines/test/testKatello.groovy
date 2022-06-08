@@ -107,7 +107,8 @@ pipeline {
                         steps {
                             dir('foreman') {
                                 sh "cp db/schema.rb.nulldb db/schema.rb"
-                                withRVM(["bundle exec npm install --no-audit"], ruby)
+                                withRVM(["bundle exec npm install --package-lock-only --no-audit"], ruby)
+                                withRVM(["bundle exec npm ci --no-audit"], ruby)
                                 withRVM(['bundle exec rake plugin:assets:precompile[katello] RAILS_ENV=production DATABASE_URL=nulldb://nohost --trace'], ruby)
                             }
                         }
@@ -129,11 +130,13 @@ pipeline {
                     stage('angular-ui') {
                         steps {
                             dir('engines/bastion') {
-                                sh "npm install --no-audit"
+                                sh "npm install --package-lock-only --no-audit"
+                                sh "npm ci --no-audit"
                                 sh "grunt ci"
                             }
                             dir('engines/bastion_katello') {
-                                sh "npm install --no-audit"
+                                sh "npm install --package-lock-only --no-audit"
+                                sh "npm ci --no-audit"
                                 sh "grunt ci"
                             }
                         }
