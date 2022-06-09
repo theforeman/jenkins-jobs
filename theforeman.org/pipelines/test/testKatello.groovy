@@ -106,6 +106,16 @@ pipeline {
                     stage('assets-precompile') {
                         steps {
                             dir('foreman') {
+                                sh "python script/filter-package-json.py"
+
+                                withRVM(["bundle exec ruby script/plugin_webpack_directories.rb > plugin_webpack.json"], ruby)
+                                script {
+                                    def plugin_webpack = readJSON file: 'plugin_webpack.json'
+                                    plugin_webpack['plugins'].each { plugin, config ->
+                                        sh "python script/filter-package-json.py --package-json ${config['root']}/package.json"
+                                    }
+                                }
+
                                 sh "cp db/schema.rb.nulldb db/schema.rb"
                                 withRVM(["bundle exec npm install --package-lock-only --no-audit"], ruby)
                                 withRVM(["bundle exec npm ci --no-audit"], ruby)
