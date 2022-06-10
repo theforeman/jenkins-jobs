@@ -122,6 +122,7 @@ pipeline {
                                 configureRVM(env.RUBY_VER, env.GEMSET)
                                 withRVM(['bundle install --without=development --jobs=5 --retry=5'], env.RUBY_VER, env.GEMSET)
                                 sh "cp db/schema.rb.nulldb db/schema.rb"
+                                filter_package_json(env.RUBY_VER, env.GEMSET)
                                 withRVM(['npm install --no-audit'], env.RUBY_VER, env.GEMSET)
                             }
                         }
