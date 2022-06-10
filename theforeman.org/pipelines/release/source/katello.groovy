@@ -51,7 +51,8 @@ pipeline {
         stage('Install Foreman npm packages') {
             steps {
                 dir('foreman') {
-                    withRVM(["bundle exec npm install --no-audit"], ruby)
+                    withRVM(["bundle exec npm install --package-lock-only --no-audit"], ruby)
+                    withRVM(["bundle exec npm ci --no-audit"], ruby)
                 }
             }
         }
@@ -76,7 +77,8 @@ pipeline {
                         expression { fileExists('package.json') }
                     }
                     steps {
-                        sh "npm install --no-audit"
+                        sh "npm install --package-lock-only --no-audit"
+                        sh "npm ci --no-audit"
                         sh 'JEST_TIMEOUT=300000 npm test'
                     }
                 }
@@ -84,11 +86,13 @@ pipeline {
                     steps {
                         script {
                             dir('engines/bastion') {
-                                sh "npm install --no-audit"
+                                sh "npm install --package-lock-only --no-audit"
+                                sh "npm ci --no-audit"
                                 sh "grunt ci"
                             }
                             dir('engines/bastion_katello') {
-                                sh "npm install --no-audit"
+                                sh "npm install --package-lock-only --no-audit"
+                                sh "npm ci --no-audit"
                                 sh "grunt ci"
                             }
                         }
