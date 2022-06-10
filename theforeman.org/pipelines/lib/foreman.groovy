@@ -64,3 +64,13 @@ production:
   template: template0
 """
 }
+
+def filter_package_json(ruby, gemset = '') {
+    sh "python script/filter-package-json.py"
+
+    withRVM(["bundle exec ruby script/plugin_webpack_directories.rb > plugin_webpack.json"], ruby, gemset)
+    def plugin_webpack = readJSON file: 'plugin_webpack.json'
+    plugin_webpack['plugins'].each { plugin, config ->
+        sh "python script/filter-package-json.py --package-json ${config['root']}/package.json"
+    }
+}
