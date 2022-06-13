@@ -1,10 +1,6 @@
 def gemset(name = null) {
 
-    def base_name = "${JOB_NAME}-${BUILD_NUMBER}"
-
-    if (EXECUTOR_NUMBER != '0') {
-        base_name += '-' + EXECUTOR_NUMBER
-    }
+    def base_name = "${JOB_NAME}"
 
     if (name) {
         base_name += '-' + name.replace(".", "-")
@@ -14,7 +10,6 @@ def gemset(name = null) {
 }
 
 def configureRVM(ruby, name = '') {
-    emptyGemset(ruby, name)
     withRVM(["gem install bundler --no-document"], ruby, name)
 }
 
@@ -23,7 +18,7 @@ def emptyGemset(ruby, name = '') {
 }
 
 def cleanupRVM(ruby, name = '') {
-    withRVM(["rvm gemset delete ${gemset(name)} --force"], ruby, name)
+    echo 'cleanupRVM is disabled'
 }
 
 def withRVM(commands, ruby, name = '') {
