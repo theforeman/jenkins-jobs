@@ -4,12 +4,12 @@
     - name: 'Find any files from debug'
       find:
         paths: "/tmp/debug-{{ pipeline_type }}-{{ pipeline_version }}-{{ pipeline_os }}"
-        recurse: yes
-        hidden: yes
+        recurse: true
+        hidden: true
       register: debug_files
     - name: 'Fetch debug files'
       fetch:
         src: "{{ item.path }}"
         dest: "{{ workspace }}"
       with_items: "{{ debug_files.files }}"
-      become: yes
+      become: true

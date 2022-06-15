@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  gather_facts: no
+  gather_facts: false
   vars:
     jenkins_host: 'https://jenkins-foreman.apps.ocp.ci.centos.org/'
     jenkins_job_name: ''
@@ -12,11 +12,11 @@
   tasks:
     - name: "Start Jenkins job"
       uri:
-        force_basic_auth: yes
+        force_basic_auth: true
         headers:
           Content-Type: "application/json"
         method: POST
-        return_content: yes
+        return_content: true
         status_code: 201
         user: "{{ jenkins_username }}"
         password: "{{ jenkins_password }}"
@@ -30,11 +30,11 @@
 
     - name: "Query Jenkins job queue until job has started"
       uri:
-        force_basic_auth: yes
+        force_basic_auth: true
         headers:
           Content-Type: "application/json"
         method: GET
-        return_content: yes
+        return_content: true
         timeout: 3
         user: "{{ jenkins_username }}"
         password: "{{ jenkins_password }}"
@@ -65,11 +65,11 @@
 
     - name: "Poll job until it finished"
       uri:
-        force_basic_auth: yes
+        force_basic_auth: true
         headers:
           Content-Type: "application/json"
         method: GET
-        return_content: yes
+        return_content: true
         timeout: 3
         user: "{{ jenkins_username }}"
         password: "{{ jenkins_password }}"
