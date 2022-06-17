@@ -31,9 +31,9 @@ def withRVM(commands, ruby, name = '') {
     commands = commands.join("\n")
     echo commands.toString()
 
-    sh """#!/bin/bash -l
+    sh(script: """#!/bin/bash -l
         set -e
         rvm use ruby-${ruby}@${gemset(name)} --create
         ${commands}
-    """
+    """, label: "${commands}")
 }

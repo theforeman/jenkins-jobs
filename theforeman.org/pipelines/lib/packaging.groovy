@@ -7,7 +7,7 @@ def update_build_description_from_packages(packages_to_build) {
 }
 
 def diff_filter(range, filter, path) {
-    return sh(returnStdout: true, script: "git diff ${range} --name-only --diff-filter=${filter} -- '${path}'").trim()
+    return sh(returnStdout: true, script: "git diff ${range} --name-only --diff-filter=${filter} -- '${path}'", label: "find git changes").trim()
 }
 
 def find_added_or_changed_files(diff_range, path) {
@@ -26,7 +26,7 @@ def find_changed_packages(diff_range) {
     def changed_packages = find_added_or_changed_files(diff_range, 'packages/**.spec')
 
     if (changed_packages) {
-        changed_packages = sh(returnStdout: true, script: "echo '${changed_packages}' | xargs dirname | xargs -n1 basename |sort -u").trim()
+        changed_packages = sh(returnStdout: true, script: "echo '${changed_packages}' | xargs dirname | xargs -n1 basename |sort -u", label: "format changed packages").trim()
     } else {
         changed_packages = ''
     }
@@ -90,7 +90,7 @@ def find_changed_debs(diff_range) {
 }
 
 def query_rpmspec(specfile, queryformat) {
-    result = sh(returnStdout: true, script: "rpmspec -q --srpm --undefine=dist --undefine=foremandist --queryformat=${queryformat} ${specfile}").trim()
+    result = sh(returnStdout: true, script: "rpmspec -q --srpm --undefine=dist --undefine=foremandist --queryformat=${queryformat} ${specfile}", label: "query rpmspec").trim()
     return result
 }
 
@@ -120,7 +120,7 @@ def repoclosures(repo, releases, version) {
 }
 
 def debian_package_version(changelog_path) {
-    return sh(returnStdout: true, script: "head -n1 ${changelog_path} |awk '{print \$2}'|sed 's/(//;s/)//'|cut -f1 -d-|cut -d: -f2").trim()
+    return sh(returnStdout: true, script: "head -n1 ${changelog_path} |awk '{print \$2}'|sed 's/(//;s/)//'|cut -f1 -d-|cut -d: -f2", label: "parse debian package version").trim()
 }
 
 def build_deb_package_steps(packages_to_build, version, repoowner = 'theforeman', pull_request = false) {
@@ -259,7 +259,7 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
         if (version == 'nightly') {
             def build_vars = read_build_vars(project)
             copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json', flatten: true)
-            sh "mv *.tar.bz2 ${project}_${package_version}.orig.tar.bz2"
+            sh(script: "mv *.tar.bz2 ${project}_${package_version}.orig.tar.bz2", label: "rename tarball")
             last_commit = readFile('commit').trim()
         } else {
             sh """
@@ -325,7 +325,7 @@ def setup_sources_os_dependent(source_dir, main_build_dir, project, os, version,
             error message: "Unsupported build type: ${build_type}"
         }
 
-        package_dir = sh(returnStdout: true, script: "find -maxdepth 1 -type d -not -name '.'").trim()
+        package_dir = sh(returnStdout: true, script: "find -maxdepth 1 -type d -not -name '.'", label: "find package dir").trim()
     }
 
     dir("${build_dir}/${package_dir}") {
@@ -352,7 +352,7 @@ def setup_sources_plugin(project, os, version, repoowner, pull_request = false) 
                 ../../dependencies/gem2deb ${project}-${package_version}.gem --debian-subdir ../${project} --only-source-dir
             """
 
-            package_dir = sh(returnStdout: true, script: "find -maxdepth 1 -type d -not -name '.'").trim()
+            package_dir = sh(returnStdout: true, script: "find -maxdepth 1 -type d -not -name '.'", label: "find package dir").trim()
         } else {
             def build_vars = read_build_vars(project)
             def build_type = build_vars.get('BUILD_TYPE', 'gem')
@@ -392,15 +392,15 @@ def setup_sources_plugin(project, os, version, repoowner, pull_request = false) 
 }
 
 def add_debian_changelog(suite, package_version, repoowner, last_commit) {
-    sh "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${repoowner} <no-reply@theforeman.org>' --version '9999-${package_version}-${suite}+scratchbuild+${BUILD_TIMESTAMP}' --message 'Automatically built package based on the state of foreman-packaging at commit ${last_commit}' debian/changelog"
+    sh(script: "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${repoowner} <no-reply@theforeman.org>' --version '9999-${package_version}-${suite}+scratchbuild+${BUILD_TIMESTAMP}' --message 'Automatically built package based on the state of foreman-packaging at commit ${last_commit}' debian/changelog", label: "add debian changelog entry")
 }
 
 def execute_pbuilder(build_dir, os, version) {
     dir(build_dir) {
         try {
-            sh "sudo FOREMAN_VERSION=${version} pdebuild-${os}64"
+            sh(script: "sudo FOREMAN_VERSION=${version} pdebuild-${os}64", label: "run pbuilder")
         } finally {
-            sh "sudo chown -R jenkins:jenkins ../"
+            sh(script: "sudo chown -R jenkins:jenkins ../", label: "fix permissions for pbuilder result")
         }
     }
 }

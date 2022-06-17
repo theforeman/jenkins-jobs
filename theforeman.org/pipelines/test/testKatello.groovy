@@ -108,7 +108,7 @@ pipeline {
                             dir('foreman') {
                                 filter_package_json(ruby)
 
-                                sh "cp db/schema.rb.nulldb db/schema.rb"
+                                sh(script: "cp db/schema.rb.nulldb db/schema.rb", label: "copy nulldb schema")
                                 withRVM(["bundle exec npm install --package-lock-only --no-audit"], ruby)
                                 withRVM(["bundle exec npm ci --no-audit"], ruby)
                                 withRVM(['bundle exec rake plugin:assets:precompile[katello] RAILS_ENV=production DATABASE_URL=nulldb://nohost --trace'], ruby)
@@ -132,14 +132,14 @@ pipeline {
                     stage('angular-ui') {
                         steps {
                             dir('engines/bastion') {
-                                sh "npm install --package-lock-only --no-audit"
-                                sh "npm ci --no-audit"
-                                sh "grunt ci"
+                                sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
+                                sh(script: "npm ci --no-audit", label: "npm ci")
+                                sh(script: "grunt ci", label: "grunt ci")
                             }
                             dir('engines/bastion_katello') {
-                                sh "npm install --package-lock-only --no-audit"
-                                sh "npm ci --no-audit"
-                                sh "grunt ci"
+                                sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
+                                sh(script: "npm ci --no-audit", label: "npm ci")
+                                sh(script: "grunt ci", label: "grunt ci")
                             }
                         }
                     }

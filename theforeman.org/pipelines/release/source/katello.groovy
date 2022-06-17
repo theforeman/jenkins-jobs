@@ -77,23 +77,23 @@ pipeline {
                         expression { fileExists('package.json') }
                     }
                     steps {
-                        sh "npm install --package-lock-only --no-audit"
-                        sh "npm ci --no-audit"
-                        sh 'JEST_TIMEOUT=300000 npm test'
+                        sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
+                        sh(script: "npm ci --no-audit", label: "npm ci")
+                        sh(script: 'JEST_TIMEOUT=300000 npm test', label: "npm test")
                     }
                 }
                 stage('angular-ui') {
                     steps {
                         script {
                             dir('engines/bastion') {
-                                sh "npm install --package-lock-only --no-audit"
-                                sh "npm ci --no-audit"
-                                sh "grunt ci"
+                                sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
+                                sh(script: "npm ci --no-audit", label: "npm ci")
+                                sh(script: "grunt ci", label: "grunt ci")
                             }
                             dir('engines/bastion_katello') {
-                                sh "npm install --package-lock-only --no-audit"
-                                sh "npm ci --no-audit"
-                                sh "grunt ci"
+                                sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
+                                sh(script: "npm ci --no-audit", label: "npm ci")
+                                sh(script: "grunt ci", label: "grunt ci")
                             }
                         }
                     }

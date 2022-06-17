@@ -15,7 +15,7 @@ void git_clone_jenkins_jobs(args = [:]) {
 }
 
 def list_files(glob = '') {
-    sh(script: "ls -1 ${glob}", returnStdout: true).trim().split()
+    sh(script: "ls -1 ${glob}", returnStdout: true, label: "list files: '${glob}'").trim().split()
 }
 
 def set_job_build_description(job_name, status, file_name) {

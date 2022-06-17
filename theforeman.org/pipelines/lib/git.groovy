@@ -12,7 +12,7 @@ def ghprb_git_checkout() {
 }
 
 def git_hash(ref = 'HEAD') {
-    return sh(script: "git rev-parse ${ref}", returnStdout: true).trim()
+    return sh(script: "git rev-parse ${ref}", returnStdout: true, label: "git hash").trim()
 }
 
 def archive_git_hash(ref = 'HEAD') {

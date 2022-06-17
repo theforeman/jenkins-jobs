@@ -80,27 +80,30 @@ pipeline {
                               continue
                             }
 
-                            sh "git checkout origin/${env.ghprbTargetBranch}"
+                            sh(script: "git checkout origin/${env.ghprbTargetBranch}", label: "git checkout target_branch")
                             old_version = query_rpmspec(old_spec_path, '%{VERSION}')
                             old_release = query_rpmspec(old_spec_path, '%{RELEASE}')
 
-                            sh "git checkout -"
+                            sh(script: "git checkout -", label: "git checkout source_branch")
                             new_version = query_rpmspec(new_spec_path, '%{VERSION}')
                             new_release = query_rpmspec(new_spec_path, '%{RELEASE}')
 
                             compare_version = sh(
                               script: "rpmdev-vercmp ${old_version} ${new_version}",
-                              returnStatus: true
+                              returnStatus: true,
+                              label: "rpmdev-vercmp"
                             )
 
                             compare_release = sh(
                               script: "rpmdev-vercmp ${old_release} ${new_release}",
-                              returnStatus: true
+                              returnStatus: true,
+                              label: "rpmdev-vercmp"
                             )
 
                             compare_new_to_one = sh(
                               script: "rpmdev-vercmp 1 ${new_release}",
-                              returnStatus: true
+                              returnStatus: true,
+                              label: "rpmdev-vercmp"
                             )
 
                             if (compare_version != VERCMP_EQUAL && (compare_new_to_one == VERCMP_OLDER || compare_new_to_one == VERCMP_EQUAL)) {

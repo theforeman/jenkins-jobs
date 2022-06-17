@@ -11,7 +11,7 @@ def provision() {
 }
 
 def fix_ansible_config() {
-    sh "sed -i s/yaml/debug/g ansible.cfg"
+    sh(script: "sed -i s/yaml/debug/g ansible.cfg", label: 'fix ansible config')
 }
 
 def deprovision() {
@@ -31,7 +31,7 @@ def ssh_config(relative_dir = '') {
 }
 
 def color_shell(command = '', returnStdout = false) {
-    sh(script: "${command}", returnStdout: returnStdout)
+    sh(script: "${command}", returnStdout: returnStdout, label: "${command}")
 }
 
 def duffy_ssh(command, box_name, relative_dir = '', returnStdout = false) {
