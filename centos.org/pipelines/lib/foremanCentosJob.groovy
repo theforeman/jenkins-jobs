@@ -9,11 +9,20 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
 
+    environment {
+        // https://github.com/jenkinsci/opentelemetry-plugin/issues/465
+        OTEL_SERVICE_NAME = 'centosci'
+    }
+
     stages {
         stage('Setup Environment') {
             steps {
                 deleteDir()
                 git url: 'https://github.com/theforeman/forklift.git'
+
+                // old pip doesn't use binary wheels, and we really do not want to compile the otel sdk
+                sh(label: 'update pip', script: 'pip3 install -U pip --user')
+                sh(label: 'pip install', script: '~/.local/bin/pip install opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp')
             }
         }
         stage('Provision Node') {
