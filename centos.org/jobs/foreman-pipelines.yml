@@ -88,7 +88,6 @@
     empty: ''
     distro:
       - almalinux8
-      - centos7
       - centos8-stream
       - debian10
       - debian11
