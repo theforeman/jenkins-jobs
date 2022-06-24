@@ -1,0 +1,39 @@
+- job:
+    name: foreman-pr-unit-test
+    project-type: pipeline
+    sandbox: true
+    concurrent: true
+    properties:
+      - github:
+          url: https://github.com/theforeman/foreman
+      - tfm-pull-request-build-discarder
+    triggers:
+      - github_pr_pipeline:
+          context: 'unit'
+    dsl:
+      !include-raw:
+        - pipelines/test/foreman/vars.groovy
+        - pipelines/test/foreman/unit.groovy
+        - pipelines/lib/rvm.groovy
+        - pipelines/lib/git.groovy
+        - pipelines/lib/foreman.groovy
+
+- job:
+    name: foreman-pr-integration-test
+    project-type: pipeline
+    sandbox: true
+    concurrent: true
+    properties:
+      - github:
+          url: https://github.com/theforeman/foreman
+      - tfm-pull-request-build-discarder
+    triggers:
+      - github_pr_pipeline:
+          context: 'integration'
+    dsl:
+      !include-raw:
+        - pipelines/test/foreman/vars.groovy
+        - pipelines/test/foreman/integration.groovy
+        - pipelines/lib/rvm.groovy
+        - pipelines/lib/git.groovy
+        - pipelines/lib/foreman.groovy
