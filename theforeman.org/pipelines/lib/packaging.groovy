@@ -261,8 +261,10 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
             if (build_vars['source_location']) {
                 copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json', flatten: true)
                 sh(script: "mv *.tar.bz2 ${project}_${package_version}.orig.tar.bz2", label: "rename tarball")
+                last_commit = readFile('commit').trim()
+            } else {
+                last_commit = git_hash()
             }
-            last_commit = readFile('commit').trim()
         } else {
             sh """
               # Download sources
@@ -271,21 +273,22 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
             """
         }
 
-        sh """
-            # Unpack
-            tar xf ${project}_${package_version}.orig.tar.bz2
-            if [ -d "${project}-${package_version}-develop" ] ; then
-              mv ${project}-${package_version}-develop ${project}-${package_version}
-            fi
+        if (fileExists("${project}_${package_version}.orig.tar.bz2")) {
+            sh(label: "unpack sources", script: "tar xf ${project}_${package_version}.orig.tar.bz2")
+            if (fileExists("${project}-${package_version}-develop")) {
+                sh(label: "rename source directory", script: "mv ${project}-${package_version}-develop ${project}-${package_version}")
+            }
+        } else {
+            sh(label: "create empty package folder", script: "mkdir -p ${project}-${package_version}")
+        }
+        sh(label: "copy over debian packaging files", script: "cp -r ../${project} ./${project}-${package_version}/debian")
 
-            # Bring in the debian packaging files
-            cp -r ../${project} ./${project}-${package_version}/debian
-        """
-
-        dir("${project}-${package_version}") {
-            if (pull_request || version == 'nightly') {
+        if (pull_request || version == 'nightly') {
+            dir("${project}-${package_version}") {
                 add_debian_changelog(os, package_version, repoowner, last_commit)
-                sh "mv ../${project}_${package_version}.orig.tar.bz2 ../${project}_9999.orig.tar.bz2"
+            }
+            if (fileExists("${project}_${package_version}.orig.tar.bz2")) {
+                sh(label: "rename source tarball for nightly", script: "mv ${project}_${package_version}.orig.tar.bz2 ${project}_9999.orig.tar.bz2")
             }
         }
     }
