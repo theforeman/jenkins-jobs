@@ -9,16 +9,15 @@ def foreman_client_distros = [
 def foreman_el_releases = [
     'el8'
 ]
-def foreman_debian_releases = ['buster', 'bullseye', 'focal']
+def foreman_debian_releases = ['bullseye', 'focal']
 
 def pipelines_deb = [
     'install': [
-        'debian10',
         'debian11',
         'ubuntu2004'
     ],
     'upgrade': [
-        'debian10',
+        'debian11',
         'ubuntu2004'
     ]
 ]

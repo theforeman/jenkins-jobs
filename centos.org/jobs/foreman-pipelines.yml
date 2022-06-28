@@ -89,7 +89,6 @@
     distro:
       - almalinux8
       - centos8-stream
-      - debian10
       - debian11
       - ubuntu2004
     version:
