@@ -42,7 +42,11 @@ pipeline {
         stage('Push RPMs') {
             agent { label 'admin && sshkey' }
             steps {
-                push_rpms_direct("foreman-nightly/RHEL/8", "nightly/el8")
+                script {
+                    for (release in foreman_el_releases) {
+                        push_rpms_direct("foreman-${foreman_version}/${release}", "${foreman_version}/${release}")
+                    }
+                }
             }
         }
     }
