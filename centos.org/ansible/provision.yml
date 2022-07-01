@@ -5,6 +5,7 @@
       cico:
         action: get
         retry_count: 5
+        release: 8-stream
       register: cico_get_data
       retries: 2
       delay: 310
