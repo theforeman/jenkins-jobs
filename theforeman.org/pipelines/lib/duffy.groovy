@@ -41,3 +41,7 @@ def duffy_ssh(command, box_name, relative_dir = '', returnStdout = false) {
 def duffy_scp(file_path, file_dest, box_name, relative_dir = '') {
     color_shell "scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -F ${ssh_config(relative_dir)} ${box_name}:${file_path} ${file_dest}"
 }
+
+def duffy_scp_in(file_path, file_dest, box_name, relative_dir = '') {
+    color_shell("scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -F ${ssh_config(relative_dir)} ${file_path} ${box_name}:${file_dest}")
+}

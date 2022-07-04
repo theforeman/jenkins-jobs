@@ -10,8 +10,7 @@ pipeline {
     }
 
     environment {
-        // https://github.com/jenkinsci/opentelemetry-plugin/issues/465
-        OTEL_SERVICE_NAME = 'centosci'
+        ANSIBLE_CALLBACK_WHITELIST = 'community.general.opentelemetry'
     }
 
     stages {
@@ -36,7 +35,7 @@ pipeline {
                     if (params.type == 'pulpcore') {
                         setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false, 'pipeline_version': params.version]
                     } else {
-                        setup_extra_vars = []
+                        setup_extra_vars = ['forklift_telemetry': true]
                     }
                     runPlaybook(
                         playbook: 'playbooks/setup_forklift.yml',
@@ -53,12 +52,27 @@ pipeline {
                 script {
                     extra_vars = buildExtraVars(extraVars: playBook['extraVars'])
 
+                    def otel_env = """
+                    export OTEL_EXPORTER_OTLP_HEADERS='${env.OTEL_EXPORTER_OTLP_HEADERS}'
+                    export OTEL_EXPORTER_OTLP_ENDPOINT='${env.OTEL_EXPORTER_OTLP_ENDPOINT}'
+                    export OTEL_TRACES_EXPORTER='${env.OTEL_TRACES_EXPORTER}'
+                    export TRACE_ID='${env.TRACE_ID}'
+                    export SPAN_ID='${env.SPAN_ID}'
+                    export TRACEPARENT='${env.TRACEPARENT}'
+                    export TRACESTATE='${env.TRACESTATE}'
+                    export ANSIBLE_CALLBACK_WHITELIST='${env.ANSIBLE_CALLBACK_WHITELIST}'
+                    """
+
+                    writeFile(file: 'otel_env', text: otel_env)
+                    duffy_scp_in('otel_env', 'otel_env', 'duffy_box', './')
+                    sh(script: 'rm -rf otel_env', label: 'remove otel_env file')
+
                     def playbooks = duffy_ssh("ls forklift/pipelines/${playBook['pipeline']}", 'duffy_box', './', true)
                     playbooks = playbooks.split("\n")
 
                     for(playbook in playbooks) {
                         stage(playbook) {
-                            duffy_ssh("cd forklift && ansible-playbook pipelines/${playBook['pipeline']}/${playbook} ${extra_vars}", 'duffy_box', './')
+                            duffy_ssh("source otel_env && cd forklift && ansible-playbook pipelines/${playBook['pipeline']}/${playbook} ${extra_vars}", 'duffy_box', './')
                         }
                     }
                 }
@@ -70,7 +84,7 @@ pipeline {
         always {
             script {
                 extra_vars = buildExtraVars(extraVars: playBook['extraVars'])
-                duffy_ssh("cd forklift && ansible-playbook playbooks/collect_debug.yml --limit '${playBook['boxes'].join(',')}' ${extra_vars}", 'duffy_box', './')
+                duffy_ssh("source otel_env && cd forklift && ansible-playbook playbooks/collect_debug.yml --limit '${playBook['boxes'].join(',')}' ${extra_vars}", 'duffy_box', './')
                 runPlaybook(
                     playbook: 'jenkins-jobs/centos.org/ansible/fetch_debug_files.yml',
                     inventory: cico_inventory('./'),
