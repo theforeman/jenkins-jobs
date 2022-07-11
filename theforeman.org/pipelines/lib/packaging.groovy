@@ -71,7 +71,7 @@ def find_changed_debs(diff_range) {
             type: 'plugin',
             name: project,
             path: "${folder}/${project}",
-            operating_system: 'buster'
+            operating_system: 'focal'
         ])
     }
 
