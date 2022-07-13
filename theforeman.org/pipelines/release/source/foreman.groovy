@@ -45,37 +45,6 @@ pipeline {
                         }
                     }
                 }
-                stage('ruby-2.5-postgres') {
-                    agent { label 'fast' }
-                    environment {
-                        RUBY_VER = '2.5'
-                        GEMSET = 'ruby2.5'
-                    }
-                    stages {
-                        stage("setup-2.5-postgres") {
-                            steps {
-                                git url: git_url, branch: git_ref
-                                configureRVM(env.RUBY_VER, env.GEMSET)
-                                databaseFile(gemset(env.GEMSET))
-                                configureDatabase(env.RUBY_VER, env.GEMSET)
-                            }
-                        }
-                        stage("unit-tests-2.5-postgres") {
-                            steps {
-                                withRVM(['bundle exec rake jenkins:unit TESTOPTS="-v" --trace'], env.RUBY_VER, env.GEMSET)
-                            }
-                        }
-                    }
-                    post {
-                        always {
-                            junit(testResults: 'jenkins/reports/unit/*.xml')
-                        }
-                        cleanup {
-                            cleanup(env.RUBY_VER, env.GEMSET)
-                            deleteDir()
-                        }
-                    }
-                }
                 stage('ruby-2.7-postgres-integrations') {
                     agent { label 'fast' }
                     environment {

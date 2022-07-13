@@ -19,7 +19,6 @@
           type: user-defined
           name: ruby
           values:
-            - 2.5
             - 2.7
       - axis:
           type: user-defined
@@ -32,9 +31,6 @@
           name: slave
           values:
             - fast
-    execution-strategy:
-      combination-filter: >
-        (database == 'postgresql') || ((database == 'postgresql-integrations') && (ruby == '2.7'))
     builders:
       - shell: !include-raw: scripts/test/test_develop.sh
     publishers:
