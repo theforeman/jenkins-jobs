@@ -37,3 +37,23 @@
         - pipelines/lib/rvm.groovy
         - pipelines/lib/git.groovy
         - pipelines/lib/foreman.groovy
+
+- job:
+    name: foreman-pr-katello-test
+    project-type: pipeline
+    sandbox: true
+    concurrent: true
+    properties:
+      - github:
+          url: https://github.com/theforeman/foreman
+      - tfm-pull-request-build-discarder
+    triggers:
+      - github_pr_pipeline:
+          context: 'katello'
+    dsl:
+      !include-raw:
+        - pipelines/test/foreman/vars.groovy
+        - pipelines/test/foreman/katello.groovy
+        - pipelines/lib/rvm.groovy
+        - pipelines/lib/git.groovy
+        - pipelines/lib/foreman.groovy
