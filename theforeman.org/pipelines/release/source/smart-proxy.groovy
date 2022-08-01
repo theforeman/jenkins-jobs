@@ -63,6 +63,7 @@ def run_test(args) {
         configureRVM(ruby, gemset)
         withRVM(["cp config/settings.yml.example config/settings.yml"], ruby, gemset)
         withRVM(["bundle install --without=development --jobs=5 --retry=5"], ruby, gemset)
+        archiveArtifacts(artifacts: 'Gemfile.lock')
         withRVM(["bundle exec rake jenkins:unit --trace"], ruby, gemset)
     } finally {
         cleanupRVM(ruby, gemset)
