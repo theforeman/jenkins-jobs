@@ -65,6 +65,7 @@ def run_test(args) {
     try {
         configureRVM(ruby, gemset)
         withRVM(["PUPPET_VERSION='${puppet}' bundle install --without=development --jobs=5 --retry=5"], ruby, gemset)
+        archiveArtifacts(artifacts: 'Gemfile.lock')
         withRVM(["PUPPET_VERSION='${puppet}' bundle exec rake spec"], ruby, gemset)
     } finally {
         cleanupRVM(ruby, gemset)
