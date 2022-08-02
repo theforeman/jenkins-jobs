@@ -19,9 +19,7 @@ pipeline {
                 deleteDir()
                 git url: 'https://github.com/theforeman/forklift.git'
 
-                // old pip doesn't use binary wheels, and we really do not want to compile the otel sdk
-                sh(label: 'update pip', script: 'pip3 install -U pip --user')
-                sh(label: 'pip install', script: '~/.local/bin/pip install opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp')
+                sh(label: 'pip install', script: 'pip3.8 install opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp cicoclient')
             }
         }
         stage('Provision Node') {
