@@ -11,7 +11,8 @@ def provision() {
 }
 
 def fix_ansible_config() {
-    sh(script: "sed -i s/yaml/debug/g ansible.cfg", label: 'fix ansible config')
+    // the yaml stdout callback is gone in ansible-core
+    sh(script: "sed -i /stdout_callback/d ansible.cfg", label: 'fix ansible config')
 }
 
 def deprovision() {
