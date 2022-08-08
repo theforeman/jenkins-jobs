@@ -82,6 +82,25 @@
       - plugins
 
 - project:
+    name: foreman-release-test-34
+    jobs:
+      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
+    empty: ''
+    distro:
+      - almalinux8
+      - centos8-stream
+      - debian11
+      - ubuntu2004
+    version:
+      - '3.4'
+    action:
+      - install
+      - upgrade
+    type:
+      - foreman
+      - plugins
+
+- project:
     name: foreman-nightly
     jobs:
       - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
