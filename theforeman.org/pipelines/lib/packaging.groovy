@@ -256,8 +256,8 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
     last_commit = package_version
 
     dir(build_dir) {
+        def build_vars = read_build_vars(project)
         if (version == 'nightly') {
-            def build_vars = read_build_vars(project)
             if (build_vars['source_location']) {
                 copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json', flatten: true)
                 sh(script: "mv *.tar.bz2 ${project}_${package_version}.orig.tar.bz2", label: "rename tarball")
@@ -266,11 +266,13 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
                 last_commit = git_hash()
             }
         } else {
-            sh """
-              # Download sources
-              wget https://downloads.theforeman.org/${project}/${project}-${package_version}.tar.bz2 https://downloads.theforeman.org/${project}/${project}-${package_version}.tar.bz2.sig
-              mv ${project}-${package_version}.tar.bz2 ${project}_${package_version}.orig.tar.bz2
-            """
+            if (build_vars['source_location']) {
+                sh """
+                  # Download sources
+                  wget https://downloads.theforeman.org/${project}/${project}-${package_version}.tar.bz2 https://downloads.theforeman.org/${project}/${project}-${package_version}.tar.bz2.sig
+                  mv ${project}-${package_version}.tar.bz2 ${project}_${package_version}.orig.tar.bz2
+                """
+            }
         }
 
         if (fileExists("${project}_${package_version}.orig.tar.bz2")) {
