@@ -12,6 +12,8 @@ pipeline {
             steps {
                 deleteDir()
                 git url: 'https://github.com/theforeman/forklift.git'
+
+                sh(label: 'pip install', script: 'pip3.8 install --user python-cicoclient')
             }
         }
         stage('Provision Node') {
