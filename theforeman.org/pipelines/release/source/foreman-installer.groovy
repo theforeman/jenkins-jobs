@@ -35,6 +35,7 @@ pipeline {
                 script {
                     sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type)
                 }
+                archiveArtifacts(artifacts: 'Puppetfile.lock', allowEmptyArchive: true)
             }
         }
     }
