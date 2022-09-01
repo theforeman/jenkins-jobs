@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  vars:
+    duffy_session: "{{ lookup('file', './duffy_session') }}"
+  tasks:
+    - name: 'Destroy node'
+      evgeni.duffy.session_retire:
+        session_id: "{{ duffy_session }}"

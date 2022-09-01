@@ -14,3 +14,13 @@
       - upgrade
     type:
       - luna
+
+- project:
+    name: luna-nightly-duffy
+    jobs:
+      - 'foreman-pipeline-{type}-{version}'
+    empty: ''
+    version:
+      - nightly
+    type:
+      - luna

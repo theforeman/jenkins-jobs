@@ -1,0 +1,11 @@
+{{ ssh_config_base }}
+{% for host in duffy_data.nodes %}
+
+Host duffy_box
+  HostName {{ host['hostname']  }}
+  User root
+  Port 22
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  GlobalKnownHostsFile=/dev/null
+{% endfor %}

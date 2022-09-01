@@ -10,6 +10,17 @@ def provision() {
     }
 }
 
+def provisionDuffy() {
+    fix_ansible_config()
+    git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')
+
+  	dir('jenkins-jobs/centos.org/ansible') {
+        runPlaybook(playbook: 'provision_duffy.yml')
+        archiveArtifacts artifacts: 'duffy_inventory'
+        archiveArtifacts artifacts: 'ssh_config'
+    }
+}
+
 def fix_ansible_config() {
     // the yaml stdout callback is gone in ansible-core
     sh(script: "sed -i /stdout_callback/d ansible.cfg", label: 'fix ansible config')
@@ -21,6 +32,18 @@ def deprovision() {
             runPlaybook(playbook: 'deprovision.yml')
       	}
     }
+}
+
+def deprovisionDuffy() {
+    if (fileExists('jenkins-jobs/centos.org/ansible/duffy_session')) {
+        dir('jenkins-jobs/centos.org/ansible') {
+            runPlaybook(playbook: 'deprovision_duffy.yml')
+      	}
+    }
+}
+
+def duffy_inventory(relative_dir = '') {
+    return relative_dir + 'jenkins-jobs/centos.org/ansible/duffy_inventory'
 }
 
 def cico_inventory(relative_dir = '') {
