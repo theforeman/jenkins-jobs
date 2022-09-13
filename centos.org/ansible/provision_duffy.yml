@@ -7,11 +7,6 @@
         quantity: 1
       register: duffy_data
 
-    - name: 'Fail if no hosts returned'
-      fail:
-        msg: 'Could not get hosts from ci.centos.org'
-      when: duffy_data.nodes|length == 0
-
     - name: 'Write data locally'
       copy:
         content: "{{ duffy_data.session }}"
