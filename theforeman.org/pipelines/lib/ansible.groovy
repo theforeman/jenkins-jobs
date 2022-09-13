@@ -8,6 +8,7 @@ def runPlaybook(args) {
     venv = args.venv
     remote_user = args.remote_user
     become_user = args.become_user
+    limit = args.limit
 
     def command = [
         "ansible-playbook",
@@ -26,6 +27,10 @@ def runPlaybook(args) {
 
     if (become_user) {
         command.push("--become-user ${become_user}")
+    }
+
+    if (limit) {
+        command.push("--limit ${limit}")
     }
 
     if (extraVars) {

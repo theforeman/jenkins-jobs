@@ -9,6 +9,7 @@ pipeline {
 
     environment {
         ANSIBLE_CALLBACK_WHITELIST = 'community.general.opentelemetry'
+        ANSIBLE_INVENTORY_ENABLED = 'evgeni.duffy.inventory'
     }
 
     stages {
@@ -30,6 +31,8 @@ pipeline {
         stage('Install Pipeline Requirements') {
             steps {
                 script {
+                    def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
+
                     pipeline_users = []
                     pipelines.each { action, oses ->
                         oses.each { os ->
@@ -39,6 +42,7 @@ pipeline {
                     runPlaybook(
                         playbook: 'playbooks/setup_pipeline_users.yml',
                         inventory: duffy_inventory('./'),
+                        limit: "duffy_session_${duffy_session}",
                         options: ['-b'],
                         extraVars: ['pipeline_users': pipeline_users],
                     )
@@ -52,6 +56,7 @@ pipeline {
                         runPlaybook(
                             playbook: 'playbooks/setup_forklift.yml',
                             inventory: duffy_inventory('./'),
+                            limit: "duffy_session_${duffy_session}",
                             remote_user: user,
                             extraVars: setup_extra_vars,
                             commandLineExtraVars: true,
@@ -105,6 +110,7 @@ pipeline {
     post {
         always {
             script {
+                def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
                 def branches = [:]
                 pipelines.each { action, oses ->
                     oses.each { os ->
@@ -119,6 +125,7 @@ pipeline {
                                 runPlaybook(
                                     playbook: 'jenkins-jobs/centos.org/ansible/fetch_debug_files.yml',
                                     inventory: duffy_inventory('./'),
+                                    limit: "duffy_session_${duffy_session}",
                                     extraVars: ["workspace": "${env.WORKSPACE}/debug"] + playBook['extraVars'],
                                     commandLineExtraVars: true,
                                     remote_user: username,

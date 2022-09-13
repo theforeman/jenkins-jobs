@@ -12,14 +12,6 @@
         content: "{{ duffy_data.session }}"
         dest: "{{ playbook_dir }}/duffy_session"
 
-    - name: 'Write inventory'
-      copy:
-        content: |
-          {% for host in duffy_data.nodes %}
-          {{ host['hostname'] }} ansible_fqdn={{ host['hostname'] }} ansible_user=root ansible_host={{ host['ipaddr'] }}
-          {% endfor %}
-        dest: "{{ playbook_dir }}/duffy_inventory"
-
     - name: 'Fetch default ssh_config'
       slurp:
         src: /etc/ssh/ssh_config

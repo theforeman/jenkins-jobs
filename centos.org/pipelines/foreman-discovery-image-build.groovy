@@ -23,19 +23,25 @@ pipeline {
         }
         stage('Install Pipeline Requirements') {
             steps {
-                runPlaybook(
-                    playbook: 'playbooks/setup_pipeline_users.yml',
-                    inventory: duffy_inventory('./'),
-                    options: ['-b'],
-                    extraVars: ['pipeline_users': ['pipe-fdi-builder']],
-                )
-                runPlaybook(
-                    playbook: 'playbooks/setup_forklift.yml',
-                    inventory: duffy_inventory('./'),
-                    remote_user: 'pipe-fdi-builder',
-                    extraVars: ['vagrant_scp': true],
-                    commandLineExtraVars: true,
-                )
+                script {
+                    def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
+
+                    runPlaybook(
+                        playbook: 'playbooks/setup_pipeline_users.yml',
+                        inventory: duffy_inventory('./'),
+                        limit: "duffy_session_${duffy_session}",
+                        options: ['-b'],
+                        extraVars: ['pipeline_users': ['pipe-fdi-builder']],
+                    )
+                    runPlaybook(
+                        playbook: 'playbooks/setup_forklift.yml',
+                        inventory: duffy_inventory('./'),
+                        limit: "duffy_session_${duffy_session}",
+                        remote_user: 'pipe-fdi-builder',
+                        extraVars: ['vagrant_scp': true],
+                        commandLineExtraVars: true,
+                    )
+                }
             }
         }
         stage('Run Build') {
