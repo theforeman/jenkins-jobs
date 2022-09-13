@@ -31,3 +31,4 @@
         dest: "{{ playbook_dir }}/ssh_config"
       vars:
         ssh_config_base: "{{ etc_ssh_config['content'] | b64decode }}"
+        duffy_hostname: "{{ duffy_data['nodes'][0]['hostname'] }}"
