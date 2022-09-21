@@ -7,7 +7,7 @@
         retry_count: 5
         release: 8-stream
       register: cico_get_data
-      retries: 2
+      retries: 10
       delay: 310
       until: cico_get_data.ansible_module_results is defined
 
