@@ -3,7 +3,7 @@
   tasks:
     - name: 'Find any files from debug'
       find:
-        paths: "/tmp/debug-{{ pipeline_type }}-{{ pipeline_version }}-{{ pipeline_os }}"
+        paths: "/tmp/debug-{{ pipeline_type }}-{{ pipeline_version }}-{{ pipeline_os }}-{{ pipeline_action }}"
         recurse: true
         hidden: true
       register: debug_files

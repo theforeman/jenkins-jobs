@@ -18,7 +18,7 @@ pipeline {
                 git url: 'https://github.com/theforeman/forklift.git'
 
                 sh(label: 'pip install', script: 'pip3.8 install --user opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp')
-                sh(label: 'duffy collection install', script: 'ansible-galaxy collection install --collections-path ~/.ansible/collections git+https://github.com/evgeni/evgeni.duffy')
+                sh(label: 'duffy collection install', script: 'ansible-galaxy collection install --collections-path ~/.ansible/collections git+https://github.com/evgeni/evgeni.duffy ansible.posix')
 
                 sh label: 'configure duffy', script: '''
                 # we do not want to leak the key to the logs
@@ -36,18 +36,33 @@ pipeline {
         stage('Install Pipeline Requirements') {
             steps {
                 script {
+                    pipeline_users = []
+                    pipelines.each { action, oses ->
+                        oses.each { os ->
+                            pipeline_users.push("pipe-${os}-${action}")
+                        }
+                    }
+                    runPlaybook(
+                        playbook: 'playbooks/setup_pipeline_users.yml',
+                        inventory: duffy_inventory('./'),
+                        options: ['-b'],
+                        extraVars: ['pipeline_users': pipeline_users],
+                    )
+
                     if (params.type == 'pulpcore') {
                         setup_extra_vars = ['forklift_install_pulp_from_galaxy': true, 'forklift_install_from_galaxy': false, 'pipeline_version': params.version]
                     } else {
                         setup_extra_vars = ['forklift_telemetry': true]
                     }
-                    runPlaybook(
-                        playbook: 'playbooks/setup_forklift.yml',
-                        inventory: duffy_inventory('./'),
-                        options: ['-b'],
-                        extraVars: setup_extra_vars,
-                        commandLineExtraVars: true,
-                    )
+                    pipeline_users.each { user ->
+                        runPlaybook(
+                            playbook: 'playbooks/setup_forklift.yml',
+                            inventory: duffy_inventory('./'),
+                            remote_user: user,
+                            extraVars: setup_extra_vars,
+                            commandLineExtraVars: true,
+                        )
+                    }
                 }
             }
         }
@@ -66,22 +81,23 @@ pipeline {
                     """
 
                     writeFile(file: 'otel_env', text: otel_env)
-                    duffy_scp_in('otel_env', 'otel_env', 'duffy_box', './')
-                    sh(script: 'rm -rf otel_env', label: 'remove otel_env file')
 
                     def branches = [:]
                     pipelines.each { action, oses ->
                         oses.each { os ->
                             def name = "${os}-${action}"
+                            def username = "pipe-${os}-${action}"
+                            def boxname = "${username}@duffy_box"
                             branches[name] = {
                                 def playBook = pipelineVars(action: action, type: params.type, version: params.version, os: os, extra_vars: ['expected_version': params.expected_version ?: ''])
-                                def extra_vars = buildExtraVars(extraVars: playBook['extraVars'] + ["forklift_vagrant_lock": "/tmp/forklift.lock"])
-                                def playbooks = duffy_ssh("ls forklift/pipelines/${playBook['pipeline']}", 'duffy_box', './', true)
+                                def extra_vars = buildExtraVars(extraVars: playBook['extraVars'])
+                                def playbooks = duffy_ssh("ls forklift/pipelines/${playBook['pipeline']}", boxname, './', true)
                                 playbooks = playbooks.split("\n")
 
+                                duffy_scp_in('otel_env', 'otel_env', boxname, './')
                                 for(playbook in playbooks) {
                                     stage(playbook) {
-                                        duffy_ssh("source otel_env && cd forklift && ansible-playbook pipelines/${playBook['pipeline']}/${playbook} ${extra_vars}", 'duffy_box', './')
+                                        duffy_ssh("source otel_env && cd forklift && ansible-playbook pipelines/${playBook['pipeline']}/${playbook} ${extra_vars}", boxname, './')
                                     }
                                 }
                             }
@@ -101,16 +117,19 @@ pipeline {
                 pipelines.each { action, oses ->
                     oses.each { os ->
                         def name = "${os}-${action}-post"
+                        def username = "pipe-${os}-${action}"
+                        def boxname = "${username}@duffy_box"
                         branches[name] = {
                             def playBook = pipelineVars(action: action, type: params.type, version: params.version, os: os, extra_vars: ['expected_version': params.expected_version ?: ''])
                             def extra_vars = buildExtraVars(extraVars: playBook['extraVars'])
                             try {
-                                duffy_ssh("source otel_env && cd forklift && ansible-playbook playbooks/collect_debug.yml --limit '${playBook['boxes'].join(',')}' ${extra_vars}", 'duffy_box', './')
+                                duffy_ssh("source otel_env && cd forklift && ansible-playbook playbooks/collect_debug.yml --limit '${playBook['boxes'].join(',')}' ${extra_vars}", boxname, './')
                                 runPlaybook(
                                     playbook: 'jenkins-jobs/centos.org/ansible/fetch_debug_files.yml',
                                     inventory: duffy_inventory('./'),
                                     extraVars: ["workspace": "${env.WORKSPACE}/debug"] + playBook['extraVars'],
                                     commandLineExtraVars: true,
+                                    remote_user: username,
                                     options: ['-b']
                                 )
                             } catch(Exception ex) {

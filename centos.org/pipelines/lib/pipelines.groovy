@@ -9,7 +9,8 @@ def pipelineVars(Map args) {
     extra_vars = [
         'pipeline_version': args.version,
         'pipeline_os': args.os,
-        'pipeline_type': args.type
+        'pipeline_type': args.type,
+        'pipeline_action': args.action
     ]
 
     if (args.extra_vars != null) {
