@@ -13,7 +13,7 @@ pipeline {
             agent { label 'sshkey' }
 
             steps {
-                mash('foreman', 'nightly')
+                mash('foreman', foreman_version)
             }
         }
         stage('Repoclosure') {
@@ -43,9 +43,7 @@ pipeline {
             agent { label 'admin && sshkey' }
             steps {
                 script {
-                    for (release in foreman_el_releases) {
-                        push_rpms_direct("foreman-${foreman_version}/${release}", "${foreman_version}/${release}")
-                    }
+                    push_foreman_rpms(nil, foreman_version, foreman_el_releases)
                 }
             }
         }
