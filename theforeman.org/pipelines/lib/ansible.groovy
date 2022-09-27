@@ -6,6 +6,8 @@ def runPlaybook(args) {
     options = args.options ?: []
     commandLineExtraVars = args.commandLineExtraVars ?: false
     venv = args.venv
+    remote_user = args.remote_user
+    become_user = args.become_user
 
     def command = [
         "ansible-playbook",
@@ -15,6 +17,15 @@ def runPlaybook(args) {
 
     if (options) {
         command += options
+    }
+
+    if (remote_user) {
+        command.push("--user ${remote_user}")
+        command.push("-e ansible_user=${remote_user}")
+    }
+
+    if (become_user) {
+        command.push("--become-user ${become_user}")
     }
 
     if (extraVars) {
