@@ -118,3 +118,17 @@
     type:
       - foreman
       - plugins
+
+- project:
+    name: foreman-duffy
+    jobs:
+      - 'foreman-pipeline-{type}-{flavor}-{version}'
+    empty: ''
+    flavor:
+      - deb
+      - rpm
+    version:
+      - nightly
+    type:
+      - foreman
+      - plugins

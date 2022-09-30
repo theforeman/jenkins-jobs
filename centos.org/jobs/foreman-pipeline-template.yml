@@ -61,3 +61,33 @@
         - ../theforeman.org/pipelines/lib/duffy.groovy{empty}
         - ../theforeman.org/pipelines/lib/ansible.groovy{empty}
         - ../theforeman.org/pipelines/lib/foreman_infra.groovy{empty}
+
+- job-template:
+    name: foreman-pipeline-{type}-{flavor}-{version}
+    project-type: 'pipeline'
+    sandbox: true
+    parameters:
+      - string:
+          name: expected_version
+          default: ''
+      - string:
+          name: version
+          default: '{version}'
+      - string:
+          name: type
+          default: '{type}'
+    properties:
+      - build-discarder:
+          days-to-keep: 3
+          num-to-keep: 3
+          artifact-days-to-keep: 3
+          artifact-num-to-keep: 3
+    dsl:
+      !include-raw:
+        - ../theforeman.org/pipelines/vars/{type}/{version}.groovy
+        - ../theforeman.org/pipelines/vars/{type}/{flavor}.groovy
+        - pipelines/lib/foremanDuffyJob.groovy{empty}
+        - pipelines/lib/pipelines.groovy{empty}
+        - ../theforeman.org/pipelines/lib/duffy.groovy{empty}
+        - ../theforeman.org/pipelines/lib/ansible.groovy{empty}
+        - ../theforeman.org/pipelines/lib/foreman_infra.groovy{empty}
