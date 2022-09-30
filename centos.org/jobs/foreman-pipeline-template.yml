@@ -55,7 +55,7 @@
           artifact-num-to-keep: 3
     dsl:
       !include-raw:
-        - ../theforeman.org/pipelines/vars/katello/{version}.groovy
+        - ../theforeman.org/pipelines/vars/{type}/{version}.groovy
         - pipelines/lib/foremanDuffyJob.groovy{empty}
         - pipelines/lib/pipelines.groovy{empty}
         - ../theforeman.org/pipelines/lib/duffy.groovy{empty}
