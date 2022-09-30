@@ -126,6 +126,19 @@ def runCicoPipelines(project, version, config, expected_version = '') {
     runCicoJobsInParallel(pipes)
 }
 
+def runDuffyPipeline(project, version, expected_version = '') {
+    def job = "foreman-pipeline-${project}-${version}"
+    def parameters = [
+            expected_version: expected_version
+        ]
+    def extra_vars = [
+            jenkins_download_artifacts: 'true',
+            jenkins_artifacts_directory: "${env.WORKSPACE}/artifacts/foreman-pipeline-${project}-${version}/",
+        ]
+
+    runCicoJob(job, parameters, extra_vars)
+}
+
 def notifyDiscourse(env, introText, description) {
     emailext(
         subject: "${env.JOB_NAME} ${env.BUILD_ID} failed",

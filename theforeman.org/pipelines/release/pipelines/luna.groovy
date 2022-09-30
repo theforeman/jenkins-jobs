@@ -13,7 +13,7 @@ pipeline {
             agent any
             steps {
                 script {
-                    runCicoPipelines('luna', 'nightly', pipelines)
+                    runDuffyPipeline('luna', 'nightly')
                 }
             }
         }
