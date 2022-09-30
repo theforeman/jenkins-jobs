@@ -35,7 +35,7 @@ pipeline {
 
             steps {
                 script {
-                    runCicoPipelines('foreman', foreman_version, pipelines, params.expected_version)
+                    runDuffyPipelines(['foreman-rpm', 'foreman-deb'], foreman_version, pipelines, params.expected_version)
                 }
             }
         }
