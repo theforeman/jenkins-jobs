@@ -14,7 +14,7 @@ pipeline {
 
             steps {
                 script {
-                    runCicoPipelines('plugins', foreman_version, pipelines_deb)
+                    runDuffyPipeline('plugins-deb', foreman_version)
                 }
             }
         }
