@@ -133,9 +133,14 @@ pipeline {
                 expression { packages_to_build }
             }
             steps {
+                for(int i = 0; i < packages_to_build.size(); i++) {
+                    def index = i
+                    packages[packages_to_build[index]] = {
+                        obal(action: "scratch", extraVars: ['build_package_download_logs': 'True', 'build_package_download_rpms': 'True'], packages: packages_to_build[index])
+                    }
+                }
 
-                obal(action: "scratch", extraVars: ['build_package_download_logs': 'True', 'build_package_download_rpms': 'True'], packages: packages_to_build)
-
+                parallel packages
             }
         }
 
