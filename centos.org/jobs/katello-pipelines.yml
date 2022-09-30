@@ -97,3 +97,13 @@
       - upgrade
     type:
       - katello
+
+- project:
+    name: katello-duffy
+    jobs:
+      - 'foreman-pipeline-{type}-{version}'
+    empty: ''
+    version:
+      - 'nightly'
+    type:
+      - katello

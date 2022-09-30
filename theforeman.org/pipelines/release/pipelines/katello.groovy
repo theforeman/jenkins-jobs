@@ -35,7 +35,7 @@ pipeline {
 
             steps {
                 script {
-                    runCicoPipelines('katello', katello_version, pipelines)
+                    runDuffyPipeline('katello', katello_version)
                 }
             }
         }

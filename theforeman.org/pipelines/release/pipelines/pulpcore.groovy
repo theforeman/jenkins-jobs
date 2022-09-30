@@ -40,7 +40,7 @@ pipeline {
 
             steps {
                 script {
-                    runCicoPipelines('pulpcore', pulpcore_version, pipelines)
+                    runDuffyPipeline('pulpcore', pulpcore_version)
                 }
             }
         }
