@@ -1,22 +1,6 @@
 ---
 - project:
-    name: pulpcore-install
-    jobs:
-      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
-    empty: ''
-    version:
-      !include: ../../theforeman.org/yaml/includes/pulpcore_versions.yaml.inc
-    distro:
-      - centos7
-      - centos8-stream
-      - centos9-stream
-    action:
-      - pulpcore
-    type:
-      - pulpcore
-
-- project:
-    name: pulpcore-duffy
+    name: pulpcore
     jobs:
       - 'foreman-pipeline-{type}-{version}'
     empty: ''

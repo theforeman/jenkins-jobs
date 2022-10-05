@@ -2,22 +2,6 @@
 - project:
     name: luna-nightly
     jobs:
-      - 'foreman-pipeline-{type}-{version}-{distro}-{action}'
-    empty: ''
-    version:
-      - nightly
-    distro:
-      - almalinux8
-      - centos8-stream
-    action:
-      - install
-      - upgrade
-    type:
-      - luna
-
-- project:
-    name: luna-nightly-duffy
-    jobs:
       - 'foreman-pipeline-{type}-{version}'
     empty: ''
     version:
