@@ -104,6 +104,9 @@
       - 'foreman-pipeline-{type}-{version}'
     empty: ''
     version:
+      - '4.4'
+      - '4.5'
+      - '4.6'
       - 'nightly'
     type:
       - katello
