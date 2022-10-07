@@ -2,9 +2,11 @@
 - project:
     name: luna-nightly
     jobs:
-      - 'foreman-pipeline-{type}-{version}'
+      - 'foreman-pipeline-{type}-{flavor}-{version}'
     empty: ''
     version:
       - nightly
     type:
       - luna
+    flavor:
+      - rpm

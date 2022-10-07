@@ -35,7 +35,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('katello', katello_version)
+                    runDuffyPipeline('katello-rpm', katello_version)
                 }
             }
         }

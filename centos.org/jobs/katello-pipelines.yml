@@ -2,7 +2,7 @@
 - project:
     name: katello
     jobs:
-      - 'foreman-pipeline-{type}-{version}'
+      - 'foreman-pipeline-{type}-{flavor}-{version}'
     empty: ''
     version:
       - '4.4'
@@ -11,3 +11,5 @@
       - 'nightly'
     type:
       - katello
+    flavor:
+      - rpm

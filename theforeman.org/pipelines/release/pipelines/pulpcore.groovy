@@ -40,7 +40,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('pulpcore', pulpcore_version)
+                    runDuffyPipeline('pulpcore-rpm', pulpcore_version)
                 }
             }
         }

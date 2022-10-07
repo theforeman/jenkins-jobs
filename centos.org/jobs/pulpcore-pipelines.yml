@@ -2,9 +2,11 @@
 - project:
     name: pulpcore
     jobs:
-      - 'foreman-pipeline-{type}-{version}'
+      - 'foreman-pipeline-{type}-{flavor}-{version}'
     empty: ''
     version:
       !include: ../../theforeman.org/yaml/includes/pulpcore_versions.yaml.inc
     type:
       - pulpcore
+    flavor:
+      - rpm

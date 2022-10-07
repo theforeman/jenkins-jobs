@@ -13,7 +13,7 @@ pipeline {
             agent any
             steps {
                 script {
-                    runDuffyPipeline('luna', 'nightly')
+                    runDuffyPipeline('luna-rpm', 'nightly')
                 }
             }
         }
