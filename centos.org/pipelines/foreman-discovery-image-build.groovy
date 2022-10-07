@@ -13,19 +13,26 @@ pipeline {
                 deleteDir()
                 git url: 'https://github.com/theforeman/forklift.git'
 
-                sh(label: 'pip install', script: 'pip3.8 install --user python-cicoclient')
+                setupDuffyClient()
             }
         }
         stage('Provision Node') {
             steps {
-                provision()
+                provisionDuffy()
             }
         }
         stage('Install Pipeline Requirements') {
             steps {
                 runPlaybook(
+                    playbook: 'playbooks/setup_pipeline_users.yml',
+                    inventory: duffy_inventory('./'),
+                    options: ['-b'],
+                    extraVars: ['pipeline_users': ['pipe-fdi-builder']],
+                )
+                runPlaybook(
                     playbook: 'playbooks/setup_forklift.yml',
-                    inventory: cico_inventory('./'),
+                    inventory: duffy_inventory('./'),
+                    remote_user: 'pipe-fdi-builder',
                     extraVars: ['vagrant_scp': true],
                     commandLineExtraVars: true,
                 )
@@ -34,11 +41,12 @@ pipeline {
         stage('Run Build') {
             steps {
                 script {
-                    duffy_ssh("git clone https://github.com/${env.repo_owner}/foreman-discovery-image/ --branch ${env.branch}", 'duffy_box', './')
-                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && repoowner='${env.repo_owner}' branch='${env.branch}' proxy_repo='${env.proxy_repository}' vagrant up fdi-builder", 'duffy_box', './')
-                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant ssh -c \"sudo chmod +rx /root\" fdi-builder", 'duffy_box', './')
-                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant scp fdi-builder:foreman-discovery-image/ ./result", 'duffy_box', './')
-                    duffy_scp('foreman-discovery-image/aux/vagrant-build/result/', '.', 'duffy_box', './')
+                    def boxname = 'pipe-fdi-builder@duffy_box'
+                    duffy_ssh("git clone https://github.com/${env.repo_owner}/foreman-discovery-image/ --branch ${env.branch}", boxname, './')
+                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && repoowner='${env.repo_owner}' branch='${env.branch}' proxy_repo='${env.proxy_repository}' vagrant up fdi-builder", boxname, './')
+                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant ssh -c \"sudo chmod +rx /root\" fdi-builder", boxname, './')
+                    duffy_ssh("cd foreman-discovery-image/aux/vagrant-build/ && vagrant scp fdi-builder:foreman-discovery-image/ ./result", boxname, './')
+                    duffy_scp('foreman-discovery-image/aux/vagrant-build/result/', '.', boxname, './')
                 }
             }
         }
@@ -52,7 +60,7 @@ pipeline {
         }
 
         cleanup {
-            deprovision()
+            deprovisionDuffy()
             deleteDir()
         }
     }

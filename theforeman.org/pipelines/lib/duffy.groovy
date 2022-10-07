@@ -1,3 +1,14 @@
+def setupDuffyClient() {
+    sh(label: 'duffy collection install', script: 'ansible-galaxy collection install --collections-path ~/.ansible/collections git+https://github.com/evgeni/evgeni.duffy ansible.posix')
+
+    sh label: 'configure duffy', script: '''
+    # we do not want to leak the key to the logs
+    set +x
+    mkdir -p ~/.config
+    echo -e "client:\\n  url: https://duffy.ci.centos.org/api/v1\\n  auth:\\n    name: foreman\\n    key: ${CICO_API_KEY}" > ~/.config/duffy
+    '''
+}
+
 def provision() {
     fix_ansible_config()
     git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')

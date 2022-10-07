@@ -18,14 +18,8 @@ pipeline {
                 git url: 'https://github.com/theforeman/forklift.git'
 
                 sh(label: 'pip install', script: 'pip3.8 install --user opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp')
-                sh(label: 'duffy collection install', script: 'ansible-galaxy collection install --collections-path ~/.ansible/collections git+https://github.com/evgeni/evgeni.duffy ansible.posix')
 
-                sh label: 'configure duffy', script: '''
-                # we do not want to leak the key to the logs
-                set +x
-                mkdir -p ~/.config
-                echo -e "client:\\n  url: https://duffy.ci.centos.org/api/v1\\n  auth:\\n    name: foreman\\n    key: ${CICO_API_KEY}" > ~/.config/duffy
-                '''
+                setupDuffyClient()
             }
         }
         stage('Provision Node') {
