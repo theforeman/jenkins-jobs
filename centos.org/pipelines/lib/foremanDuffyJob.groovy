@@ -90,9 +90,7 @@ pipeline {
 
                                 duffy_scp_in('otel_env', 'otel_env', boxname, './')
                                 for(playbook in playbooks) {
-                                    stage(playbook) {
-                                        duffy_ssh("source otel_env && cd forklift && ansible-playbook pipelines/${playBook['pipeline']}/${playbook} ${extra_vars}", boxname, './')
-                                    }
+                                    duffy_ssh("source otel_env && cd forklift && ansible-playbook pipelines/${playBook['pipeline']}/${playbook} ${extra_vars}", boxname, './')
                                 }
                             }
                         }
