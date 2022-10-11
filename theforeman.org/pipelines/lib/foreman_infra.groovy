@@ -151,7 +151,7 @@ def runDuffyPipelines(projects, version, expected_version = '') {
             ],
             extra_vars: [
                 jenkins_download_artifacts: 'true',
-                jenkins_artifacts_directory: "${env.WORKSPACE}/artifacts/foreman-pipeline-${project}-${version}-${os}-${type}/",
+                jenkins_artifacts_directory: "${env.WORKSPACE}/artifacts/foreman-pipeline-${project}-${version}/",
             ]
         ]
     }
