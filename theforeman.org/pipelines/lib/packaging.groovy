@@ -287,7 +287,7 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
 
         if (pull_request || version == 'nightly') {
             dir("${project}-${package_version}") {
-                add_debian_changelog(os, package_version, repoowner, last_commit)
+                add_automated_debian_changelog(os, package_version, repoowner, last_commit)
             }
             if (fileExists("${project}_${package_version}.orig.tar.bz2")) {
                 sh(label: "rename source tarball for nightly", script: "mv ${project}_${package_version}.orig.tar.bz2 ${project}_9999.orig.tar.bz2")
@@ -338,7 +338,7 @@ def setup_sources_os_dependent(source_dir, main_build_dir, project, os, version,
     dir("${build_dir}/${package_dir}") {
         if (pull_request) {
             last_commit = git_hash()
-            add_debian_changelog(os, package_version, repoowner, last_commit)
+            add_automated_debian_changelog(os, package_version, repoowner, last_commit)
         }
     }
 
@@ -391,15 +391,22 @@ def setup_sources_plugin(project, os, version, repoowner, pull_request = false) 
     dir("${build_dir}/${package_dir}") {
         if (pull_request) {
             last_commit = git_hash()
-            add_debian_changelog('plugins', package_version, repoowner, last_commit)
+            add_automated_debian_changelog('plugins', package_version, repoowner, last_commit)
         }
     }
 
     return "${build_dir}/${package_dir}"
 }
 
-def add_debian_changelog(suite, package_version, repoowner, last_commit) {
-    sh(script: "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${repoowner} <no-reply@theforeman.org>' --version '9999-${package_version}-${suite}+scratchbuild+${BUILD_TIMESTAMP}' --message 'Automatically built package based on the state of foreman-packaging at commit ${last_commit}' debian/changelog", label: "add debian changelog entry")
+def add_automated_debian_changelog(suite, package_version, repoowner, last_commit) {
+    def author = "${repoowner} <no-reply@theforeman.org>"
+    def version = "9999-${package_version}-${suite}+scratchbuild+${BUILD_TIMESTAMP}"
+    def message = "Automatically built package based on the state of foreman-packaging at commit ${last_commit}"
+    add_debian_changelog(author, version, message)
+}
+
+def add_debian_changelog(author, version, message) {
+    sh(script: "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${author}' --version '${version}' --message '${message}' debian/changelog", label: "add debian changelog entry")
 }
 
 def execute_pbuilder(build_dir, os, version) {
