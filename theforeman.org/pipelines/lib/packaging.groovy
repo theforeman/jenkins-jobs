@@ -293,6 +293,9 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
                 sh(label: "rename source tarball for nightly", script: "mv ${project}_${package_version}.orig.tar.bz2 ${project}_9999.orig.tar.bz2")
             }
         }
+        dir("${project}-${package_version}") {
+            inject_debian_release_version(os)
+        }
     }
 
     return "${build_dir}/${project}-${package_version}"
@@ -340,6 +343,7 @@ def setup_sources_os_dependent(source_dir, main_build_dir, project, os, version,
             last_commit = git_hash()
             add_automated_debian_changelog(os, package_version, repoowner, last_commit)
         }
+        inject_debian_release_version(os)
     }
 
     return "${build_dir}/${package_dir}"
@@ -407,6 +411,20 @@ def add_automated_debian_changelog(suite, package_version, repoowner, last_commi
 
 def add_debian_changelog(author, version, message) {
     sh(script: "\$(git rev-parse --show-toplevel)/scripts/changelog.rb --author '${author}' --version '${version}' --message '${message}' debian/changelog", label: "add debian changelog entry")
+}
+
+def inject_debian_release_version(os) {
+    def debian_release_to_version = [
+        'buster': 'debian10',
+        'bullseye': 'debian11',
+        'bookworm': 'debian12',
+        'trixie': 'debian13',
+        'forky': 'debian14',
+        'focal': 'ubuntu2004',
+        'jammy': 'ubuntu2204',
+    ]
+    def suffix="+${debian_release_to_version[os]}"
+    sh(script: "sed -i '1 s/)/${suffix})/' debian/changelog", label: "inject Debian release into package version")
 }
 
 def execute_pbuilder(build_dir, os, version) {
