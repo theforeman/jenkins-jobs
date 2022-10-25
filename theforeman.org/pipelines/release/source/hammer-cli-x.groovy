@@ -18,11 +18,6 @@ pipeline {
                 add_hammer_cli_git_repos(hammer_cli_git_repos)
             }
         }
-        stage("test-ruby-2.5") {
-            steps {
-                run_test(ruby: '2.5')
-            }
-        }
         stage("test-ruby-2.7") {
             steps {
                 run_test(ruby: '2.7')

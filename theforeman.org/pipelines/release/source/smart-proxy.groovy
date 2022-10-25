@@ -14,11 +14,6 @@ pipeline {
                 git url: git_url, branch: git_ref
             }
         }
-        stage("test ruby-2.5") {
-            steps {
-                run_test(ruby: '2.5')
-            }
-        }
         stage("test ruby-2.7") {
             steps {
                 run_test(ruby: '2.7')

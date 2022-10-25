@@ -20,7 +20,6 @@
           type: user-defined
           name: ruby
           values:
-            - 2.5
             - 2.7
     builders:
       - shell: !include-raw: scripts/test/test_hammer_cli_foreman_discovery.sh
