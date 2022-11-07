@@ -13,6 +13,7 @@
     minor:
         - '3'
         - '4'
+        - '5'
 
 - view:
     name: 'Foreman Nightly'
