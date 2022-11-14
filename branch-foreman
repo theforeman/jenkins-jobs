@@ -1,0 +1,47 @@
+#!/bin/bash
+
+FOREMAN_VERSION=$1
+KATELLO_VERSION=$2
+
+if [[ -z $FOREMAN_VERSION ]] || [[ -z $KATELLO_VERSION ]] ; then
+	echo "Usage: $0 FOREMAN_VERSION KATELLO_VERSION"
+	exit 1
+fi
+
+sed "/foreman_version/ s/nightly/${FOREMAN_VERSION}/" theforeman.org/pipelines/vars/foreman/nightly.groovy > theforeman.org/pipelines/vars/foreman/${FOREMAN_VERSION}.groovy
+
+sed -e "/foreman_version/ s/nightly/${FOREMAN_VERSION}/" \
+	-e "/katello_version/ s/nightly/${KATELLO_VERSION}/" \
+	theforeman.org/pipelines/vars/katello/nightly.groovy > theforeman.org/pipelines/vars/katello/$KATELLO_VERSION.groovy
+
+sed -i "/nightly/i \ \ \ \ \ \ - '${FOREMAN_VERSION}'" centos.org/jobs/foreman-pipelines.yml
+
+sed -i "/nightly/i \ \ \ \ \ \ - '${KATELLO_VERSION}'" centos.org/jobs/katello-pipelines.yml
+
+echo "- '${FOREMAN_VERSION}'" >> theforeman.org/yaml/includes/foreman_versions.yaml.inc
+
+echo "      - '${KATELLO_VERSION}'" >> theforeman.org/yaml/jobs/pipeline/katello-rpm-pipeline.yaml
+
+# TODO This should be a templated pipeline
+echo "Create theforeman.org/yaml/jobs/test_${FOREMAN_VERSION/./_}_stable.yaml"
+echo "Create theforeman.org/yaml/jobs/test_proxy_${FOREMAN_VERSION/./_}_stable.yaml"
+
+# TODO This is a non-trivial addition to script
+echo "Add ${FOREMAN_VERSION%*.} as a minor to theforeman.org/yaml/views/release.yml"
+
+# TODO The sed line was too complex
+echo "Add the following to theforeman.org/pipelines/test/foreman/vars.groovy"
+cat <<EOF
+    '${FOREMAN_VERSION}-stable': [
+        'ruby': ['2.7'],
+        'katello': 'KATELLO-${FOREMAN_VERSION}'
+    ],
+EOF
+
+echo "Add the following to theforeman.org/pipelines/test/testKatello.groovy"
+cat <<EOF
+    'KATELLO-${KATELLO_VERSION}': [
+        'foreman': '${FOREMAN_VERSION}-stable',
+        'ruby': ['2.7']
+    ],
+EOF
