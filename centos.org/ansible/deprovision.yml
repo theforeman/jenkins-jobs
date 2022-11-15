@@ -1,9 +1,0 @@
----
-- hosts: localhost
-  vars:
-    cico_data: "{{ lookup('file', './cico_data.json') | from_json }}"
-  tasks:
-    - name: 'Destroy node'
-      cico:
-        action: done
-        ssid: "{{ cico_data.ssid }}"

@@ -9,18 +9,6 @@ def setupDuffyClient() {
     '''
 }
 
-def provision() {
-    fix_ansible_config()
-    git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')
-
-  	dir('jenkins-jobs/centos.org/ansible') {
-        runPlaybook(playbook: 'provision.yml')
-        archiveArtifacts artifacts: 'cico_data.json'
-        archiveArtifacts artifacts: 'cico_inventory'
-        archiveArtifacts artifacts: 'ssh_config'
-    }
-}
-
 def provisionDuffy() {
     fix_ansible_config()
     git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')
@@ -37,14 +25,6 @@ def fix_ansible_config() {
     sh(script: "sed -i /stdout_callback/d ansible.cfg", label: 'fix ansible config')
 }
 
-def deprovision() {
-    if (fileExists('jenkins-jobs/centos.org/ansible/cico_data.json')) {
-        dir('jenkins-jobs/centos.org/ansible') {
-            runPlaybook(playbook: 'deprovision.yml')
-      	}
-    }
-}
-
 def deprovisionDuffy() {
     if (fileExists('jenkins-jobs/centos.org/ansible/duffy_session')) {
         dir('jenkins-jobs/centos.org/ansible') {
@@ -55,10 +35,6 @@ def deprovisionDuffy() {
 
 def duffy_inventory(relative_dir = '') {
     return relative_dir + 'jenkins-jobs/centos.org/ansible/duffy_inventory'
-}
-
-def cico_inventory(relative_dir = '') {
-    return relative_dir + 'jenkins-jobs/centos.org/ansible/cico_inventory'
 }
 
 def ssh_config(relative_dir = '') {
