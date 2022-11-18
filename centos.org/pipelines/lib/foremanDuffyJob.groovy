@@ -18,7 +18,7 @@ pipeline {
                 deleteDir()
                 git url: 'https://github.com/theforeman/forklift.git'
 
-                sh(label: 'pip install', script: 'pip3.9 install --user opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp')
+                sh(label: 'pip install', script: 'pip3.8 install --user opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp')
 
                 setupDuffyClient()
             }
