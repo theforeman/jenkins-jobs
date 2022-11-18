@@ -76,7 +76,7 @@ pipeline {
                     export SPAN_ID='${env.SPAN_ID}'
                     export TRACEPARENT='${env.TRACEPARENT}'
                     export TRACESTATE='${env.TRACESTATE}'
-                    export ANSIBLE_CALLBACK_WHITELIST='${env.ANSIBLE_CALLBACK_WHITELIST}'
+                    #export ANSIBLE_CALLBACK_WHITELIST='${env.ANSIBLE_CALLBACK_WHITELIST}'
                     """
 
                     writeFile(file: 'otel_env', text: otel_env)
