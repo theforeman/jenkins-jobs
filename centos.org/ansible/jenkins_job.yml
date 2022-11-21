@@ -85,6 +85,13 @@
         state: directory
       when: jenkins_download_artifacts | bool
 
+    - name: "Create artifacts sub-directories"
+      file:
+        path: "{{ jenkins_artifacts_directory }}/{{ item }}"
+        state: directory
+      loop: "{{ build_job_result.json.artifacts | map(attribute='relativePath') | map('dirname') | unique }}"
+      when: jenkins_download_artifacts | bool
+
     - name: "Fetch remote console log"
       get_url:
         url: "{{ jenkins_host }}/job/{{ jenkins_job_name }}/{{ poll_result.json.executable.number }}/consoleText"
@@ -94,7 +101,7 @@
     - name: "Fetch remote artifacts"
       get_url:
         url: "{{ jenkins_host }}/job/{{ jenkins_job_name }}/{{ poll_result.json.executable.number }}/artifact/{{ item.relativePath }}"
-        dest: "{{ jenkins_artifacts_directory }}/{{ item.fileName }}"
+        dest: "{{ jenkins_artifacts_directory }}/{{ item.relativePath }}"
       loop: "{{ build_job_result.json.artifacts }}"
       when: jenkins_download_artifacts | bool
 
