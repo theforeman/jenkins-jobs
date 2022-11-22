@@ -89,7 +89,7 @@
       file:
         path: "{{ jenkins_artifacts_directory }}/{{ item }}"
         state: directory
-      loop: "{{ build_job_result.json.artifacts | map(attribute='relativePath') | map('dirname') | unique }}"
+      loop: "{{ build_job_result.json.artifacts | map(attribute='relativePath') | map('dirname') | unique | list }}"
       when: jenkins_download_artifacts | bool
 
     - name: "Fetch remote console log"
