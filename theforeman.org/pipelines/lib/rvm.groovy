@@ -13,9 +13,13 @@ def gemset(name = null) {
     base_name
 }
 
-def configureRVM(ruby, name = '') {
+def configureRVM(ruby, name = '', bundler_version = null) {
     emptyGemset(ruby, name)
-    withRVM(["gem install bundler --no-document"], ruby, name)
+    if (bundler_version) {
+        withRVM(["gem install bundler -v '${bundler_version}' --no-document"], ruby, name)
+    } else {
+        withRVM(["gem install bundler --no-document"], ruby, name)
+    }
 }
 
 def emptyGemset(ruby, name = '') {

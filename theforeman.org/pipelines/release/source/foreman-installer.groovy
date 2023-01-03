@@ -63,7 +63,8 @@ def run_test(args) {
     def gemset = "ruby-${ruby}-puppet-${puppet}"
 
     try {
-        configureRVM(ruby, gemset)
+        // Bundler 2.4 dropped Ruby 2.5 support
+        configureRVM(ruby, gemset, '< 2.4')
         withRVM(["PUPPET_VERSION='${puppet}' bundle install --without=development --jobs=5 --retry=5"], ruby, gemset)
         archiveArtifacts(artifacts: 'Gemfile.lock')
         withRVM(["PUPPET_VERSION='${puppet}' bundle exec rake spec"], ruby, gemset)

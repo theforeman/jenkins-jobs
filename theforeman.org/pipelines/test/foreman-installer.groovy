@@ -50,7 +50,8 @@ pipeline {
                     }
                     stage("Setup RVM") {
                         steps {
-                            configureRVM(ruby, "${ruby}-${PUPPET_VERSION}")
+                            // Bundler 2.4 dropped support for Ruby 2.5
+                            configureRVM(ruby, "${ruby}-${PUPPET_VERSION}", '< 2.4')
                         }
                     }
                     stage('Install dependencies') {
