@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+LINT="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")/jenkins-lint.py")"
+
+test_project() {
+	local project=$1
+
+	if [[ $project == "theforeman.org" ]] ; then
+		local dir="."
+	elif [[ $project == "centos.org" ]] ; then
+		local dir="jobs"
+	else
+		echo "Unknown project '${project}'"
+		exit 1
+	fi
+
+	(
+		cd "${project}"
+
+		jenkins-jobs -l debug test -r "${dir}"
+
+		local output="$(mktemp -d)"
+		trap "rm -rf '${output}'" EXIT
+
+		jenkins-jobs test -r "${dir}" --config-xml -o "${output}"
+		find "${output}" -name config.xml -exec "$LINT" --xml {} +
+		rm -rf "${output}"
+	)
+}
+
+PROJECT=$1
+
+if [[ -z $PROJECT ]] ; then
+	test_project theforeman.org
+	test_project centos.org
+else
+	test_project "${PROJECT}"
+fi
