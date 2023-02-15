@@ -19,4 +19,4 @@
     name: 'Foreman Nightly'
     description: 'Foreman nightly jobs'
     view-type: list
-    regex: '.+-((nightly|plugins)-(rpm|deb)-pipeline|(develop|master|source|package)-(test|release))'
+    regex: '.+-((nightly|plugins)-(rpm|deb)-pipeline|plugins-(rpm|deb)-test-pipeline|(develop|master|source|package)-(test|release))'
