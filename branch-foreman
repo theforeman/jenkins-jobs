@@ -30,11 +30,19 @@ echo "Create theforeman.org/yaml/jobs/test_${FOREMAN_VERSION/./_}_stable.yaml"
 echo "Add ${FOREMAN_VERSION%*.} as a minor to theforeman.org/yaml/views/release.yml"
 
 # TODO The sed line was too complex
-echo "Add the following to theforeman.org/pipelines/test/foreman/vars.groovy"
+echo "Add the following to the foreman_integration_versions section in theforeman.org/pipelines/test/foreman/vars.groovy"
 cat <<EOF
     '${FOREMAN_VERSION}-stable': [
         'ruby': ['2.7'],
-        'katello': 'KATELLO-${FOREMAN_VERSION}'
+        'katello': 'KATELLO-${KATELLO_VERSION}'
+    ],
+EOF
+
+echo "Add the following to the foreman_unit_versions section in theforeman.org/pipelines/test/foreman/vars.groovy"
+cat <<EOF
+    '${FOREMAN_VERSION}-stable': [
+        'ruby': ['2.7'],
+        'katello': 'KATELLO-${KATELLO_VERSION}'
     ],
 EOF
 

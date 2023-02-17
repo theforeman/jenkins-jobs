@@ -3,6 +3,10 @@ def foreman_integration_versions = [
         'ruby': ['2.7'],
         'katello': 'master'
     ],
+    '3.6-stable': [
+        'ruby': ['2.7'],
+        'katello': 'KATELLO-4.8'
+    ],
     '3.5-stable': [
         'ruby': ['2.7'],
         'katello': 'KATELLO-4.7'
@@ -28,6 +32,10 @@ def foreman_integration_versions = [
 def foreman_unit_versions = [
     'develop': [
         'ruby': ['2.7']
+    ],
+    '3.6-stable': [
+        'ruby': ['2.7'],
+        'katello': 'KATELLO-4.8'
     ],
     '3.5-stable': [
         'ruby': ['2.7']
