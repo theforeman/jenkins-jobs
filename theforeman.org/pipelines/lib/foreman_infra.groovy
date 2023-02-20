@@ -51,7 +51,7 @@ def runIndividualCicoJob(job_name, number = 0, job_parameters = null, job_extra_
 
     sleep(number * 5) //See https://bugs.centos.org/view.php?id=14920
     try {
-        withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift-cloud', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             runPlaybook(
                 playbook: 'centos.org/ansible/jenkins_job.yml',
                 extraVars: extra_vars,

@@ -17,7 +17,7 @@ pipeline {
                 deleteDir()
                 git_clone_jenkins_jobs()
 
-                withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift-cloud', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     runPlaybook(
                         playbook: 'centos.org/ansible/jenkins_job.yml',
                         extraVars: [
@@ -28,7 +28,7 @@ pipeline {
                     )
                 }
 
-                withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift-cloud', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     runPlaybook(
                         playbook: 'centos.org/ansible/jenkins_job.yml',
                         extraVars: [
