@@ -128,3 +128,23 @@ For a plugin "smart_proxy_example", first create a job that tests the main (mast
 An org admin must then:
 
 * add the repo to the [Bots team](https://github.com/orgs/theforeman/teams/bots/repositories) with **write** access
+
+# Foreman's Other Tests
+
+Jenkins is not the only place tests are defined and executed.
+
+## GitHub Actions
+
+Several repositories use [GitHub Actions](https://github.com/features/actions) either *instead of* or *together with* Jenkins.
+
+The definitions of these jobs are in `.github/workflows/` of their respective repositories.
+
+Failed jobs cannot be re-triggered with a comment, only from the GitHub UI which requires maintainer permissions for the repository.
+
+## Packit
+
+Several repositories use [Packit](https://packit.dev) to produce RPMs based on pull requests.
+
+The definitions of these jobs are in `.packit.yaml` of their respective repositories.
+
+Failed jobs can be re-triggered with a `/packit build` comment in the PR.
