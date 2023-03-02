@@ -67,6 +67,11 @@
     name: 'foreman-plugins-{version}-deb-test-pipeline'
     project-type: pipeline
     sandbox: true
+    triggers:
+      - reverse:
+          jobs:
+            - foreman-{version}-deb-pipeline
+          result: success
     dsl:
       !include-raw:
         - 'pipelines/vars/foreman/{version}.groovy'
