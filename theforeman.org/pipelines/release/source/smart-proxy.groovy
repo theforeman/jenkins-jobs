@@ -9,14 +9,27 @@ pipeline {
     }
 
     stages {
-        stage("Clone repository") {
-            steps {
-                git url: git_url, branch: git_ref
-            }
-        }
-        stage("test ruby") {
-            steps {
-                run_test(ruby: '2.7', '3.0', '3.1')
+        stage('Test') {
+            matrix {
+                agent any
+                axes {
+                    axis {
+                        name 'ruby'
+                        values '2.7', '3.0', '3.1'
+                    }
+                }
+                stages {
+                    stage("Clone repository") {
+                        steps {
+                            git url: git_url, branch: git_ref
+                        }
+                    }
+                    stage("Test Ruby") {
+                        steps {
+                            run_test(ruby)
+                        }
+                    }
+                }
             }
         }
         stage('Build and Archive Source') {
@@ -31,6 +44,7 @@ pipeline {
             }
         }
     }
+    
     post {
         success {
             build(
