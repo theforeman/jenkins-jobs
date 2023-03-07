@@ -67,7 +67,12 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.7'
+                        values '3.1'
+                    }
+                }
+                when {
+                    expression {
+                        ruby_versions.contains(env.ruby)
                     }
                 }
                 environment {
@@ -78,6 +83,10 @@ pipeline {
                         steps {
                             script {
                                 git_checkout()
+                            }
+
+                            dir('foreman') {
+                                git url: "https://github.com/theforeman/foreman", branch: develop, poll: false
                             }
                         }
                     }
