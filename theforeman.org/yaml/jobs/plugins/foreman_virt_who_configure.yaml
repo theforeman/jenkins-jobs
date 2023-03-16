@@ -1,7 +1,6 @@
 - project:
     name: foreman_virt_who_configure
     defaults: plugin
-    dbs: 'postgresql'
     parameters:
       - string:
           name: branch
