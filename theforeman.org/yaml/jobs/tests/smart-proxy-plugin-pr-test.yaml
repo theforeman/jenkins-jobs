@@ -23,6 +23,7 @@
       - dhcp_remote_isc
       - discovery
       - dns_infoblox
+      - dynflow
       - monitoring
       - omaha
       - pulp

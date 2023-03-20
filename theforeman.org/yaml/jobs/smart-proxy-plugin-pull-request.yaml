@@ -39,7 +39,6 @@
     name: smart-proxy-plugin-pull-request
     plugin:
       - ansible
-      - dynflow
       - openscap
       - remote_execution_ssh
       - salt
