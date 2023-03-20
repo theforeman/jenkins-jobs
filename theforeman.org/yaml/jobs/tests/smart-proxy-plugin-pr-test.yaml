@@ -27,6 +27,7 @@
       - monitoring
       - omaha
       - pulp
+      - salt
     jobs:
       - 'smart_proxy_{plugin}-pr-test'
     empty: ''
