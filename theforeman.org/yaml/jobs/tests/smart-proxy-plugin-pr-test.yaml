@@ -24,6 +24,7 @@
       - discovery
       - dns_infoblox
       - monitoring
+      - omaha
       - pulp
     jobs:
       - 'smart_proxy_{plugin}-pr-test'

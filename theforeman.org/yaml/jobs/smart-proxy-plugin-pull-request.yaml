@@ -40,7 +40,6 @@
     plugin:
       - ansible
       - dynflow
-      - omaha
       - openscap
       - remote_execution_ssh
       - salt
