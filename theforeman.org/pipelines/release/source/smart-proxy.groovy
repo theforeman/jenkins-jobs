@@ -26,7 +26,7 @@ pipeline {
                     }
                     stage("Test Ruby") {
                         steps {
-                            run_test(ruby)
+                            run_test(ruby: env.ruby)
                         }
                     }
                 }
@@ -36,9 +36,13 @@ pipeline {
             steps {
                 dir(project_name) {
                     git url: git_url, branch: git_ref
+
+                    script {
+                        archive_git_hash()
+                    }
                 }
+                
                 script {
-                    archive_git_hash()
                     sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type)
                 }
             }
