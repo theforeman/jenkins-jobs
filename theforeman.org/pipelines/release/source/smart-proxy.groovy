@@ -26,7 +26,7 @@ pipeline {
                     }
                     stage("Test Ruby") {
                         steps {
-                            run_test(env.ruby)
+                            run_test(ruby)
                         }
                     }
                 }
