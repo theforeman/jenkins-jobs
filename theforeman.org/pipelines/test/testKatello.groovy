@@ -11,26 +11,6 @@ def katello_versions = [
         'foreman': '3.5-stable',
         'ruby': ['2.7']
     ],
-    'KATELLO-4.6': [
-        'foreman': '3.4-stable',
-        'ruby': ['2.7']
-    ],
-    'KATELLO-4.5': [
-        'foreman': '3.3-stable',
-        'ruby': ['2.7']
-    ],
-    'KATELLO-4.4': [
-        'foreman': '3.2-stable',
-        'ruby': ['2.7']
-    ],
-    'KATELLO-4.3': [
-        'foreman': '3.1-stable',
-        'ruby': ['2.7']
-    ],
-    'KATELLO-4.2': [
-        'foreman': '3.0-stable',
-        'ruby': ['2.7']
-    ],
     //Testing of 3.18 to help with better testing of user issue fixes for migration
     'KATELLO-3.18': [
         'foreman': '2.3-stable',
