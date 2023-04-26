@@ -8,7 +8,6 @@
     scm:
       - git:
           url: https://github.com/theforeman/hammer-cli-foreman-discovery
-          per-build-tag: true
           wipe-workspace: true
           branches:
             - master

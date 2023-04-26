@@ -13,7 +13,6 @@
     scm:
       - git:
           url: https://github.com/theforeman/hammer-cli-foreman
-          per-build-tag: true
           wipe-workspace: true
           branches:
             - '${ghprbActualCommit}'
