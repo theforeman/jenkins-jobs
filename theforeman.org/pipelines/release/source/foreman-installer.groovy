@@ -17,11 +17,6 @@ pipeline {
                 }
             }
         }
-        stage("test ruby 2.5 & puppet 6") {
-            steps {
-                run_test(ruby: '2.5', puppet: '6.3')
-            }
-        }
         stage("test ruby 2.7 & puppet 7") {
             steps {
                 run_test(ruby: '2.7', puppet: '7')
@@ -63,8 +58,7 @@ def run_test(args) {
     def gemset = "ruby-${ruby}-puppet-${puppet}"
 
     try {
-        // Bundler 2.4 dropped Ruby 2.5 support
-        configureRVM(ruby, gemset, '< 2.4')
+        configureRVM(ruby, gemset)
         withRVM(["PUPPET_VERSION='${puppet}' bundle install --without=development --jobs=5 --retry=5"], ruby, gemset)
         archiveArtifacts(artifacts: 'Gemfile.lock')
         withRVM(["PUPPET_VERSION='${puppet}' bundle exec rake spec"], ruby, gemset)
