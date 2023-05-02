@@ -14,7 +14,7 @@ pipeline {
                 ])
 
                 virtEnv('jjb-venv', 'pip install pbr')
-                virtEnv('jjb-venv', 'pip install jenkins-job-builder')
+                virtEnv('jjb-venv', 'pip install -r requirements.txt')
             }
         }
 
