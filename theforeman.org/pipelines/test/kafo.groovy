@@ -11,34 +11,14 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.4', '2.5', '2.7'
+                        values '2.7'
                     }
                     axis {
                         name 'PUPPET_VERSION'
-                        values '5.0', '6.0', '7.0'
+                        values '7.0'
                     }
                 }
                 excludes {
-                    exclude {
-                        axis {
-                            name 'ruby'
-                            notValues '2.4'
-                        }
-                        axis {
-                            name 'PUPPET_VERSION'
-                            values '5.0'
-                        }
-                    }
-                    exclude {
-                        axis {
-                            name 'ruby'
-                            notValues '2.5'
-                        }
-                        axis {
-                            name 'PUPPET_VERSION'
-                            values '6.0'
-                        }
-                    }
                     exclude {
                         axis {
                             name 'ruby'
@@ -59,8 +39,7 @@ pipeline {
                     }
                     stage("Setup RVM") {
                         steps {
-                            // Bundler 2.4 dropped support for Ruby 2.5
-                            configureRVM(ruby, "${ruby}-${PUPPET_VERSION}", '< 2.4')
+                            configureRVM(ruby, "${ruby}-${PUPPET_VERSION}")
                         }
                     }
                     stage('Install dependencies') {
