@@ -7,14 +7,16 @@
           url: '{repo}'
       - tfm-pull-request-build-discarder
     scm:
-      - git:
+      - name: plugin
+        git:
           url: '{repo}'
           wipe-workspace: true
           basedir: 'plugin'
           branches:
             - '${{ghprbActualCommit}}'
           refspec: '+refs/pull/${{ghprbPullId}}/*:refs/remotes/origin/pr/${{ghprbPullId}}/*'
-      - git:
+      - name: foreman
+        git:
           url: https://github.com/theforeman/foreman
           prune: true
           wipe-workspace: true
