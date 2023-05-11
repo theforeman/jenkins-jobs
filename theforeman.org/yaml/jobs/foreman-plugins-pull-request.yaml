@@ -8,6 +8,13 @@
       - tfm-pull-request-build-discarder
     scm:
       - git:
+          url: '{repo}'
+          wipe-workspace: true
+          basedir: 'plugin'
+          branches:
+            - '${{ghprbActualCommit}}'
+          refspec: '+refs/pull/${{ghprbPullId}}/*:refs/remotes/origin/pr/${{ghprbPullId}}/*'
+      - git:
           url: https://github.com/theforeman/foreman
           prune: true
           wipe-workspace: true
@@ -35,9 +42,7 @@
           timeout: 120
           write-description: 'Build timed out (after {{0}} minutes). Marking the build as aborted.'
     builders:
-      - plugin-pull-request:
-          plugin-name: '{plugin}'
-          plugin-repo: '{repo}'
+      - test_plugin
     publishers:
       - gemset_cleanup
       - junit:
