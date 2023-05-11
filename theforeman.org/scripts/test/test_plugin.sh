@@ -64,10 +64,9 @@ tasks="jenkins:unit"
 # we need to install node modules and compile webpack
 if [ -d "${PLUGIN_ROOT}/test/integration" ] ; then
   npm install --no-audit
-  tasks="webpack:compile $tasks"
+  tasks="$tasks jenkins:integration"
 fi
 
-tasks="$tasks jenkins:integration"
 bundle exec rake $tasks TESTOPTS="-v" --trace
 
 # Run the DB seeds to verify they work
