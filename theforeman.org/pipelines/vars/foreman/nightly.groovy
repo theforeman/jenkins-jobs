@@ -4,8 +4,7 @@ def foreman_client_distros = [
     'el9',
     'el8',
     'el7',
-    'sles12',
-    'sles11'
+    'sles12'
 ]
 def foreman_el_releases = [
     'el8'
