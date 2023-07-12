@@ -7,7 +7,7 @@ def obal(args) {
         packages = packages.join(' ')
     }
 
-    def cmd = "python -m obal ${args.action} ${packages}"
+    def cmd = "python3 -m obal ${args.action} ${packages}"
 
     if (extra_vars) {
         extra_vars_file = writeExtraVars(extraVars: extra_vars)
