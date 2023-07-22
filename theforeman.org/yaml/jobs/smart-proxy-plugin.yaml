@@ -45,7 +45,6 @@
       - dns_infoblox
       - discovery:
           branch: develop # have to be the special child
-      - dynflow
       - monitoring
       - omaha
       - openscap
