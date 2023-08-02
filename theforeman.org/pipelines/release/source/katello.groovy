@@ -78,6 +78,7 @@ pipeline {
                     }
                     steps {
                         sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
+                        archiveArtifacts(artifacts: 'package-lock.json')
                         sh(script: "npm ci --no-audit", label: "npm ci")
                         sh(script: 'JEST_TIMEOUT=300000 npm test', label: "npm test")
                     }
