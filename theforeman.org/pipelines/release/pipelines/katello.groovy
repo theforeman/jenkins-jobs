@@ -9,43 +9,115 @@ pipeline {
     }
 
     stages {
-        stage('Mash Koji Repositories') {
-            agent { label 'sshkey' }
-
-            steps {
-                mash("katello", katello_version)
+        stage('koji') {
+            when {
+                expression { stage_source == 'koji' }
             }
-        }
-        stage('Katello Repoclosure') {
-            agent { label 'el' }
+            stages {
+                stage('koji-mash-repositories') {
+                    agent { label 'sshkey' }
 
-            steps {
-                script {
-                    parallel repoclosures('katello', foreman_el_releases, foreman_version)
+                    steps {
+                        mash("katello", katello_version)
+                    }
+                }
+                stage('koji-repoclosure') {
+                    agent { label 'el' }
+
+                    steps {
+                        script {
+                            parallel repoclosures('katello', foreman_el_releases, foreman_version)
+                        }
+                    }
+                    post {
+                        always {
+                            deleteDir()
+                        }
+                    }
+                }
+                stage('koji-install-test') {
+                    agent any
+
+                    steps {
+                        script {
+                            runDuffyPipeline('katello-rpm', katello_version)
+                        }
+                    }
+                }
+                stage('koji-push-rpms') {
+                    agent { label 'admin && sshkey' }
+
+                    steps {
+                        script {
+                            foreman_el_releases.each { distro ->
+                                push_katello_rpms(katello_version, distro)
+                            }
+                        }
+                    }
                 }
             }
-            post {
-                always {
-                    deleteDir()
-                }
-            }
         }
-        stage('Test Suites') {
-            agent any
-
-            steps {
-                script {
-                    runDuffyPipeline('katello-rpm', katello_version)
-                }
+        stage('staging') {
+            agent { label 'el8' }
+            when {
+                expression { stage_source == 'stagingyum' }
             }
-        }
-        stage('Push RPMs') {
-            agent { label 'admin && sshkey' }
+            stages {
+                stage('staging-build-repository') {
+                    steps {
+                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
-            steps {
-                script {
-                    foreman_el_releases.each { distro ->
-                        push_katello_rpms(katello_version, distro)
+                        script {
+                            foreman_el_releases.each { distro ->
+                                sh "./build_stage_repository katello ${katello_version} ${distro}"
+                            }
+                        }
+                    }
+                }
+                stage('staging-copy-repository') {
+                    steps {
+                        script {
+                            dir('tmp') {
+                                rsync_to_yum_stage('katello', 'katello', katello_version)
+                            }
+                        }
+                    }
+                }
+                stage('staging-repoclosure') {
+                    steps {
+                        script {
+                            def parallelStagesMap = [:]
+                            def name = 'katello-staging'
+                            foreman_el_releases.each { distro ->
+                                parallelStagesMap[distro] = { repoclosure(name, distro, katello_version) }
+                            }
+                            parallel parallelStagesMap
+                        }
+                    }
+                    post {
+                        always {
+                            deleteDir()
+                        }
+                    }
+                }
+                stage('staging-install-test') {
+                    agent any
+
+                    steps {
+                        script {
+                            runDuffyPipeline('katello-rpm', katello_version)
+                        }
+                    }
+                }
+                stage('staging-push-rpms') {
+                    agent { label 'admin && sshkey' }
+
+                    steps {
+                        script {
+                            foreman_el_releases.each { distro ->
+                                push_foreman_staging_rpms('katello', katello_version, distro)
+                            }
+                        }
                     }
                 }
             }
