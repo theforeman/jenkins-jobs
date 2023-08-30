@@ -24,6 +24,8 @@
     sandbox: true
     triggers:
       - timed: 'H 21 * * *'
+    wrappers:
+      - ansicolor
     dsl:
       !include-raw:
         - 'pipelines/vars/foreman/{version}.groovy'

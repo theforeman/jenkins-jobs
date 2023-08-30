@@ -7,7 +7,13 @@ def obal(args) {
         packages = packages.join(' ')
     }
 
-    def cmd = "python -m obal ${args.action} ${packages}"
+    if (env.NODE_LABELS.contains('el8')) {
+        python = 'python3.11'
+    } else {
+        python = 'python'
+    }
+
+    def cmd = "${python} -m obal ${args.action} ${packages}"
 
     if (extra_vars) {
         extra_vars_file = writeExtraVars(extraVars: extra_vars)

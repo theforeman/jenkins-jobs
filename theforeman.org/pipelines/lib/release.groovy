@@ -3,13 +3,13 @@ void push_foreman_rpms(repo_type, version, distro) {
     push_rpms("foreman-${repo_type}-${version}", repo_type, version, distro)
 }
 
-void push_rpms(repo_src, repo_dest, version, distro, keep_old_files = false) {
-    push_rpms_direct("${repo_src}/${distro}", "${repo_dest}/${version}/${distro}", !keep_old_files, keep_old_files)
+void push_rpms(repo_src, repo_dest, version, distro, keep_old_files = false, staging = false) {
+    push_rpms_direct("${repo_src}/${distro}", "${repo_dest}/${version}/${distro}", !keep_old_files, keep_old_files, staging)
 }
 
-void push_rpms_direct(repo_source, repo_dest, overwrite = true, merge = false) {
+void push_rpms_direct(repo_source, repo_dest, overwrite = true, merge = false, staging = false) {
     sshagent(['repo-sync']) {
-        sh "ssh yumrepo@web01.osuosl.theforeman.org ${repo_source} ${repo_dest} ${overwrite} ${merge}"
+        sh "ssh yumrepo@web01.osuosl.theforeman.org ${repo_source} ${repo_dest} ${overwrite} ${merge} ${staging}"
     }
 }
 
@@ -40,3 +40,13 @@ void mash(collection, version) {
         sh "ssh -o 'BatchMode yes' root@koji.katello.org collection-mash-split.py ${collection} ${version}"
     }
 }
+
+void push_staging_rpms(repo_src, repo_dest, version, distro, keep_old_files = false) {
+    push_rpms_direct("${repo_src}/${distro}", "${repo_dest}/${version}/${distro}", !keep_old_files, keep_old_files, true)
+}
+
+void push_foreman_staging_rpms(repo_type, version, distro) {
+    version = version == 'develop' ? 'nightly' : version
+    push_staging_rpms("${repo_type}/${version}", repo_type, version, distro)
+}
+

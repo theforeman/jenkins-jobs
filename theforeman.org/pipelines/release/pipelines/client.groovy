@@ -9,43 +9,110 @@ pipeline {
     }
 
     stages {
-        stage('Mash Koji Repositories') {
-            agent { label 'sshkey' }
-
-            steps {
-                mash('foreman-client', foreman_version)
+        stage('koji') {
+            when {
+                expression { stage_source == 'koji' }
             }
-        }
-        stage('Repoclosure') {
-            agent { label 'el' }
+            stages {
+                stage('koji-mash-repositories') {
+                    agent { label 'sshkey' }
 
-            steps {
-                script {
-                    def parallelStagesMap = [:]
-                    def name = 'foreman-client'
-                    foreman_client_distros.each { distro ->
-                        if (distro.startsWith('el')) {
-                            parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
-                        } else if (distro.startsWith('fc')) {
-                            parallelStagesMap[distro] = { repoclosure(name, distro.replace('fc', 'f'), foreman_version) }
+                    steps {
+                        mash('foreman-client', foreman_version)
+                    }
+                }
+                stage('koji-repoclosure') {
+                    agent { label 'el' }
+
+                    steps {
+                        script {
+                            def parallelStagesMap = [:]
+                            def name = 'foreman-client'
+                            foreman_client_distros.each { distro ->
+                                if (distro.startsWith('el')) {
+                                    parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
+                                } else if (distro.startsWith('fc')) {
+                                    parallelStagesMap[distro] = { repoclosure(name, distro.replace('fc', 'f'), foreman_version) }
+                                }
+                            }
+                            parallel parallelStagesMap
                         }
                     }
-                    parallel parallelStagesMap
+                    post {
+                        always {
+                            deleteDir()
+                        }
+                    }
                 }
-            }
-            post {
-                always {
-                    deleteDir()
+                stage('koji-push-rpms') {
+                    agent { label 'admin && sshkey' }
+
+                    steps {
+                        script {
+                            foreman_client_distros.each { distro ->
+                                push_foreman_rpms('client', foreman_version, distro)
+                            }
+                        }
+                    }
                 }
             }
         }
-        stage('Push RPMs') {
-            agent { label 'admin && sshkey' }
+        stage('staging') {
+            agent { label 'el8' }
+            when {
+                expression { stage_source == 'stagingyum' }
+            }
+            stages {
+                stage('staging-build-repository') {
+                    steps {
+                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
-            steps {
-                script {
-                    foreman_client_distros.each { distro ->
-                        push_foreman_rpms('client', foreman_version, distro)
+                        script {
+                            foreman_client_distros.each { distro ->
+                                sh "./build_stage_repository foreman-client ${foreman_version} ${distro}"
+                            }
+                        }
+                    }
+                }
+                stage('staging-copy-repository') {
+                    steps {
+                        script {
+                            dir('tmp') {
+                                rsync_to_yum_stage('foreman-client', 'client', foreman_version)
+                            }
+                        }
+                    }
+                }
+                stage('staging-repoclosure') {
+                    steps {
+                        script {
+                            def parallelStagesMap = [:]
+                            def name = 'foreman-client-staging'
+                            foreman_client_distros.each { distro ->
+                                if (distro.startsWith('el')) {
+                                    parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
+                                } else if (distro.startsWith('fc')) {
+                                    parallelStagesMap[distro] = { repoclosure(name, distro.replace('fc', 'f'), foreman_version) }
+                                }
+                            }
+                            parallel parallelStagesMap
+                        }
+                    }
+                    post {
+                        always {
+                            deleteDir()
+                        }
+                    }
+                }
+                stage('staging-push-rpms') {
+                    agent { label 'admin && sshkey' }
+
+                    steps {
+                        script {
+                            foreman_client_distros.each { distro ->
+                                push_foreman_staging_rpms('client', foreman_version, distro)
+                            }
+                        }
                     }
                 }
             }

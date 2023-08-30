@@ -1,5 +1,7 @@
 def foreman_version = '3.4'
 def git_branch = "${foreman_version}-stable"
+def stage_source = 'koji'
+
 def foreman_client_distros = [
     'el9',
     'el8',

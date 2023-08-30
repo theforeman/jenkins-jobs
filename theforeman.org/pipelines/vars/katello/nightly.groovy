@@ -1,5 +1,6 @@
 def foreman_version = 'nightly'
 def katello_version = 'nightly'
+def stage_source = 'koji'
 def foreman_el_releases = [
     'el8'
 ]
