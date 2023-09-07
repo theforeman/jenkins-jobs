@@ -42,6 +42,15 @@
             - rpm/.*
 
 - trigger:
+    name: github_pr_rpm_develop
+    triggers:
+      - github-pull-request:
+          <<: *ghprb_defaults
+          status-url: https://ci.theforeman.org/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_ID/pipeline
+          white-list-target-branches:
+            - rpm/develop
+
+- trigger:
     name: github_pr_pipeline
     triggers:
       - github-pull-request:

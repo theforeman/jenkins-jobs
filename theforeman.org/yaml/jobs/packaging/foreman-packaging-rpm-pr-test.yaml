@@ -28,7 +28,7 @@
       - github:
           url: https://github.com/theforeman/foreman-packaging
     triggers:
-      - github_pr_rpm:
+      - github_pr_rpm_develop:
           context: 'rpm-copr'
     dsl:
       !include-raw:
