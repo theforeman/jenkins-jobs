@@ -41,14 +41,14 @@ pipeline {
                         archive_git_hash()
                     }
                 }
-                
+
                 script {
                     sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type)
                 }
             }
         }
     }
-    
+
     post {
         success {
             build(
