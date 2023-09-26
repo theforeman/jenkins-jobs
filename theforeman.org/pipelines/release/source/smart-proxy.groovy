@@ -25,6 +25,13 @@ pipeline {
                         }
                     }
                     stage("Test Ruby") {
+                        environment {
+                            // ci_reporters gem
+                            CI_REPORTS = 'jenkins/reports/unit'
+                            // minitest-reporters
+                            MINITEST_REPORTER = 'JUnitReporter'
+                            MINITEST_REPORTERS_REPORTS_DIR = 'jenkins/reports/unit'
+                        }
                         steps {
                             run_test(ruby: env.ruby)
                         }
