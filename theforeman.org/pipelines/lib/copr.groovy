@@ -20,3 +20,33 @@ def status_copr_links(repo) {
         }
     }
 }
+
+def copr_repos(package_name) {
+    def repos = []
+
+    if(fileExists('copr_build_info')) {
+        build_info_yaml = readYaml(file: "copr_build_info/${package_name}")
+
+        for(Map build_info: build_info_yaml['results']) {
+            def module_args = build_info['invocation']['module_args']
+            repos.add([
+                url: "https://download.copr.fedorainfracloud.org/results/${module_args['user']}/${module_args['project']}/${module_args['chroot']}",
+                chroot: convert_to_dist(build_info['chroot'])
+            ])
+        }
+    }
+
+    return repos
+}
+
+def convert_to_dist(chroot) {
+    if(chroot == 'rhel-9-x86_64') {
+        return 'el9'
+    } else if(chroot == 'rhel-8-x86_64') {
+        return 'el8'
+    } else if(chroot == 'rhel-7-x86_64') {
+        return 'el7'
+    } else {
+        return null
+    }
+}

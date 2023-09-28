@@ -139,7 +139,6 @@ pipeline {
                         action: "scratch",
                         extraVars: [
                             'build_package_build_system': 'copr',
-                            'build_package_download_rpms': 'True',
                             'build_package_archive_build_info': 'True',
                             'build_package_copr_config': copr_config,
                         ],
@@ -156,7 +155,22 @@ pipeline {
             }
             steps {
 
-                obal(action: "repoclosure", packages: packages_to_build)
+                script {
+                    for(String package_name: packages_to_build) {
+                        repos = copr_repos(package_name)
+
+                        for(Map repo: repos) {
+                            obal(
+                                action: "repoclosure",
+                                packages: packages_to_build,
+                                extraVars: [
+                                    'repoclosure_check_repos': repo['url'],
+                                    'repoclosure_target_dist': repo['dist']
+                                ]
+                            )
+                        }
+                    }
+                }
 
             }
         }
