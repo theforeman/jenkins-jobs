@@ -162,7 +162,7 @@ pipeline {
                         for(Map repo: repos) {
                             obal(
                                 action: "repoclosure",
-                                packages: packages_to_build,
+                                packages: [package_name],
                                 extraVars: [
                                     'repoclosure_check_repos': repo['url'],
                                     'repoclosure_target_dist': repo['dist']
