@@ -6,7 +6,7 @@
     concurrent: false
     properties:
       - github:
-          url: https://github.com/theforeman/pulpcore-packaging
+          url: https://github.com/thepulpcore/pulpcore-packaging
     triggers:
         - github
     dsl:
@@ -26,3 +26,31 @@
     empty: ''
     version:
       !include: ../../includes/pulpcore_versions.yaml.inc
+
+- job-template:
+    name: 'pulpcore-packaging-rpm-copr-{version}-release'
+    project-type: pipeline
+    sandbox: true
+    concurrent: false
+    properties:
+      - github:
+          url: https://github.com/thepulpcore/pulpcore-packaging
+    triggers:
+        - github
+    dsl:
+      !include-raw:
+        - 'pipelines/vars/pulpcore/{version}.groovy'
+        - 'pipelines/release/pulpcore_packaging_rpm_copr_release.groovy{empty}'
+        - 'pipelines/lib/git.groovy{empty}'
+        - 'pipelines/lib/ansible.groovy{empty}'
+        - 'pipelines/lib/obal.groovy{empty}'
+        - 'pipelines/lib/packaging.groovy{empty}'
+        - 'pipelines/lib/foreman_infra.groovy{empty}'
+
+- project:
+    name: pulpcore-packaging-rpm-copr-nightly
+    jobs:
+      - 'pulpcore-packaging-rpm-copr-{version}-release'
+    empty: ''
+    version:
+      - 'nightly'
