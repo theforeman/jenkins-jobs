@@ -54,8 +54,6 @@
           repo: 'https://github.com/theforeman/foreman_discovery'
       - foreman_host_extra_validator:
           repo: 'https://github.com/theforeman/foreman_host_extra_validator'
-      - foreman_openscap:
-          repo: 'https://github.com/theforeman/foreman_openscap'
       - foreman_setup:
           repo: 'https://github.com/theforeman/foreman_setup'
       - foreman_templates:
