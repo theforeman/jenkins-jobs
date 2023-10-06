@@ -1,0 +1,24 @@
+- job-template:
+    name: 'candlepin-{version}-rpm-pipeline'
+    project-type: pipeline
+    sandbox: true
+    triggers:
+      - timed: 'H 21 * * *'
+    dsl:
+      !include-raw:
+        - 'pipelines/vars/candlepin/{version}.groovy'
+        - 'pipelines/release/pipelines/candlepin.groovy{empty}'
+        - 'pipelines/lib/rvm.groovy{empty}'
+        - 'pipelines/lib/ansible.groovy{empty}'
+        - 'pipelines/lib/obal.groovy{empty}'
+        - 'pipelines/lib/packaging.groovy{empty}'
+        - 'pipelines/lib/release.groovy{empty}'
+        - 'pipelines/lib/foreman_infra.groovy{empty}'
+
+- project:
+    name: candlepin
+    jobs:
+      - 'candlepin-{version}-rpm-pipeline'
+    empty: ''
+    version:
+      !include: ../../includes/candlepin_versions.yaml.inc

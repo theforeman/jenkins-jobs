@@ -46,8 +46,6 @@ void push_staging_rpms(repo_src, repo_dest, version, distro, keep_old_files = fa
         destination = "releases/${version}/${distro}"
     } else if (repo_dest == 'katello') {
         destination = "katello/${version}/katello/${distro}"
-    } else if (repo_dest == 'candlepin') {
-        destination = "katello/${version}/candlepin/${distro}"
     } else {
         destination = "${repo_dest}/${version}/${distro}"
     }
