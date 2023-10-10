@@ -1,6 +1,6 @@
 def status_copr_links(repo) {
     if(fileExists('copr_build_info')) {
-        def build_info_files = sh(returnStdout: true, script: "ls copr_build_info/", label: "copr build info").trim().split(' ')
+        def build_info_files = sh(returnStdout: true, script: "ls copr_build_info/", label: "copr build info").trim().split("\n")
 
         for(String build_info_file: build_info_files) {
             build_info_yaml = readYaml(file: "copr_build_info/${build_info_file}")
