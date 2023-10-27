@@ -69,7 +69,7 @@ pipeline {
 
                         script {
                             foreman_client_distros.each { distro ->
-                                sh "./build_stage_repository foreman-client ${foreman_version} ${distro}"
+                                sh "./build_stage_repository client ${foreman_version} ${distro}"
                             }
                         }
                     }
@@ -78,7 +78,7 @@ pipeline {
                     steps {
                         script {
                             dir('tmp') {
-                                rsync_to_yum_stage('foreman-client', 'client', foreman_version)
+                                rsync_to_yum_stage('client', 'client', foreman_version)
                             }
                         }
                     }
