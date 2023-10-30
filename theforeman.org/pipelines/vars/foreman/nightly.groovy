@@ -1,6 +1,6 @@
 def foreman_version = 'nightly'
 def git_branch = "develop"
-def stage_source = 'koji'
+def stage_source = 'stagingyum'
 
 def foreman_client_distros = [
     'el9',
