@@ -7,3 +7,4 @@ def pipelines = [
         'centos8-stream'
     ]
 ]
+def stage_source = 'koji'
