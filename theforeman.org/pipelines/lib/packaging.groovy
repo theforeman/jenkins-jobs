@@ -96,7 +96,7 @@ def query_rpmspec(specfile, queryformat) {
 
 def repoclosure(repo, dist, version) {
     version = version == 'nightly' ? 'develop' : version
-    git_repo = repo == 'pulpcore' ? 'pulpcore-packaging' : 'foreman-packaging'
+    git_repo = repo.contains('pulpcore') ? 'pulpcore-packaging' : 'foreman-packaging'
     ws(dist) {
         dir('packaging') {
             git url: "https://github.com/theforeman/${git_repo}", branch: "rpm/${version}", poll: false
