@@ -70,9 +70,7 @@ pipeline {
                 stage('staging-copy-repository') {
                     steps {
                         script {
-                            dir('tmp') {
-                                rsync_to_yum_stage('plugins', 'plugins', foreman_version)
-                            }
+                            rsync_to_yum_stage('plugins', foreman_version)
                         }
                     }
                 }

@@ -94,9 +94,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            dir('tmp') {
-                                rsync_to_yum_stage('pulpcore', 'pulpcore', pulpcore_version)
-                            }
+                            rsync_to_yum_stage('pulpcore', pulpcore_version)
                         }
                     }
                 }

@@ -83,9 +83,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            dir('tmp') {
-                                rsync_to_yum_stage('katello', 'katello', katello_version)
-                            }
+                            rsync_to_yum_stage('katello', katello_version)
                         }
                     }
                 }

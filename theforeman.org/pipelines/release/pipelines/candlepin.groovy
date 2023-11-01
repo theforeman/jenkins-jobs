@@ -29,9 +29,7 @@ pipeline {
             }
             steps {
                 script {
-                    dir('tmp') {
-                        rsync_to_yum_stage('candlepin', 'candlepin', candlepin_version)
-                    }
+                    rsync_to_yum_stage('candlepin', candlepin_version)
                 }
             }
         }

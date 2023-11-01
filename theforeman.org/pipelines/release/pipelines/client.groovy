@@ -83,9 +83,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            dir('tmp') {
-                                rsync_to_yum_stage('client', 'client', foreman_version)
-                            }
+                            rsync_to_yum_stage('client', foreman_version)
                         }
                     }
                 }
