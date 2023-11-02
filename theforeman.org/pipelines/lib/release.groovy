@@ -42,7 +42,17 @@ void mash(collection, version) {
 }
 
 void push_staging_rpms(repo_src, repo_dest, version, distro, keep_old_files = false) {
-    push_rpms_direct("${repo_src}/${distro}", "${repo_dest}/${version}/${distro}", !keep_old_files, keep_old_files, true)
+    if (repo_dest == 'foreman') {
+        destination = "releases/${version}/${distro}"
+    } else if (repo_dest == 'katello') {
+        destination = "katello/${version}/katello/${distro}"
+    } else if (repo_dest == 'candlepin') {
+        destination = "katello/${version}/candlepin/${distro}"
+    } else {
+        destination = "${repo_dest}/${version}/${distro}"
+    }
+
+    push_rpms_direct("${repo_src}/${distro}", destination, !keep_old_files, keep_old_files, true)
 }
 
 void push_foreman_staging_rpms(repo_type, version, distro) {
