@@ -8,7 +8,7 @@ def deb_build_steps = [
 ]
 
 pipeline {
-    agent { label 'rpmbuild' }
+    agent none
 
     options {
         timestamps()
@@ -21,6 +21,8 @@ pipeline {
         stage('Build Package') {
             parallel {
                 stage('Build Koji RPM') {
+                    agent { label 'rpmbuild' }
+
                     when {
                         expression { build_rpm }
                     }
@@ -60,6 +62,8 @@ pipeline {
                     }
                 }
                 stage('Build Copr RPM') {
+                    agent { label 'rpmbuild' }
+
                     when {
                         expression { build_rpm }
                     }
