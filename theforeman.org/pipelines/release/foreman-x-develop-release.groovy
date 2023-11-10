@@ -60,6 +60,11 @@ pipeline {
                             }
                         }
                     }
+                    post {
+                        cleanup {
+                            deleteDir()
+                        }
+                    }
                 }
                 stage('Build Copr RPM') {
                     agent { label 'rpmbuild' }
@@ -103,6 +108,11 @@ pipeline {
                                     }
                                 }
                             }
+                        }
+                    }
+                    post {
+                        cleanup {
+                            deleteDir()
                         }
                     }
                 }
@@ -176,10 +186,6 @@ pipeline {
     post {
         failure {
             notifyDiscourse(env, "${project_name} package release pipeline failed:", currentBuild.description)
-        }
-        cleanup {
-            echo "Cleaning up workspace"
-            deleteDir()
         }
     }
 }
