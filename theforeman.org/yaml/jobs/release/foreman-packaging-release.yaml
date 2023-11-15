@@ -1,0 +1,80 @@
+---
+- job-template:
+    name: 'foreman-packaging-{packaging_label}-{version}-release'
+    project-type: pipeline
+    sandbox: true
+    concurrent: false
+    properties:
+      - github:
+          url: https://github.com/theforeman/foreman-packaging
+    triggers:
+        - github
+    dsl:
+      !include-raw:
+        - 'pipelines/vars/foreman/{version}.groovy'
+        - 'pipelines/release/foreman_packaging_{packaging_type}_release.groovy{empty}'
+        - 'pipelines/lib/git.groovy{empty}'
+        - 'pipelines/lib/ansible.groovy{empty}'
+        - 'pipelines/lib/obal.groovy{empty}'
+        - 'pipelines/lib/packaging.groovy{empty}'
+        - 'pipelines/lib/foreman_infra.groovy{empty}'
+
+- project:
+    name: foreman-packaging-deb
+    jobs:
+      - 'foreman-packaging-{packaging_label}-{version}-release'
+    empty: ''
+    packaging_label: deb
+    packaging_type: deb
+    version:
+      !include: ../../includes/foreman_versions.yaml.inc
+
+- project:
+    name: foreman-packaging-rpm-koji-release
+    jobs:
+      - 'foreman-packaging-{packaging_label}-{version}-release'
+    empty: ''
+    packaging_label: rpm
+    packaging_type: rpm
+    version:
+      !include: ../../includes/foreman_versions_koji.yaml.inc
+
+- project:
+    name: foreman-packaging-rpm-copr-release
+    jobs:
+      - 'foreman-packaging-{packaging_label}-{version}-release'
+    empty: ''
+    packaging_label: rpm
+    packaging_type: rpm_copr
+    version:
+      !include: ../../includes/foreman_versions_copr.yaml.inc
+
+- project:
+    name: foreman-packaging-deb-nightly
+    jobs:
+      - 'foreman-packaging-{packaging_label}-{version}-release'
+    empty: ''
+    packaging_label: deb
+    packaging_type: deb
+    version:
+      - 'nightly'
+
+- project:
+    name: foreman-packaging-rpm-koji-nightly
+    jobs:
+      - 'foreman-packaging-{packaging_label}-{version}-release'
+    empty: ''
+    packaging_label: rpm
+    packaging_type: rpm
+    version:
+      - 'nightly'
+
+- project:
+    name: foreman-packaging-rpm-copr-nightly
+    jobs:
+      - 'foreman-packaging-{packaging_label}-{version}-release'
+    empty: ''
+    packaging_label: rpm-copr
+    packaging_type: rpm_copr
+    version:
+      - 'nightly'

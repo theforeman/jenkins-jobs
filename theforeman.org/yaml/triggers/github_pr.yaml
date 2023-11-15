@@ -33,21 +33,42 @@
             - deb/.*
 
 - trigger:
-    name: github_pr_rpm
+    name: github_pr_rpm_koji_foreman
     triggers:
       - github-pull-request:
           <<: *ghprb_defaults
           status-url: https://ci.theforeman.org/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_ID/pipeline
           white-list-target-branches:
-            - rpm/.*
+            - rpm/3\.[0-8]+
 
 - trigger:
-    name: github_pr_rpm_develop
+    name: github_pr_rpm_koji_pulpcore
     triggers:
       - github-pull-request:
           <<: *ghprb_defaults
           status-url: https://ci.theforeman.org/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_ID/pipeline
           white-list-target-branches:
+            - rpm/3\.[0-2][0-9]
+
+- trigger:
+    name: github_pr_rpm_copr_foreman
+    triggers:
+      - github-pull-request:
+          <<: *ghprb_defaults
+          status-url: https://ci.theforeman.org/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_ID/pipeline
+          white-list-target-branches:
+            - rpm/3\.9
+            - rpm/3\.1[0-9]+
+            - rpm/develop
+
+- trigger:
+    name: github_pr_rpm_copr_pulpcore
+    triggers:
+      - github-pull-request:
+          <<: *ghprb_defaults
+          status-url: https://ci.theforeman.org/blue/organizations/jenkins/$JOB_NAME/detail/$JOB_NAME/$BUILD_ID/pipeline
+          white-list-target-branches:
+            - rpm/3\.[3-9][0-9]
             - rpm/develop
 
 - trigger:
