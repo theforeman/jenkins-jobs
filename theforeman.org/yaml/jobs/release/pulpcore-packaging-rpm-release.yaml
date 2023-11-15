@@ -20,12 +20,20 @@
         - 'pipelines/lib/foreman_infra.groovy{empty}'
 
 - project:
-    name: pulpcore-packaging
+    name: pulpcore-packaging-rpm-koji
     jobs:
       - 'pulpcore-packaging-rpm-{version}-release'
     empty: ''
     version:
-      !include: ../../includes/pulpcore_versions.yaml.inc
+      !include: ../../includes/pulpcore_versions_koji.yaml.inc
+
+- project:
+    name: pulpcore-packaging-rpm-copr
+    jobs:
+      - 'pulpcore-packaging-rpm-copr-{version}-release'
+    empty: ''
+    version:
+      !include: ../../includes/pulpcore_versions_copr.yaml.inc
 
 - job-template:
     name: 'pulpcore-packaging-rpm-copr-{version}-release'
@@ -46,11 +54,3 @@
         - 'pipelines/lib/obal.groovy{empty}'
         - 'pipelines/lib/packaging.groovy{empty}'
         - 'pipelines/lib/foreman_infra.groovy{empty}'
-
-- project:
-    name: pulpcore-packaging-rpm-copr-nightly
-    jobs:
-      - 'pulpcore-packaging-rpm-copr-{version}-release'
-    empty: ''
-    version:
-      - 'nightly'
