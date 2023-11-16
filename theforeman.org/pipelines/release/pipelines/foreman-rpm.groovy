@@ -63,6 +63,9 @@ pipeline {
             }
             stages {
                 stage('staging-build-repository') {
+                    when {
+                        expression { foreman_version == 'nightly' }
+                    }
                     steps {
                         git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
@@ -74,6 +77,9 @@ pipeline {
                     }
                 }
                 stage('staging-copy-repository') {
+                    when {
+                        expression { foreman_version == 'nightly' }
+                    }
                     steps {
                         script {
                             dir('tmp') {
