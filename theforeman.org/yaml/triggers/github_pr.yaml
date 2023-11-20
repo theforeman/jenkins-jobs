@@ -1,4 +1,4 @@
-- ghprb_defaults: &ghprb_defaults
+- _ghprb_defaults: &ghprb_defaults
     name: ghprb_defaults
     org-list:
       - theforeman
