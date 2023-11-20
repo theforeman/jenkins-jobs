@@ -475,11 +475,11 @@ def rsync_yum(user, ssh_key, collection, target, version) {
     def hosts = ["web01.osuosl.theforeman.org"]
 
     for(host in hosts) {
-        def target_path = "${user}@${host}:rsync_cache/${target}"
+        def target_path = "${user}@${host}:rsync_cache/${target}/${version}/"
 
         sh """
             export RSYNC_RSH="ssh -i ${ssh_key}"
-            /usr/bin/rsync --checksum --perms --recursive --links --verbose --partial --one-file-system --delete-after ${collection}/${version} ${target_path}
+            /usr/bin/rsync --checksum --perms --recursive --links --verbose --partial --one-file-system --delete-after ${collection}/${version}/ ${target_path}
         """
     }
 }
