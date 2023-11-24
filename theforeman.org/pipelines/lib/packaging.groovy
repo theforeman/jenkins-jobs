@@ -259,7 +259,7 @@ def setup_sources_core(project, os, version, repoowner, pull_request = false) {
         def build_vars = read_build_vars(project)
         if (version == 'nightly') {
             if (build_vars['source_location']) {
-                copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json', flatten: true)
+                copyArtifacts(projectName: build_vars['source_location'], excludes: 'package-lock.json', flatten: true, selector: upstream(fallbackToLastSuccessful: true))
                 sh(script: "mv *.tar.bz2 ${project}_${package_version}.orig.tar.bz2", label: "rename tarball")
                 last_commit = readFile('commit').trim()
             } else {

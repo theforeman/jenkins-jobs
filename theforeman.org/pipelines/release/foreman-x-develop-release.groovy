@@ -31,7 +31,7 @@ pipeline {
                             steps {
                                 script {
                                     artifact_path = "${pwd()}/artifacts"
-                                    copyArtifacts(projectName: source_project_name, target: artifact_path)
+                                    copyArtifacts(projectName: source_project_name, target: artifact_path, selector: upstream(fallbackToLastSuccessful: true))
                                     commit_hash = readFile("${artifact_path}/commit")
                                 }
                             }
@@ -77,7 +77,7 @@ pipeline {
                             steps {
                                 script {
                                     artifact_path = "${pwd()}/artifacts"
-                                    copyArtifacts(projectName: source_project_name, target: artifact_path)
+                                    copyArtifacts(projectName: source_project_name, target: artifact_path, selector: upstream(fallbackToLastSuccessful: true))
                                     commit_hash = readFile("${artifact_path}/commit")
                                 }
                             }
