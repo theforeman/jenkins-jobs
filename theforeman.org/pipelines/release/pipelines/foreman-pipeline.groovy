@@ -48,12 +48,7 @@ pipeline {
 
             steps {
                 script {
-                    def parallelStagesMap = [:]
-                    def name = 'foreman-staging'
-                    foreman_el_releases.each { distro ->
-                        parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
-                    }
-                    parallel parallelStagesMap
+                    parallel repoclosures('foreman-staging', foreman_el_releases, foreman_version)
                 }
             }
             post {
