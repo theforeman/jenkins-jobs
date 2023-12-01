@@ -12,16 +12,48 @@ pipeline {
         stage('Mash Koji Repositories') {
             agent { label 'sshkey' }
 
+            when {
+                expression { stage_source == 'koji' }
+            }
+
             steps {
                 mash("foreman", foreman_version)
             }
         }
-        stage('Repoclosure') {
+        stage('Koji Repoclosure') {
             agent { label 'el' }
+
+            when {
+                expression { stage_source == 'koji' }
+            }
 
             steps {
                 script {
                     parallel repoclosures('foreman', foreman_el_releases, foreman_version)
+                }
+            }
+            post {
+                always {
+                    deleteDir()
+                }
+            }
+        }
+
+        stage('Staging Repoclosure') {
+            agent { label 'el8' }
+
+            when {
+                expression { stage_source == 'stagingyum' }
+            }
+
+            steps {
+                script {
+                    def parallelStagesMap = [:]
+                    def name = 'foreman-staging'
+                    foreman_el_releases.each { distro ->
+                        parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
+                    }
+                    parallel parallelStagesMap
                 }
             }
             post {
@@ -39,8 +71,12 @@ pipeline {
                 }
             }
         }
-        stage('Push RPMs') {
+        stage('Push Koji RPMs') {
             agent { label 'admin && sshkey' }
+
+            when {
+                expression { stage_source == 'koji' }
+            }
 
             steps {
                 script {
@@ -50,6 +86,23 @@ pipeline {
                 }
             }
         }
+
+        stage('Push Staging RPMs') {
+            agent { label 'admin && sshkey' }
+
+            when {
+                expression { stage_source == 'stagingyum' }
+            }
+
+            steps {
+                script {
+                    foreman_el_releases.each { distro ->
+                        push_foreman_staging_rpms('foreman', foreman_version, distro)
+                    }
+                }
+            }
+        }
+
         stage('Push DEBs') {
             agent { label 'debian' }
 
