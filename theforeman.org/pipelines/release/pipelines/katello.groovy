@@ -95,7 +95,7 @@ pipeline {
                             def parallelStagesMap = [:]
                             def name = 'katello-staging'
                             foreman_el_releases.each { distro ->
-                                parallelStagesMap[distro] = { repoclosure(name, distro, katello_version) }
+                                parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
                             }
                             parallel parallelStagesMap
                         }
