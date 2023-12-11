@@ -72,7 +72,7 @@ pipeline {
 
                         script {
                             foreman_el_releases.each { distro ->
-                                sh "./build_stage_repository katello ${katello_version} ${distro}"
+                                sh "./build_stage_repository katello ${katello_version} ${distro} ${foreman_version}"
                             }
                         }
                     }
