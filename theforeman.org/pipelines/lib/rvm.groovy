@@ -15,6 +15,11 @@ def gemset(name = null) {
 
 def configureRVM(ruby, name = '', bundler_version = null) {
     emptyGemset(ruby, name)
+
+    if (ruby == '2.7') {
+        bundler_version = '2.4.22'
+    }
+
     if (bundler_version) {
         withRVM(["gem install bundler -v '${bundler_version}' --no-document"], ruby, name)
     } else {
