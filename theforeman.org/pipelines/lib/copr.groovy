@@ -31,7 +31,7 @@ def copr_repos(package_name) {
             def module_args = build_info['invocation']['module_args']
             repos.add([
                 url: "https://download.copr.fedorainfracloud.org/results/${module_args['user']}/${module_args['project']}/${module_args['chroot']}",
-                chroot: convert_to_dist(build_info['chroot'])
+                dist: convert_to_dist(build_info['chroot'])
             ])
         }
     }
