@@ -60,16 +60,6 @@
       - 'nightly'
 
 - project:
-    name: foreman-packaging-rpm-koji-nightly
-    jobs:
-      - 'foreman-packaging-{packaging_label}-{version}-release'
-    empty: ''
-    packaging_label: rpm
-    packaging_type: rpm
-    version:
-      - 'nightly'
-
-- project:
     name: foreman-packaging-rpm-copr-nightly
     jobs:
       - 'foreman-packaging-{packaging_label}-{version}-release'
