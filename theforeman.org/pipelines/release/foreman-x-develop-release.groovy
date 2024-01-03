@@ -20,52 +20,6 @@ pipeline {
     stages {
         stage('Build Package') {
             parallel {
-                stage('Build Koji RPM') {
-                    agent { label 'rpmbuild' }
-
-                    when {
-                        expression { build_rpm }
-                    }
-                    stages {
-                        stage('Copy Source') {
-                            steps {
-                                script {
-                                    artifact_path = "${pwd()}/artifacts"
-                                    copyArtifacts(projectName: source_project_name, target: artifact_path)
-                                    commit_hash = readFile("${artifact_path}/commit")
-                                }
-                            }
-                        }
-                        stage('Setup Environment') {
-                            steps {
-                                dir('foreman-packaging') {
-                                    git(url: 'https://github.com/theforeman/foreman-packaging.git', branch: 'rpm/develop', poll: false)
-                                }
-                                setup_obal()
-                            }
-                        }
-                        stage('Release') {
-                            steps {
-                                dir('foreman-packaging') {
-                                    obal(
-                                        action: 'nightly',
-                                        packages: rpm_source_package_name,
-                                        extraVars: [
-                                            'releasers': releasers,
-                                            'nightly_sourcefiles': artifact_path,
-                                            'nightly_githash': commit_hash
-                                        ]
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    post {
-                        cleanup {
-                            deleteDir()
-                        }
-                    }
-                }
                 stage('Build Copr RPM') {
                     agent { label 'rpmbuild' }
 
