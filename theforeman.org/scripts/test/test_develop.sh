@@ -15,7 +15,13 @@ rvm use ruby-${ruby}@${gemset} --create
 rvm gemset empty --force
 set -x
 
-gem install bundler --no-document
+if ["${ruby}" = '2.7']
+then
+    gem install bundler -v 2.4.22 --no-document
+else
+    gem install bundler --no-document
+fi
+
 
 # Retry as rubygems (being external to us) can be intermittent
 bundle install --without=development --jobs=5 --retry=5
