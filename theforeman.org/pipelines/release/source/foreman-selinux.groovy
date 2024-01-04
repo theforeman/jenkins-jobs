@@ -20,10 +20,9 @@ pipeline {
         stage("Build for rhel7") {
             steps {
                 script {
-                    distro = 'rhel7'
                     instprefix = pwd(tmp: true)
                 }
-                sh "make INSTPREFIX=${instprefix}/${distro} DISTRO=${distro}"
+                sh "make INSTPREFIX=${instprefix}"
             }
         }
         stage('Build and Archive Source') {
