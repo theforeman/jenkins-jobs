@@ -479,7 +479,7 @@ def rsync_yum(user, ssh_key, collection, target, version) {
 
         sh """
             export RSYNC_RSH="ssh -i ${ssh_key}"
-            /usr/bin/rsync --checksum --perms --recursive --links --verbose --partial --one-file-system --delete-after ${collection}/${version}/ ${target_path}
+            /usr/bin/rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after ${collection}/${version}/ ${target_path}
         """
     }
 }
