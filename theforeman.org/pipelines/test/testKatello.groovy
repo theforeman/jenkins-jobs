@@ -116,7 +116,12 @@ pipeline {
                     stage('rubocop') {
                         steps {
                             dir('foreman') {
-                                withRVM(['bundle exec rake katello:rubocop TESTOPTS="-v" --trace'], ruby)
+                                withRVM(["bundle exec rubocop --format progress --out ${env.WORKSPACE}/rubocop.log --format progress ${env.WORKSPACE}"], ruby)
+                            }
+                        }
+                        post {
+                            always {
+                                recordIssues tool: ruboCop(pattern: "${env.WORKSPACE}/rubocop.log"), enabledForFailure: true
                             }
                         }
                     }
