@@ -23,7 +23,7 @@ rvm gemset empty --force
 
 set -x
 
-if ["${ruby}" = '2.7']
+if [ "${ruby}" = '2.7' ]
 then
     gem install bundler -v 2.4.22 --no-document
 else
