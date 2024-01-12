@@ -1,8 +1,12 @@
 def candlepin_version = 'nightly'
-def candlepin_distros = ['el8']
 def packaging_branch = 'rpm/develop'
+def candlepin_distros = [
+    'el8',
+    'el9'
+]
 def pipelines = [
     'candlepin': [
-        'centos8-stream'
+        'centos8-stream',
+        'centos9-stream'
     ]
 ]
