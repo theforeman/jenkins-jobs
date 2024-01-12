@@ -11,7 +11,7 @@ def foreman_el_releases = [
     'el9',
     'el8'
 ]
-def foreman_debian_releases = ['bullseye', 'focal', 'jammy']
+def foreman_debian_releases = ['bullseye', 'bookworm', 'focal', 'jammy']
 
 def pipelines_deb = [
     'install': [
