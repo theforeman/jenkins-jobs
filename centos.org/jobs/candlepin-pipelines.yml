@@ -1,0 +1,13 @@
+---
+- project:
+    name: candlepin
+    jobs:
+      - 'foreman-pipeline-{type}-{flavor}-{version}'
+    empty: ''
+    flavor:
+      - rpm
+    version:
+      - '4.3'
+      - nightly
+    type:
+      - candlepin

@@ -47,6 +47,15 @@ pipeline {
                 }
             }
         }
+        stage('staging-install-test') {
+            agent any
+
+            steps {
+                script {
+                    runDuffyPipeline('candlepin', candlepin_version)
+                }
+            }
+        }
         stage('staging-push-rpms') {
             agent { label 'admin && sshkey' }
 
