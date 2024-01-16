@@ -17,7 +17,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.7', '2.5'
+                        values '2.7'
                     }
                 }
                 when {
