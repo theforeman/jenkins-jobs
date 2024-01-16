@@ -52,7 +52,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('candlepin', candlepin_version)
+                    runDuffyPipeline('candlepin-rpm', candlepin_version)
                 }
             }
         }
