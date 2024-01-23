@@ -4,7 +4,7 @@ def databaseFile(id) {
 }
 
 def addGem() {
-    writeFile(text: "gemspec :path => '../', :development_group => :dev", file: 'bundler.d/Gemfile.local.rb')
+    writeFile(text: "gemspec :path => '../', :development_group => :dev\n", file: 'bundler.d/Gemfile.local.rb')
     if(fileExists('../gemfile.d/')) {
         sh "cat ../gemfile.d/*.rb >> bundler.d/Gemfile.local.rb"
     }
