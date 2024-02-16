@@ -1,5 +1,4 @@
 #!/bin/bash
-[ -z "$ruby" ] && ruby=2.0.0
 
 if [ -d foreman ];then
   cd foreman/

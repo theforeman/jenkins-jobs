@@ -42,6 +42,7 @@
       - gemset_cleanup
       - junit:
           results: 'foreman/jenkins/reports/unit/*.xml'
+      - checkout_cleanup
 
 - project:
     name: foreman-plugin-pull-request
