@@ -1,8 +1,0 @@
-- project:
-    name: foreman_discovery
-    defaults: plugin
-    branch:
-      - develop:
-          foreman_branch: develop
-    jobs:
-      - 'test_plugin_{name}_{branch}'

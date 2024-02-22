@@ -46,25 +46,9 @@
 - project:
     name: foreman-plugin-pull-request
     plugin:
-      - foreman_bootdisk:
-          repo: 'https://github.com/theforeman/foreman_bootdisk'
       - foreman_default_hostgroup:
           repo: 'https://github.com/theforeman/foreman_default_hostgroup'
-      - foreman_discovery:
-          repo: 'https://github.com/theforeman/foreman_discovery'
-      - foreman_host_extra_validator:
-          repo: 'https://github.com/theforeman/foreman_host_extra_validator'
-      - foreman_openscap:
-          repo: 'https://github.com/theforeman/foreman_openscap'
       - foreman_setup:
           repo: 'https://github.com/theforeman/foreman_setup'
-      - foreman_templates:
-          repo: 'https://github.com/theforeman/foreman_templates'
-      - foreman_userdata:
-          repo: 'https://github.com/theforeman/foreman_userdata'
-      - puppetdb_foreman:
-          repo: 'https://github.com/theforeman/puppetdb_foreman'
-      - foreman_kubevirt:
-          repo: 'https://github.com/theforeman/foreman_kubevirt.git'
     jobs:
       - '{plugin}-pull-request'
