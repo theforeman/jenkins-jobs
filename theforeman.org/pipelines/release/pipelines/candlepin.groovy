@@ -57,7 +57,7 @@ pipeline {
             }
         }
         stage('staging-push-rpms') {
-            agent { label 'admin && sshkey' }
+            agent { label 'sshkey' }
 
             steps {
                 script {

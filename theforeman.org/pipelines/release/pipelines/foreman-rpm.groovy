@@ -45,7 +45,7 @@ pipeline {
                     }
                 }
                 stage('koji-push-rpms') {
-                    agent { label 'admin && sshkey' }
+                    agent { label 'sshkey' }
                     steps {
                         script {
                             for (release in foreman_el_releases) {
@@ -110,7 +110,7 @@ pipeline {
                     }
                 }
                 stage('staging-push-rpms') {
-                    agent { label 'admin && sshkey' }
+                    agent { label 'sshkey' }
 
                     steps {
                         script {

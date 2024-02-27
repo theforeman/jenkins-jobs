@@ -45,7 +45,7 @@ pipeline {
                     }
                 }
                 stage('koji-push-rpms') {
-                    agent { label 'admin && sshkey' }
+                    agent { label 'sshkey' }
 
                     steps {
                         script {
@@ -116,7 +116,7 @@ pipeline {
                     }
                 }
                 stage('staging-push-rpms') {
-                    agent { label 'admin && sshkey' }
+                    agent { label 'sshkey' }
 
                     steps {
                         script {

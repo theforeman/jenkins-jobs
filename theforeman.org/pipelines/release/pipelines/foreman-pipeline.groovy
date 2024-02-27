@@ -67,7 +67,7 @@ pipeline {
             }
         }
         stage('Push Koji RPMs') {
-            agent { label 'admin && sshkey' }
+            agent { label 'sshkey' }
 
             when {
                 expression { stage_source == 'koji' }
@@ -83,7 +83,7 @@ pipeline {
         }
 
         stage('Push Staging RPMs') {
-            agent { label 'admin && sshkey' }
+            agent { label 'sshkey' }
 
             when {
                 expression { stage_source == 'stagingyum' }

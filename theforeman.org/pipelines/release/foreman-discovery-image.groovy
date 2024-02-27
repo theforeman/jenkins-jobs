@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'admin && sshkey' }
+    agent { label 'sshkey' }
 
     options {
         timestamps()
