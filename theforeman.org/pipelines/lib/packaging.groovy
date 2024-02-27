@@ -405,6 +405,7 @@ def setup_sources_plugin(project, os, version, repoowner, pull_request = false) 
             last_commit = git_hash()
             add_automated_debian_changelog('plugins', package_version, repoowner, last_commit)
         }
+        inject_foreman_release_version(version)
     }
 
     return "${build_dir}/${package_dir}"
@@ -433,6 +434,13 @@ def inject_debian_release_version(os) {
     ]
     def suffix="+${debian_release_to_version[os]}"
     sh(script: "sed -i '1 s/)/${suffix})/' debian/changelog", label: "inject Debian release into package version")
+}
+
+def inject_foreman_release_version(version) {
+    if (version != 'nightly') {
+        def suffix="~fm${version}"
+        sh(script: "sed -i '1 s/)/${suffix})/' debian/changelog", label: "inject Foreman release into package version")
+    }
 }
 
 def execute_pbuilder(build_dir, os, version) {
