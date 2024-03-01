@@ -431,6 +431,7 @@ def inject_debian_release_version(os) {
         'forky': 'debian14',
         'focal': 'ubuntu2004',
         'jammy': 'ubuntu2204',
+        'noble': 'ubuntu2404',
     ]
     def suffix="+${debian_release_to_version[os]}"
     sh(script: "sed -i '1 s/)/${suffix})/' debian/changelog", label: "inject Debian release into package version")
