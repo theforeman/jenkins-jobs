@@ -13,12 +13,6 @@ void push_rpms_direct(repo_source, repo_dest, overwrite = true, merge = false, s
     }
 }
 
-void push_rpms_katello(version) {
-    sshagent(['katello-fedorapeople']) {
-        sh "ssh katelloproject@fedorapeople.org 'cd /project/katello/bin && sh rsync-repos-from-koji ${version}'"
-    }
-}
-
 void push_debs_direct(os, repo) {
     sshagent(['freight']) {
         sh "ssh freight@web01.osuosl.theforeman.org deploy ${os} ${repo}"
