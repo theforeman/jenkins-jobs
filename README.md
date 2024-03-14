@@ -82,22 +82,14 @@ Current PR test jobs (used on Foreman itself) support these commands:
 
 ### Smart proxy plugin testing
 
-Proxy plugins are tested like ordinary gems with tests run entirely from the plugin directory, installing the smart proxy as a dependency (via bundler's git support).  The [test_proxy_plugin_matrix job](https://ci.theforeman.org/job/test_proxy_plugin_matrix/) is usually used to test plugins in a generic way.
+Proxy plugins are tested like ordinary gems with tests run entirely from the plugin directory, installing the smart proxy as a dependency (via bundler's git support).
 
-Each plugin should have a job defined in JJB that calls test_proxy_plugin_matrix here: https://ci.theforeman.org/view/Plugins/
-
-#### Smart proxy plugin PR testing
-
-To test pull requests, a separate job is used that also takes the PR details: https://ci.theforeman.org/view/Plugins/job/test_proxy_plugin_pull_request/
-
-### Adding a new smart proxy plugin
-
-For a plugin "smart_proxy_example", first create a job that tests the main (master or develop) branch.
+To add testing for a plugin `smart_proxy_example` do the following:
 
 * ensure plugin tests run when doing `bundle install` and `rake test`, see [testing a plugin](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Smart-Proxy_Plugin#Testing) for help
 * if different branches rely on different versions of smart proxy, specify `:branch` in Gemfile on those branches
-* create a smart_proxy_example.yaml file in [theforeman.org/yaml/jobs/plugins](https://github.com/theforeman/jenkins-jobs/tree/master/theforeman.org/yaml/jobs/plugins)
-* This will create a "test_proxy_plugin_smart_proxy_example_master" job in Jenkins to test the master branch.
+* add the project in [theforeman.org/yaml/jobs/smart-proxy-plugin.yaml](https://github.com/theforeman/jenkins-jobs/tree/master/theforeman.org/yaml/jobs/smart-proxy-plugin.yaml) to create a `smart-proxy-example-test` job in Jenkins to test the master branch.
+* add the project in [theforeman.org/yaml/jobs/smart-proxy-plugin-pr-test.yaml](https://github.com/theforeman/jenkins-jobs/tree/master/theforeman.org/yaml/jobs/tests/smart-proxy-plugin-pr-test.yaml) to create a `smart_proxy_example-pr-test` job in Jenkins to test PRs.
 * ensure the job is green by fixing bugs, installing dependencies etc.
 * add hook to GitHub repo, see [GitHub repo hook](#testing-develop)
 
@@ -112,6 +104,7 @@ Jenkins is not the only place tests are defined and executed.
 ## GitHub Actions
 
 Several repositories use [GitHub Actions](https://github.com/features/actions) either *instead of* or *together with* Jenkins.
+They commonly use our [reusable actions](https://github.com/theforeman/actions).
 
 The definitions of these jobs are in `.github/workflows/` of their respective repositories.
 
