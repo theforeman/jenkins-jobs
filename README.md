@@ -80,30 +80,6 @@ Current PR test jobs (used on Foreman itself) support these commands:
 
 ## Quick reference for plugin maintainers
 
-### Foreman plugin testing
-
-Foreman plugins are tested by adding the plugin to a Foreman checkout and running core tests, so it checks that existing behaviours still work and new plugin tests are run too.  The [test_plugin_matrix job](https://ci.theforeman.org/job/test_plugin_matrix/) copies the core jobs, but adds a plugin from a given git repo/branch and is usually used to test plugins in a generic way.
-
-Each plugin should have a job defined in JJB that calls test_plugin_matrix here: https://ci.theforeman.org/view/Plugins/
-
-#### Foreman plugin PR testing
-
-To test pull requests, a separate job is used that also takes the PR details: https://ci.theforeman.org/view/Plugins/job/test_plugin_pull_request/
-
-#### Adding a new Foreman plugin
-
-For a plugin "foreman_example", first create a job that tests the main (master or develop) branch.
-
-* ensure plugin tests (if any) run when `rake jenkins:unit` is called, see [the example plugin](https://github.com/theforeman/foreman_plugin_template/) and [testing a plugin](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin#Testing) for help
-* create a foreman_example.yaml file in [theforeman.org/yaml/jobs/plugins](https://github.com/theforeman/jenkins-jobs/tree/master/theforeman.org/yaml/jobs/plugins)
-  * This will create a "test_plugin_foreman_example_master" job in Jenkins to test the master branch.
-* ensure the job is green by fixing bugs, installing dependencies etc.
-* add hook to GitHub repo, see [GitHub repo hook](#testing-develop)
-
-An org admin must then:
-
-* add the repo to the [Bots team](https://github.com/orgs/theforeman/teams/bots/repositories) with **write** access
-
 ### Smart proxy plugin testing
 
 Proxy plugins are tested like ordinary gems with tests run entirely from the plugin directory, installing the smart proxy as a dependency (via bundler's git support).  The [test_proxy_plugin_matrix job](https://ci.theforeman.org/job/test_proxy_plugin_matrix/) is usually used to test plugins in a generic way.
