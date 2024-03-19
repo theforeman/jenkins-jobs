@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'fast' }
+    agent { label 'el' }
 
     stages {
         stage('Setup workspace') {
