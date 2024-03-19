@@ -15,6 +15,7 @@ def foreman_debian_releases = ['bullseye', 'bookworm', 'jammy']
 def pipelines_deb = [
     'install': [
         'debian11',
+        'debian12',
         'ubuntu2204'
     ],
     'upgrade': [
