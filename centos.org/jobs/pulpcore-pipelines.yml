@@ -1,17 +1,5 @@
 ---
 - project:
-    name: pulpcore-koji
-    jobs:
-      - 'foreman-pipeline-{type}-{flavor}-{version}'
-    empty: ''
-    version:
-      !include: ../../theforeman.org/yaml/includes/pulpcore_versions_koji.yaml.inc
-    type:
-      - pulpcore
-    flavor:
-      - rpm
-
-- project:
     name: pulpcore-copr
     jobs:
       - 'foreman-pipeline-{type}-{flavor}-{version}'
