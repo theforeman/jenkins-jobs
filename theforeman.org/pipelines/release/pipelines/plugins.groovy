@@ -9,52 +9,8 @@ pipeline {
     }
 
     stages {
-        stage('koji') {
-            when {
-                expression { stage_source == 'koji' }
-            }
-            stages {
-                stage('koji-mash-repositories') {
-                    agent { label 'sshkey' }
-
-                    steps {
-                        mash('foreman-plugins', foreman_version)
-                    }
-                }
-                stage('koji-repoclosure') {
-                    agent { label 'el' }
-
-                    steps {
-                        script {
-                            parallel repoclosures('plugins', foreman_el_releases, foreman_version)
-                        }
-                    }
-                    post {
-                        always {
-                            deleteDir()
-                        }
-                    }
-                }
-                stage('koji-push-rpms') {
-                    agent { label 'sshkey' }
-
-                    steps {
-                        script {
-                            def overwrite = foreman_version == 'nightly'
-                            def merge = foreman_version != 'nightly'
-                            for (release in foreman_el_releases) {
-                                push_rpms_direct("foreman-plugins-${foreman_version}/${release}", "plugins/${foreman_version}/${release}", overwrite, merge)
-                            }
-                        }
-                    }
-                }
-            }
-        }
         stage('staging') {
             agent { label 'el8' }
-            when {
-                expression { stage_source == 'stagingyum' }
-            }
             stages {
                 stage('staging-build-repository') {
                     steps {

@@ -10,69 +10,8 @@ pipeline {
 
 
     stages {
-        stage('koji') {
-            when {
-                expression { stage_source == 'koji' }
-            }
-            stages {
-                stage('koji-mash-repositories') {
-                    agent { label 'sshkey' }
-
-                    steps {
-                        mash('pulpcore', pulpcore_version)
-                    }
-                }
-                stage('koji-repoclosure') {
-                    agent { label 'el' }
-
-                    steps {
-                        script {
-                            def parallelStagesMap = [:]
-                            def name = 'pulpcore'
-                            pulpcore_distros.each { distro ->
-                                parallelStagesMap[distro] = { repoclosure(name, distro, pulpcore_version) }
-                            }
-                            parallel parallelStagesMap
-                        }
-                    }
-                    post {
-                        always {
-                            deleteDir()
-                        }
-                    }
-                }
-                stage('koji-test') {
-                    agent any
-
-                    steps {
-                        script {
-                            runDuffyPipeline('pulpcore-rpm', pulpcore_version)
-                        }
-                    }
-                }
-                stage('koji-push-rpms') {
-                    agent { label 'sshkey' }
-
-                    steps {
-                        script {
-                            pulpcore_distros.each { distro ->
-                                push_pulpcore_rpms(pulpcore_version, distro)
-                            }
-                        }
-                    }
-                }
-            }
-            post {
-                failure {
-                    notifyDiscourse(env, "Pulpcore ${pulpcore_version} RPM pipeline failed:", currentBuild.description)
-                }
-            }
-        }
         stage('staging') {
             agent { label 'el8' }
-            when {
-                expression { stage_source == 'stagingyum' }
-            }
             stages {
                 stage('staging-build-repository') {
                     when {

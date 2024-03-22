@@ -9,59 +9,8 @@ pipeline {
     }
 
     stages {
-        stage('koji') {
-            when {
-                expression { stage_source == 'koji' }
-            }
-            stages {
-                stage('koji-mash-repositories') {
-                    agent { label 'sshkey' }
-
-                    steps {
-                        mash("katello", katello_version)
-                    }
-                }
-                stage('koji-repoclosure') {
-                    agent { label 'el' }
-
-                    steps {
-                        script {
-                            parallel repoclosures('katello', foreman_el_releases, foreman_version)
-                        }
-                    }
-                    post {
-                        always {
-                            deleteDir()
-                        }
-                    }
-                }
-                stage('koji-install-test') {
-                    agent any
-
-                    steps {
-                        script {
-                            runDuffyPipeline('katello-rpm', katello_version)
-                        }
-                    }
-                }
-                stage('koji-push-rpms') {
-                    agent { label 'sshkey' }
-
-                    steps {
-                        script {
-                            foreman_el_releases.each { distro ->
-                                push_katello_rpms(katello_version, distro)
-                            }
-                        }
-                    }
-                }
-            }
-        }
         stage('staging') {
             agent { label 'el8' }
-            when {
-                expression { stage_source == 'stagingyum' }
-            }
             stages {
                 stage('staging-build-repository') {
                     when {

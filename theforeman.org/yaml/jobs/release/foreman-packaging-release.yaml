@@ -30,16 +30,6 @@
       !include: ../../includes/foreman_versions.yaml.inc
 
 - project:
-    name: foreman-packaging-rpm-koji-release
-    jobs:
-      - 'foreman-packaging-{packaging_label}-{version}-release'
-    empty: ''
-    packaging_label: rpm
-    packaging_type: rpm
-    version:
-      !include: ../../includes/foreman_versions_koji.yaml.inc
-
-- project:
     name: foreman-packaging-rpm-copr-release
     jobs:
       - 'foreman-packaging-{packaging_label}-{version}-release'

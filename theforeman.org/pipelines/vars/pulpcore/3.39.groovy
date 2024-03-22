@@ -7,4 +7,3 @@ def pipelines = [
         'centos9-stream'
     ]
 ]
-def stage_source = 'stagingyum'

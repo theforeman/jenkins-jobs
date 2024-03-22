@@ -29,12 +29,6 @@ void push_katello_rpms(version, distro) {
     push_rpms_direct("katello-${version}/candlepin/${distro}", "katello/${version}/candlepin/${distro}", !keep_old, keep_old)
 }
 
-void mash(collection, version) {
-    sshagent(['mash']) {
-        sh "ssh -o 'BatchMode yes' root@koji.katello.org collection-mash-split.py ${collection} ${version}"
-    }
-}
-
 void push_staging_rpms(repo_src, repo_dest, version, distro, keep_old_files = false) {
     if (repo_dest == 'foreman') {
         destination = "releases/${version}/${distro}"

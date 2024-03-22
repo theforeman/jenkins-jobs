@@ -1,6 +1,5 @@
 def foreman_version = '3.10'
 def git_branch = "${foreman_version}-stable"
-def stage_source = 'stagingyum'
 
 def foreman_client_distros = [
     'el9',
