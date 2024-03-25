@@ -13,26 +13,15 @@ pipeline {
             when {
                 expression { candlepin_version == 'nightly' }
             }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
-
-                script {
-                    candlepin_distros.each { distro ->
-                        sh "./build_stage_repository candlepin ${candlepin_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
-            when {
-                expression { candlepin_version == 'nightly' }
+            environment {
+                PROJECT = 'candlepin'
+                VERSION = candlepin_version
+                RSYNC_RSH = "ssh -i ${ssh_key}"
             }
             steps {
-                script {
-                    dir('tmp') {
-                        rsync_to_yum_stage('candlepin', 'candlepin', candlepin_version)
-                    }
-                }
+                rel_eng_clone()
+                rel_eng_build_stage()
+                rel_eng_upload_stage()
             }
         }
         stage('staging-repoclosure') {

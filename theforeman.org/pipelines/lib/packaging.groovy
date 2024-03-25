@@ -481,22 +481,19 @@ def rsync_debian(user, ssh_key, suite, component, deb_paths) {
     }
 }
 
-def rsync_to_yum_stage(collection, target, version) {
-    def user = 'yumrepostage'
-    def ssh_key = '/home/jenkins/workspace/staging_key/rsync_yumrepostage_key'
-
-    rsync_yum(user, ssh_key, collection, target, version)
+// Scripts that wrap https://github.com/theforeman/theforeman-rel-eng
+def rel_eng_clone() {
+    git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 }
 
-def rsync_yum(user, ssh_key, collection, target, version) {
-    def hosts = ["web01.osuosl.theforeman.org"]
+def rel_eng_build_stage() {
+    script {
+        sh "./generate_stage_repository"
+    }
+}
 
-    for(host in hosts) {
-        def target_path = "${user}@${host}:rsync_cache/${target}/${version}/"
-
-        sh """
-            export RSYNC_RSH="ssh -i ${ssh_key}"
-            /usr/bin/rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after ${collection}/${version}/ ${target_path}
-        """
+def rel_eng_upload_stage() {
+    script {
+        sh "./upload_stage_rpms"
     }
 }

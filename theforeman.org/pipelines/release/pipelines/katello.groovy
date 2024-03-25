@@ -16,26 +16,15 @@ pipeline {
                     when {
                         expression { katello_version == 'nightly' }
                     }
-                    steps {
-                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
-
-                        script {
-                            foreman_el_releases.each { distro ->
-                                sh "./build_stage_repository katello ${katello_version} ${distro} ${foreman_version}"
-                            }
-                        }
-                    }
-                }
-                stage('staging-copy-repository') {
-                    when {
-                        expression { katello_version == 'nightly' }
+                    environment {
+                        PROJECT = 'katello'
+                        VERSION = katello_version
+                        RSYNC_RSH = "ssh -i ${ssh_key}"
                     }
                     steps {
-                        script {
-                            dir('tmp') {
-                                rsync_to_yum_stage('katello', 'katello', katello_version)
-                            }
-                        }
+                        rel_eng_clone()
+                        rel_eng_build_stage()
+                        rel_eng_upload_stage()
                     }
                 }
                 stage('staging-repoclosure') {
