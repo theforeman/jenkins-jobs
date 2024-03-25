@@ -17,26 +17,15 @@ pipeline {
                     when {
                         expression { pulpcore_version == 'nightly' }
                     }
-                    steps {
-                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
-
-                        script {
-                            pulpcore_distros.each { distro ->
-                                sh "./build_stage_repository pulpcore ${pulpcore_version} ${distro}"
-                            }
-                        }
-                    }
-                }
-                stage('staging-copy-repository') {
-                    when {
-                        expression { pulpcore_version == 'nightly' }
+                    environment {
+                        PROJECT = 'pulpcore'
+                        VERSION = pulpcore_version
+                        RSYNC_RSH = "ssh -i ${ssh_key}"
                     }
                     steps {
-                        script {
-                            dir('tmp') {
-                                rsync_to_yum_stage('pulpcore', 'pulpcore', pulpcore_version)
-                            }
-                        }
+                        rel_eng_clone()
+                        rel_eng_build_stage()
+                        rel_eng_upload_stage()
                     }
                 }
                 stage('staging-repoclosure') {
