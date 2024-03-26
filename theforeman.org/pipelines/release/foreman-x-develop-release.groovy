@@ -52,7 +52,6 @@ pipeline {
                                             action: 'nightly',
                                             packages: rpm_source_package_name,
                                             extraVars: [
-                                                'releasers': releasers,
                                                 'nightly_sourcefiles': artifact_path,
                                                 'nightly_githash': commit_hash,
                                                 'build_package_build_system': 'copr',
