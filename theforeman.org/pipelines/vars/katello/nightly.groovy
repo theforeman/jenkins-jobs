@@ -13,6 +13,8 @@ def pipelines = [
     ],
     'upgrade': [
         'centos8-stream',
+        'centos9-stream',
         'almalinux8',
+        'almalinux9',
     ]
 ]
