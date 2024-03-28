@@ -77,4 +77,9 @@ pipeline {
             }
         }
     }
+    post {
+        failure {
+            notifyDiscourse(env, "Pulpcore ${pulpcore_version} RPM pipeline failed:", currentBuild.description)
+        }
+    }
 }
