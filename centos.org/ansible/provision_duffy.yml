@@ -3,7 +3,7 @@
   tasks:
     - name: 'Get a new node'
       evgeni.duffy.session_request:
-        pool: metal-ec2-c5n-centos-8s-x86_64
+        pool: metal-ec2-c5n-centos-9s-x86_64
         quantity: 1
       register: duffy_data
 
