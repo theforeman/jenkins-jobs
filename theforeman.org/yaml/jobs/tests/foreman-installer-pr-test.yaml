@@ -13,4 +13,5 @@
       !include-raw:
         - pipelines/lib/git.groovy
         - pipelines/lib/rvm.groovy
+        - pipelines/lib/rbenv.groovy
         - pipelines/test/foreman-installer.groovy

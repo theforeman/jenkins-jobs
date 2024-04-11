@@ -12,7 +12,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.7'
+                        values '2.7.6'
                     }
                     axis {
                         name 'PUPPET_VERSION'
@@ -23,7 +23,7 @@ pipeline {
                     exclude {
                         axis {
                             name 'ruby'
-                            notValues '2.7'
+                            notValues '2.7.6'
                         }
                         axis {
                             name 'PUPPET_VERSION'
@@ -38,41 +38,35 @@ pipeline {
                             sh "cp Gemfile Gemfile.${ruby}-${PUPPET_VERSION}"
                         }
                     }
-                    stage("Setup RVM") {
+                    stage("bundle-install") {
                         steps {
-                            configureRVM(ruby, "${ruby}-${PUPPET_VERSION}")
-                        }
-                    }
-                    stage('Install dependencies') {
-                        steps {
-                            withRVM(["bundle install --gemfile=Gemfile.${ruby}-${PUPPET_VERSION}"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            bundleInstall(ruby, "Gemfile.${ruby}-${PUPPET_VERSION}")
                         }
                     }
                     stage('Run Rubocop') {
                         steps {
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec rake rubocop TESTOPTS='-v' --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "rake rubocop TESTOPTS='-v' --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
                         }
                     }
                     stage('Run Tests') {
                         steps {
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec rake spec TESTOPTS='-v' --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "rake spec TESTOPTS='-v' --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
                         }
                     }
                     stage('Test installer configuration') {
                         steps {
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec rake install PREFIX=${ruby}-${PUPPET_VERSION} --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman-proxy-content --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario katello --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help --trace"], ruby, "${ruby}-${PUPPET_VERSION}")
-                            withRVM(["BUNDLE_GEMFILE=Gemfile.${ruby}-${PUPPET_VERSION} bundle exec ${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help|grep -q certs-update-server"], ruby, "${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "rake install PREFIX=${ruby}-${PUPPET_VERSION} --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario katello --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman-proxy-content --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help|grep -q certs-update-server", "Gemfile.${ruby}-${PUPPET_VERSION}")
                         }
                     }
                 }
                 post {
                     always {
                         archiveArtifacts artifacts: "Gemfile*lock"
-                        cleanupRVM(ruby, "${ruby}-${PUPPET_VERSION}")
                         deleteDir()
                     }
                 }
