@@ -11,7 +11,6 @@
         - pipelines/vars/hammer-cli-katello-master.groovy
         - pipelines/release/foreman-x-develop-release.groovy
         - pipelines/lib/foreman_infra.groovy
-        - pipelines/lib/rvm.groovy
         - pipelines/lib/obal.groovy
         - pipelines/lib/git.groovy
         - pipelines/lib/ansible.groovy

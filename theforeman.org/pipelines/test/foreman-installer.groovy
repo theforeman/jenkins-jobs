@@ -40,7 +40,7 @@ pipeline {
                     }
                     stage("bundle-install") {
                         steps {
-                            bundleInstall(ruby, "Gemfile.${ruby}-${PUPPET_VERSION}")
+                            bundleInstall(ruby, "--gemfile Gemfile.${ruby}-${PUPPET_VERSION}")
                         }
                     }
                     stage('Run Rubocop') {

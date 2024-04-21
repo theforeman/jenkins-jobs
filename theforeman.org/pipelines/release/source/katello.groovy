@@ -22,19 +22,12 @@ pipeline {
                 }
             }
         }
-        stage("Setup RVM") {
-            steps {
-
-                configureRVM(ruby)
-
-            }
-        }
         stage('Configure Environment') {
             steps {
 
                 dir('foreman') {
                     addGem()
-                    databaseFile(gemset())
+                    databaseFile("${env.JOB_NAME}-${env.BUILD_ID}")
                 }
 
             }
@@ -51,8 +44,8 @@ pipeline {
         stage('Install Foreman npm packages') {
             steps {
                 dir('foreman') {
-                    withRVM(["bundle exec npm install --package-lock-only --no-audit"], ruby)
-                    withRVM(["bundle exec npm ci --no-audit"], ruby)
+                    bundleExec(ruby, "npm install --package-lock-only --no-audit")
+                    bundleExec(ruby, "npm ci --no-audit")
                 }
             }
         }
@@ -61,14 +54,14 @@ pipeline {
                 stage('tests') {
                     steps {
                         dir('foreman') {
-                            withRVM(['bundle exec rake jenkins:katello TESTOPTS="-v" --trace'], ruby)
+                            bundleExec(ruby, 'rake jenkins:katello TESTOPTS="-v" --trace')
                         }
                     }
                 }
                 stage('rubocop') {
                     steps {
                         dir('foreman') {
-                            withRVM(['bundle exec rake katello:rubocop TESTOPTS="-v" --trace'], ruby)
+                            bundleExec(ruby, 'rake katello:rubocop TESTOPTS="-v" --trace')
                         }
                     }
                 }
@@ -102,7 +95,7 @@ pipeline {
                 stage('assets-precompile') {
                     steps {
                         dir('foreman') {
-                            withRVM(["bundle exec rake plugin:assets:precompile[${project_name}] RAILS_ENV=production --trace"], ruby)
+                            bundleExec(ruby, "rake plugin:assets:precompile[${project_name}] RAILS_ENV=production --trace")
                         }
                     }
                 }
@@ -121,10 +114,10 @@ pipeline {
 
                 dir('foreman') {
 
-                    withRVM(['bundle exec rake db:drop RAILS_ENV=test >/dev/null 2>/dev/null || true'], ruby)
-                    withRVM(['bundle exec rake db:create RAILS_ENV=test'], ruby)
-                    withRVM(['bundle exec rake db:migrate RAILS_ENV=test'], ruby)
-                    withRVM(['bundle exec rake db:seed RAILS_ENV=test'], ruby)
+                    bundleExec(ruby, 'rake db:drop RAILS_ENV=test >/dev/null 2>/dev/null || true')
+                    bundleExec(ruby, 'rake db:create RAILS_ENV=test')
+                    bundleExec(ruby, 'rake db:migrate RAILS_ENV=test')
+                    bundleExec(ruby, 'rake db:seed RAILS_ENV=test')
 
                 }
 

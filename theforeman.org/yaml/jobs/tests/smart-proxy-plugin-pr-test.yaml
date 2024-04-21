@@ -13,7 +13,6 @@
     dsl:
       !include-raw:
         - pipelines/lib/git.groovy{empty}
-        - pipelines/lib/rvm.groovy{empty}
         - pipelines/test/smart-proxy.groovy{empty}
 
 - project:

@@ -16,7 +16,7 @@ pipeline {
         }
         stage("bundle-install") {
             steps {
-                bundleInstall(ruby, "Gemfile.${ruby}")
+                bundleInstall(ruby, "--gemfile Gemfile.${ruby}")
             }
         }
         stage('Run Rubocop') {

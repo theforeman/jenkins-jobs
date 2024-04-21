@@ -14,8 +14,7 @@ pipeline {
                 stage('ruby-2.7-postgres') {
                     agent { label 'fast' }
                     environment {
-                        RUBY_VER = '2.7'
-                        GEMSET = 'ruby2.7'
+                        RUBY_VER = '2.7.6'
                     }
                     stages {
                         stage("setup-2.7-postgres") {
@@ -24,14 +23,13 @@ pipeline {
                                 script {
                                     archive_git_hash()
                                 }
-                                configureRVM(env.RUBY_VER, env.GEMSET)
-                                databaseFile(gemset(env.GEMSET))
-                                configureDatabase(env.RUBY_VER, env.GEMSET)
+                                databaseFile("${env.JOB_NAME}-${env.BUILD_ID}")
+                                configureDatabase(env.RUBY_VER)
                             }
                         }
                         stage("unit-tests-2.7-postgres") {
                             steps {
-                                withRVM(['bundle exec rake jenkins:unit TESTOPTS="-v" --trace'], env.RUBY_VER, env.GEMSET)
+                                bundleExec(env.RUBY_VER, 'rake jenkins:unit TESTOPTS="-v" --trace')
                             }
                         }
                     }
@@ -40,7 +38,7 @@ pipeline {
                             junit(testResults: 'jenkins/reports/unit/*.xml')
                         }
                         cleanup {
-                            cleanup(env.RUBY_VER, env.GEMSET)
+                            cleanup(env.RUBY_VER)
                             deleteDir()
                         }
                     }
@@ -48,23 +46,21 @@ pipeline {
                 stage('ruby-2.7-postgres-integrations') {
                     agent { label 'fast' }
                     environment {
-                        RUBY_VER = '2.7'
-                        GEMSET = 'ruby2.7-ui'
+                        RUBY_VER = '2.7.6'
                     }
                     stages {
                         stage("setup-2.7-postgres-ui") {
                             steps {
                                 git url: git_url, branch: git_ref
-                                configureRVM(env.RUBY_VER, env.GEMSET)
-                                databaseFile(gemset(env.GEMSET))
-                                configureDatabase(env.RUBY_VER, env.GEMSET)
-                                withRVM(['npm install --no-audit'], env.RUBY_VER, env.GEMSET)
+                                databaseFile("${env.JOB_NAME}-${env.BUILD_ID}-ui")
+                                configureDatabase(env.RUBY_VER)
+                                withRuby(env.RUBY_VER, 'npm install --no-audit')
                                 archiveArtifacts(artifacts: 'package-lock.json')
                             }
                         }
                         stage("integration-tests-2.7-postgres-ui") {
                             steps {
-                                withRVM(['bundle exec rake jenkins:integration TESTOPTS="-v" --trace'], env.RUBY_VER, env.GEMSET)
+                                bundleExec(env.RUBY_VER, 'rake jenkins:integration TESTOPTS="-v" --trace')
                             }
                         }
                     }
@@ -73,7 +69,7 @@ pipeline {
                             junit(testResults: 'jenkins/reports/unit/*.xml')
                         }
                         cleanup {
-                            cleanup(env.RUBY_VER, env.GEMSET)
+                            cleanup(env.RUBY_VER)
                             deleteDir()
                         }
                     }
@@ -81,29 +77,27 @@ pipeline {
                 stage('ruby-2.7-nulldb-assets') {
                     agent { label 'fast' }
                     environment {
-                        RUBY_VER = '2.7'
-                        GEMSET = 'ruby2.7-assets'
+                        RUBY_VER = '2.7.6'
                     }
                     stages {
                         stage("setup-2.7-nulldb") {
                             steps {
                                 git url: git_url, branch: git_ref
-                                configureRVM(env.RUBY_VER, env.GEMSET)
-                                withRVM(['bundle install --without=development --jobs=5 --retry=5'], env.RUBY_VER, env.GEMSET)
+                                bundleInstall(env.RUBY_VER, '--without=development')
                                 sh "cp db/schema.rb.nulldb db/schema.rb"
-                                filter_package_json(env.RUBY_VER, env.GEMSET)
-                                withRVM(['npm install --no-audit'], env.RUBY_VER, env.GEMSET)
+                                filter_package_json(env.RUBY_VER)
+                                withRuby(env.RUBY_VER, 'npm install --no-audit')
                             }
                         }
                         stage("assets-precompile-2.7-nulldb") {
                             steps {
-                                withRVM(['bundle exec rake assets:precompile RAILS_ENV=production DATABASE_URL=nulldb://nohost'], env.RUBY_VER, env.GEMSET)
+                                bundleExec(env.RUBY_VER, 'rake assets:precompile RAILS_ENV=production DATABASE_URL=nulldb://nohost')
                             }
                         }
                     }
                     post {
                         cleanup {
-                            cleanup(env.RUBY_VER, env.GEMSET)
+                            cleanup(env.RUBY_VER)
                             deleteDir()
                         }
                     }

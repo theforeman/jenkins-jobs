@@ -22,6 +22,7 @@ pipeline {
             agent any
             environment {
                 BUNDLE_WITHOUT = 'bmc:development:dhcp_isc_inotify:dhcp_isc_kqueue:journald:krb5:libvirt:puppetca_token_whitelisting:realm_freeipa:windows'
+                RUBY_VERSION = '2.7.6'
             }
 
             stages {
@@ -32,19 +33,14 @@ pipeline {
                         }
                     }
                 }
-                stage('Setup RVM') {
-                    steps {
-                        configureRVM('2.7')
-                    }
-                }
                 stage('Install dependencies') {
                     steps {
-                        withRVM(['bundle install'], '2.7')
+                        bundleInstall(RUBY_VERSION)
                     }
                 }
                 stage('Run Rubocop') {
                     steps {
-                        withRVM(['bundle exec rubocop --format progress --out rubocop.log --format progress'], '2.7')
+                        bundleExec(RUBY_VERSION, 'rubocop --format progress --out rubocop.log --format progress')
                     }
                     post {
                         always {
@@ -55,7 +51,6 @@ pipeline {
             }
             post {
                 always {
-                    cleanupRVM('2.7')
                     deleteDir()
                 }
             }
@@ -67,7 +62,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.7', '3.0', '3.1'
+                        values '2.7.6', '3.0.4', '3.1.0'
                     }
                 }
                 environment {
@@ -81,14 +76,9 @@ pipeline {
                             }
                         }
                     }
-                    stage('Setup RVM') {
-                        steps {
-                            configureRVM(ruby)
-                        }
-                    }
                     stage('Install dependencies') {
                         steps {
-                            withRVM(['bundle install'], ruby)
+                            bundleInstall(ruby)
                         }
                     }
                     stage('Run Tests') {
@@ -100,7 +90,7 @@ pipeline {
                             MINITEST_REPORTERS_REPORTS_DIR = 'jenkins/reports/unit'
                         }
                         steps {
-                            withRVM(['bundle exec rake jenkins:unit'], ruby)
+                            bundleExec(ruby, 'rake jenkins:unit')
                         }
                         post {
                             always {
@@ -112,7 +102,6 @@ pipeline {
                 post {
                     always {
                         archiveArtifacts artifacts: 'Gemfile.lock'
-                        cleanupRVM(ruby)
                         deleteDir()
                     }
                 }

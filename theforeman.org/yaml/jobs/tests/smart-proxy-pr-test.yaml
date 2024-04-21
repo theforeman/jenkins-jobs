@@ -12,5 +12,4 @@
     dsl:
       !include-raw:
         - pipelines/lib/git.groovy
-        - pipelines/lib/rvm.groovy
         - pipelines/test/smart-proxy.groovy

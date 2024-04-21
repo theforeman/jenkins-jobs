@@ -13,4 +13,3 @@
     dsl:
       !include-raw:
         - pipelines/release/tarballsRelease.groovy
-        - pipelines/lib/rvm.groovy

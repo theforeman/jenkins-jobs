@@ -4,16 +4,10 @@
       - shell: |+
           #!/bin/bash -ex
 
-          set +x
-          # RVM Ruby environment
-          . /etc/profile.d/rvm.sh
-          # Use a gemset unique to each executor to enable parallel builds
-          gemset=$(echo ${JOB_NAME} | cut -d/ -f1)-${EXECUTOR_NUMBER}
-          rvm use ruby-${ruby}@${gemset} --create
-          rvm gemset empty --force
-          set -x
+          export PATH="$HOME/.rbenv/shims:$PATH"
+          export RBENV_VERSION=${ruby}
 
-          if [ "${ruby}" = '2.7' ]
+          if [ "${ruby}" = '2.7.6' ]
           then
               gem install bundler -v 2.4.22 --no-document
           else
@@ -22,4 +16,3 @@
 
           bundle install --retry 5 --jobs 5
           bundle exec rake TESTOPTS="--verbose"
-

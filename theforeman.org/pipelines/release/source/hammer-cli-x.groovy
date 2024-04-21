@@ -20,7 +20,7 @@ pipeline {
         }
         stage("test-ruby-2.7") {
             steps {
-                run_test(ruby: '2.7')
+                run_test(ruby: '2.7.6')
             }
         }
         stage('Build and Archive Source') {
@@ -63,16 +63,13 @@ def add_hammer_cli_git_repos(repos = []) {
 
 def run_test(args) {
     def ruby = args.ruby
-    def gemset = "ruby-${ruby}"
 
     try {
-        configureRVM(ruby, gemset)
-        withRVM(['bundle install --without=development --jobs=5 --retry=5'], ruby, gemset)
+        bundleInstall(ruby, '--without=development')
         archiveArtifacts(artifacts: 'Gemfile.lock')
-        withRVM(['bundle show'], ruby, gemset)
-        withRVM(['bundle exec rake ci:setup:minitest test TESTOPTS="-v"'], ruby, gemset)
+        withRuby(ruby, 'bundle show')
+        bundleExec(ruby, 'rake ci:setup:minitest test TESTOPTS="-v"')
     } finally {
-        cleanupRVM(ruby, gemset)
         junit(testResults: 'test/reports/*.xml')
     }
 }

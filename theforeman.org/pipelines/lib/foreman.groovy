@@ -14,27 +14,19 @@ def addSettings(settings) {
     sh "cp config/settings.yaml.example config/settings.yaml"
 }
 
-def configureDatabase(ruby, name = '') {
-    withRVM(['bundle install --without=development --jobs=5 --retry=5'], ruby, name)
+def configureDatabase(ruby) {
+    bundleInstall(ruby, '--without=development')
     archiveArtifacts(artifacts: 'Gemfile.lock')
-    withRVM(['bundle exec rake db:drop >/dev/null 2>/dev/null || true'], ruby, name)
-    withRVM(['bundle exec rake db:create --trace'], ruby, name)
-    withRVM(['RAILS_ENV=production bundle exec rake db:create --trace'], ruby, name)
-    withRVM(['bundle exec rake db:migrate --trace'], ruby, name)
+    bundleExec(ruby, 'rake db:drop >/dev/null 2>/dev/null || true')
+    bundleExec(ruby, 'rake db:create --trace')
+    bundleExec(ruby, 'rake db:create --trace RAILS_ENV=production')
+    bundleExec(ruby, 'rake db:migrate --trace')
 }
 
-def cleanup(ruby, name = '') {
-    try {
-
-        withRVM(['bundle exec rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true'], ruby, name)
-        withRVM(['bundle exec rake db:drop RAILS_ENV=test DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true'], ruby, name)
-        withRVM(['bundle exec rake db:drop RAILS_ENV=development DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true'], ruby, name)
-
-    } finally {
-
-        cleanupRVM(ruby, name)
-
-    }
+def cleanup(ruby) {
+    bundleExec(ruby, 'rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true')
+    bundleExec(ruby, 'rake db:drop RAILS_ENV=test DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true')
+    bundleExec(ruby, 'rake db:drop RAILS_ENV=development DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true')
 }
 
 def postgresqlTemplate(id) {
@@ -68,7 +60,7 @@ production:
 """
 }
 
-def filter_package_json(ruby, gemset = '') {
+def filter_package_json(ruby) {
     if (env.NODE_LABELS.contains('el8')) {
         python = 'python3.11'
     } else {
@@ -77,7 +69,7 @@ def filter_package_json(ruby, gemset = '') {
 
     sh "${python} script/filter-package-json.py"
 
-    withRVM(["bundle exec ruby script/plugin_webpack_directories.rb > plugin_webpack.json"], ruby, gemset)
+    bundleExec(ruby, "ruby script/plugin_webpack_directories.rb > plugin_webpack.json")
     def plugin_webpack = readJSON file: 'plugin_webpack.json'
     plugin_webpack['plugins'].each { plugin, config ->
         sh "${python} script/filter-package-json.py --package-json ${config['root']}/package.json"

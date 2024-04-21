@@ -1,8 +1,8 @@
-def bundleInstall(version, gemfile=null) {
-    command = "bundle install"
+def bundleInstall(version, options=null) {
+    command = "bundle install --jobs 5 --retry 5"
 
-    if (gemfile) {
-        command = "${command} --gemfile=${gemfile}"
+    if (options) {
+        command = "${command} ${options}"
     }
 
     withRuby(version, "bundle config set path ~/.rubygems")

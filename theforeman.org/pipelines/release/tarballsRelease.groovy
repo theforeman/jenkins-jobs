@@ -11,7 +11,7 @@ pipeline {
     environment {
         version = env.getProperty('version')
         major_version = env.getProperty('major_version')
-        ruby_ver = '2.7'
+        ruby_ver = '2.7.6'
     }
 
     stages {
@@ -71,8 +71,6 @@ void build_tarball(project, version, ruby_ver) {
             changelog: false,
             poll: false
 
-        configureRVM(ruby_ver, project)
-
         if (project == 'foreman') {
             sh "cat config/settings.yaml.example > config/settings.yaml"
             sh "cat config/database.yml.example > config/database.yml"
@@ -81,20 +79,17 @@ void build_tarball(project, version, ruby_ver) {
         env.setProperty('DEBUG_RESOLVER', '1')
 
         if (fileExists("Gemfile")) {
-            withRVM(["bundle install --without=development --jobs=5 --retry=5"], ruby_ver, project)
-            rake = "bundle exec rake"
+            bundleInstall(ruby_ver, "--without=development")
         }
 
         if (project == 'foreman-installer') {
-            withRVM(["${rake} clean"], ruby_ver, project)
+            bundleExec(ruby_ver, "rake clean")
         }
 
-        withRVM(["${rake} pkg:generate_source"], ruby_ver, project)
+        bundleExec(ruby_ver, "rake pkg:generate_source")
 
         sshagent(['deploy-downloads']) {
             sh "rsync -v --ignore-existing pkg/* downloads@web01.osuosl.theforeman.org:${base_dir}/"
         }
-
-        cleanupRVM(ruby_ver, project)
     }
 }

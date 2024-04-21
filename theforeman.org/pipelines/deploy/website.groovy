@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment {
-        ruby_version = '2.7'
+        ruby = '2.7.6'
         // Sync to the pivot-point on the web node
         target_path = 'website@web01.osuosl.theforeman.org:rsync_cache/'
         rsync_log = 'deploy-website.log'
@@ -21,13 +21,8 @@ pipeline {
                 git url: 'https://github.com/theforeman/theforeman.org', branch: 'gh-pages'
 
                 script {
-                    try {
-                        configureRVM(ruby_version)
-                        withRVM(['bundle install --jobs=5 --retry=5'], ruby_version)
-                        withRVM(['bundle exec jekyll build'], ruby_version)
-                    } finally {
-                        cleanupRVM(ruby_version)
-                    }
+                    bundleInstall(ruby)
+                    bundleExec(ruby, "jekyll build")
                 }
 
                 sshagent(['deploy-website']) {

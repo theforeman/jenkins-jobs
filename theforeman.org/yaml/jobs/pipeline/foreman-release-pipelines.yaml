@@ -14,7 +14,6 @@
         - 'pipelines/lib/release.groovy{empty}'
         - 'pipelines/lib/obal.groovy{empty}'
         - 'pipelines/lib/packaging.groovy{empty}'
-        - 'pipelines/lib/rvm.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
         - 'pipelines/lib/foreman_infra.groovy{empty}'
 
@@ -30,7 +29,6 @@
       !include-raw:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/client.groovy{empty}'
-        - 'pipelines/lib/rvm.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
         - 'pipelines/lib/obal.groovy{empty}'
         - 'pipelines/lib/packaging.groovy{empty}'
@@ -47,7 +45,6 @@
       !include-raw:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/plugins.groovy{empty}'
-        - 'pipelines/lib/rvm.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
         - 'pipelines/lib/obal.groovy{empty}'
         - 'pipelines/lib/packaging.groovy{empty}'

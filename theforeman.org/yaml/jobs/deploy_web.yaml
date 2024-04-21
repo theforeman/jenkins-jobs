@@ -15,4 +15,3 @@
     dsl:
       !include-raw:
         - pipelines/deploy/website.groovy
-        - pipelines/lib/rvm.groovy

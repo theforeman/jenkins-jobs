@@ -19,7 +19,7 @@ pipeline {
         }
         stage("test ruby 2.7 & puppet 7") {
             steps {
-                run_test(ruby: '2.7', puppet: '7')
+                run_test(ruby: '2.7.6', puppet: '7')
             }
         }
         stage('Build and Archive Source') {
@@ -55,14 +55,8 @@ pipeline {
 def run_test(args) {
     def ruby = args.ruby
     def puppet = args.puppet
-    def gemset = "ruby-${ruby}-puppet-${puppet}"
 
-    try {
-        configureRVM(ruby, gemset)
-        withRVM(["PUPPET_VERSION='${puppet}' bundle install --without=development --jobs=5 --retry=5"], ruby, gemset)
-        archiveArtifacts(artifacts: 'Gemfile.lock')
-        withRVM(["PUPPET_VERSION='${puppet}' bundle exec rake spec"], ruby, gemset)
-    } finally {
-        cleanupRVM(ruby, gemset)
-    }
+    withRuby(ruby, "PUPPET_VERSION='${puppet}' bundle install --without=development --jobs=5 --retry=5")
+    archiveArtifacts(artifacts: 'Gemfile.lock')
+    withRuby(ruby, "PUPPET_VERSION='${puppet}' bundle exec rake spec")
 }

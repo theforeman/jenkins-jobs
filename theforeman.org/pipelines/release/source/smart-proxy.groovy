@@ -15,7 +15,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.7', '3.0', '3.1'
+                        values '2.7.6', '3.0.4', '3.1.0'
                     }
                 }
                 stages {
@@ -77,16 +77,13 @@ pipeline {
 
 def run_test(args) {
     def ruby = args.ruby
-    def gemset = "ruby-${ruby}"
 
     try {
-        configureRVM(ruby, gemset)
-        withRVM(["cp config/settings.yml.example config/settings.yml"], ruby, gemset)
-        withRVM(["bundle install --without=development --jobs=5 --retry=5"], ruby, gemset)
+        sh "cp config/settings.yml.example config/settings.yml"
+        bundleInstall(ruby, "--without=development")
         archiveArtifacts(artifacts: 'Gemfile.lock')
-        withRVM(["bundle exec rake jenkins:unit --trace"], ruby, gemset)
+        bundleExec(ruby, "rake jenkins:unit --trace")
     } finally {
-        cleanupRVM(ruby, gemset)
         junit(testResults: 'jenkins/reports/unit/*.xml')
     }
 }
