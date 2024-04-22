@@ -8,6 +8,7 @@
       !include-raw:
         - 'pipelines/vars/candlepin/{version}.groovy'
         - 'pipelines/release/pipelines/candlepin.groovy{empty}'
+        - 'pipelines/lib/rbenv.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
         - 'pipelines/lib/obal.groovy{empty}'
         - 'pipelines/lib/packaging.groovy{empty}'

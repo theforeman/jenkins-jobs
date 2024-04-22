@@ -13,3 +13,4 @@
     dsl:
       !include-raw:
         - pipelines/release/tarballsRelease.groovy
+        - pipelines/lib/rbenv.groovy

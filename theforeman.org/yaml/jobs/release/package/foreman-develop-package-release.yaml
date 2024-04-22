@@ -14,6 +14,7 @@
         - pipelines/vars/foreman/nightly.groovy
         - pipelines/release/foreman-x-develop-release.groovy
         - pipelines/lib/foreman_infra.groovy
+        - pipelines/lib/rbenv.groovy
         - pipelines/lib/obal.groovy
         - pipelines/lib/git.groovy
         - pipelines/lib/ansible.groovy

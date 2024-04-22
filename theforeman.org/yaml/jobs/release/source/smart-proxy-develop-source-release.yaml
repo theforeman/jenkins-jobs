@@ -15,6 +15,7 @@
         - pipelines/release/source/smart-proxy.groovy
         - pipelines/lib/nightly_packaging.groovy
         - pipelines/lib/foreman_infra.groovy
+        - pipelines/lib/rbenv.groovy
         - pipelines/lib/git.groovy
     publishers:
       - ircbot_freenode

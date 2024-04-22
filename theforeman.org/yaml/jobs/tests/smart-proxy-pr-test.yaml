@@ -13,3 +13,4 @@
       !include-raw:
         - pipelines/lib/git.groovy
         - pipelines/test/smart-proxy.groovy
+        - pipelines/lib/rbenv.groovy
