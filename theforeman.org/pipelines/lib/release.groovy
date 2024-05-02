@@ -1,10 +1,10 @@
-void push_rpms(repo_src, repo_dest, version, distro, keep_old_files = false, staging = false) {
-    push_rpms_direct("${repo_src}/${distro}", "${repo_dest}/${version}/${distro}", !keep_old_files, keep_old_files, staging)
+void push_rpms(repo_src, repo_dest, version, distro, keep_old_files = false) {
+    push_rpms_direct("${repo_src}/${distro}", "${repo_dest}/${version}/${distro}", !keep_old_files, keep_old_files)
 }
 
-void push_rpms_direct(repo_source, repo_dest, overwrite = true, merge = false, staging = false) {
+void push_rpms_direct(repo_source, repo_dest, overwrite = true, merge = false) {
     sshagent(['repo-sync']) {
-        sh "ssh yumrepo@web01.osuosl.theforeman.org ${repo_source} ${repo_dest} ${overwrite} ${merge} ${staging}"
+        sh "ssh yumrepo@web01.osuosl.theforeman.org ${repo_source} ${repo_dest} ${overwrite} ${merge}"
     }
 }
 
@@ -23,7 +23,7 @@ void push_staging_rpms(repo_src, repo_dest, version, distro, keep_old_files = fa
         destination = "${repo_dest}/${version}/${distro}"
     }
 
-    push_rpms_direct("${repo_src}/${distro}", destination, !keep_old_files, keep_old_files, true)
+    push_rpms_direct("${repo_src}/${distro}", destination, !keep_old_files, keep_old_files)
 }
 
 void push_foreman_staging_rpms(repo_type, version, distro) {
