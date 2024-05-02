@@ -1,8 +1,3 @@
-void push_foreman_rpms(repo_type, version, distro) {
-    version = version == 'develop' ? 'nightly' : version
-    push_rpms("foreman-${repo_type}-${version}", repo_type, version, distro)
-}
-
 void push_rpms(repo_src, repo_dest, version, distro, keep_old_files = false, staging = false) {
     push_rpms_direct("${repo_src}/${distro}", "${repo_dest}/${version}/${distro}", !keep_old_files, keep_old_files, staging)
 }
@@ -17,16 +12,6 @@ void push_debs_direct(os, repo) {
     sshagent(['freight']) {
         sh "ssh freight@web01.osuosl.theforeman.org deploy ${os} ${repo}"
     }
-}
-
-void push_pulpcore_rpms(version, distro) {
-    push_rpms("pulpcore-${version}", "pulpcore", version, distro, true)
-}
-
-void push_katello_rpms(version, distro) {
-    keep_old = version != 'nightly'
-    push_rpms_direct("katello-${version}/katello/${distro}", "katello/${version}/katello/${distro}", !keep_old, keep_old)
-    push_rpms_direct("katello-${version}/candlepin/${distro}", "katello/${version}/candlepin/${distro}", !keep_old, keep_old)
 }
 
 void push_staging_rpms(repo_src, repo_dest, version, distro, keep_old_files = false) {
