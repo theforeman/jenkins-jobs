@@ -6,8 +6,6 @@
     properties:
       - github:
           url: 'https://github.com/theforeman/hammer-cli'
-    publishers:
-      - ircbot_freenode
     dsl:
       !include-raw:
         - pipelines/vars/hammer-cli-master.groovy

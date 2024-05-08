@@ -18,5 +18,3 @@
         - pipelines/lib/ansible.groovy
         - pipelines/lib/nightly_packaging.groovy
         - pipelines/lib/packaging.groovy
-    publishers:
-      - ircbot_freenode

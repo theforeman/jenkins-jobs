@@ -25,7 +25,6 @@
       - test_develop
     publishers:
       - gemset_cleanup
-      - ircbot_freenode
       - archive:
           artifacts: 'pkg/*,Gemfile.lock,package-lock.json'
           only-if-success: false

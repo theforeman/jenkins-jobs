@@ -13,5 +13,3 @@
       !include-raw:
         - pipelines/deploy/puppet.groovy
         - pipelines/lib/foreman_infra.groovy
-    publishers:
-      - ircbot_freenode

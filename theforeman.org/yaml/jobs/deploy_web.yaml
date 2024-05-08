@@ -10,8 +10,6 @@
       - github
       - pollscm:
           cron: '*/5 * * * *'
-    publishers:
-      - ircbot_freenode
     dsl:
       !include-raw:
         - pipelines/deploy/website.groovy
