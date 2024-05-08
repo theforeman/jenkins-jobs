@@ -1,21 +1,22 @@
 #!/bin/bash -ex
 
+cleanup() {
+  bundle exec rake db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true
+  bundle exec rake db:drop RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=true >/dev/null 2>/dev/null || true
+}
+
+trap cleanup SIGINT SIGTERM ERR EXIT
+
 APP_ROOT=`pwd`
 
 # setup basic settings file
 cp $APP_ROOT/config/settings.yaml.example $APP_ROOT/config/settings.yaml
 
-echo "Setting up RVM environment."
-set +x
-# RVM Ruby environment
-. /etc/profile.d/rvm.sh
-# Use a gemset unique to each executor to enable parallel builds
-gemset=$(echo ${JOB_NAME} | cut -d/ -f1)-${EXECUTOR_NUMBER}
-rvm use ruby-${ruby}@${gemset} --create
-rvm gemset empty --force
-set -x
+echo "Setting up rbenv environment."
+export PATH="$HOME/.rbenv/shims:$PATH"
+export RBENV_VERSION=${ruby}
 
-if [ "${ruby}" = '2.7' ]
+if [ "${ruby}" = '2.7.6' ]
 then
     gem install bundler -v 2.4.22 --no-document
 else

@@ -15,7 +15,7 @@
           type: user-defined
           name: ruby
           values:
-            - 2.7
+            - '2.7.6'
       - axis:
           type: label-expression
           name: slave
