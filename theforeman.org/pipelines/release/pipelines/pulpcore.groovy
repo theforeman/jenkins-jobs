@@ -36,12 +36,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    def parallelStagesMap = [:]
-                    def name = 'pulpcore-staging'
-                    pulpcore_distros.each { distro ->
-                        parallelStagesMap[distro] = { repoclosure(name, distro, pulpcore_version) }
-                    }
-                    parallel parallelStagesMap
+                    parallel repoclosures('pulpcore-staging', foreman_el_releases, foreman_version)
                 }
             }
             post {

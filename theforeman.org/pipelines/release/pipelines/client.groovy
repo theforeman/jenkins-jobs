@@ -36,16 +36,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    def parallelStagesMap = [:]
-                    def name = 'foreman-client-staging'
-                    foreman_client_distros.each { distro ->
-                        if (distro.startsWith('el')) {
-                            parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
-                        } else if (distro.startsWith('fc')) {
-                            parallelStagesMap[distro] = { repoclosure(name, distro.replace('fc', 'f'), foreman_version) }
-                        }
-                    }
-                    parallel parallelStagesMap
+                    parallel repoclosures('foreman-client-staging', foreman_client_distros, foreman_version)
                 }
             }
             post {
