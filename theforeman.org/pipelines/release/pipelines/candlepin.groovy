@@ -10,9 +10,12 @@ pipeline {
 
     environment {
         PROJECT = 'candlepin'
+        PIPELINE = "${PROJECT}-rpm"
+        REPOCLOSURE = PROJECT
     }
 
     script {
+        env.DISTROS = candlepin_distros
         env.VERSION = candlepin_version
     }
 
@@ -29,7 +32,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('candlepin', candlepin_distros, candlepin_version)
+                    parallel repoclosures(env.REPOCLOSURE, env.DISTROS, env.VERSION)
                 }
             }
             post {
@@ -41,9 +44,11 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when { not { environment name: 'PIPELINE', value: '' } }
+
             steps {
                 script {
-                    runDuffyPipeline('candlepin-rpm', candlepin_version)
+                    runDuffyPipeline(env.PIPELINE, env.VERSION)
                 }
             }
         }
@@ -52,8 +57,8 @@ pipeline {
 
             steps {
                 script {
-                    candlepin_distros.each { distro ->
-                        push_foreman_staging_rpms('candlepin', candlepin_version, distro)
+                    env.DISTROS.each { distro ->
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -61,7 +66,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Candlepin ${candlepin_version} RPM pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

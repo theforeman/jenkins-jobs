@@ -10,9 +10,12 @@ pipeline {
 
     environment {
         PROJECT = 'pulpcore'
+        PIPELINE = "${PROJECT}-rpm"
+        REPOCLOSURE = "${PROJECT}-staging"
     }
 
     script {
+        env.DISTROS = pulpcore_distros
         env.VERSION = pulpcore_version
     }
 
@@ -29,7 +32,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('pulpcore-staging', pulpcore_distros, pulpcore_version)
+                    parallel repoclosures(env.REPOCLOSURE, env.DISTROS, env.VERSION)
                 }
             }
             post {
@@ -41,9 +44,11 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when { not { environment name: 'PIPELINE', value: '' } }
+
             steps {
                 script {
-                    runDuffyPipeline('pulpcore-rpm', pulpcore_version)
+                    runDuffyPipeline(env.PIPELINE, env.VERSION)
                 }
             }
         }
@@ -52,8 +57,8 @@ pipeline {
 
             steps {
                 script {
-                    pulpcore_distros.each { distro ->
-                        push_foreman_staging_rpms('pulpcore', pulpcore_version, distro)
+                    env.DISTROS.each { distro ->
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -61,7 +66,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Pulpcore ${pulpcore_version} RPM pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

@@ -10,9 +10,12 @@ pipeline {
 
     environment {
         PROJECT = 'foreman'
+        PIPELINE = "${PROJECT}-rpm"
+        REPOCLOSURE = "${PROJECT}-staging"
     }
 
     script {
+        env.DISTROS = foreman_el_releases
         env.VERSION = foreman_version
     }
 
@@ -29,7 +32,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('foreman-staging', foreman_el_releases, foreman_version)
+                    parallel repoclosures(env.REPOCLOSURE, env.DISTROS, env.VERSION)
                 }
             }
             post {
@@ -41,9 +44,11 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when { not { environment name: 'PIPELINE', value: '' } }
+
             steps {
                 script {
-                    runDuffyPipeline('foreman-rpm', foreman_version)
+                    runDuffyPipeline(env.PIPELINE, env.VERSION)
                 }
             }
         }
@@ -52,8 +57,8 @@ pipeline {
 
             steps {
                 script {
-                    foreman_el_releases.each { distro ->
-                        push_foreman_staging_rpms('foreman', foreman_version, distro)
+                    env.DISTROS.each { distro ->
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -61,7 +66,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, 'Foreman RPM nightly pipeline failed:', currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }
