@@ -50,7 +50,7 @@ pipeline {
                 }
             }
         }
-        stage('staging-install-test') {
+        stage('staging-test') {
             agent any
 
             steps {
