@@ -8,28 +8,19 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { candlepin_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'candlepin'
+        VERSION = candlepin_version
+    }
 
-                script {
-                    candlepin_distros.each { distro ->
-                        sh "./build_stage_repository candlepin ${candlepin_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
+    stages {
+        stage('staging-repository') {
             when {
-                expression { candlepin_version == 'nightly' }
+                expression { env.VERSION == 'nightly' }
             }
             steps {
                 script {
-                    rsync_to_yum_stage('candlepin', candlepin_version)
+                    rsync_to_yum_stage
                 }
             }
         }

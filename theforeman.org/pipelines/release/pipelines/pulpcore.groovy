@@ -8,28 +8,19 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { pulpcore_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'pulpcore'
+        VERSION = pulpcore_version
+    }
 
-                script {
-                    pulpcore_distros.each { distro ->
-                        sh "./build_stage_repository pulpcore ${pulpcore_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
+    stages {
+        stage('staging-repository') {
             when {
-                expression { pulpcore_version == 'nightly' }
+                expression { env.VERSION == 'nightly' }
             }
             steps {
                 script {
-                    rsync_to_yum_stage('pulpcore', pulpcore_version)
+                    rsync_to_yum_stage
                 }
             }
         }
