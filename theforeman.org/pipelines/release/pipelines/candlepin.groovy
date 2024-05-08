@@ -30,7 +30,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('candlepin', candlepin_distros, candlepin_version)
+                    parallel repoclosures(env.PROJECT, candlepin_distros, env.VERSION)
                 }
             }
             post {
@@ -44,7 +44,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('candlepin-rpm', candlepin_version)
+                    runDuffyPipeline("${env.PROJECT}-rpm", env.VERSION)
                 }
             }
         }
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     candlepin_distros.each { distro ->
-                        push_foreman_staging_rpms('candlepin', candlepin_version, distro)
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -62,7 +62,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Candlepin ${candlepin_version} RPM pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

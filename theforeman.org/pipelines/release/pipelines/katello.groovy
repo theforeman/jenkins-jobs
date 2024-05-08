@@ -44,7 +44,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('katello-rpm', katello_version)
+                    runDuffyPipeline("${env.PROJECT}-rpm", env.VERSION)
                 }
             }
         }
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     foreman_el_releases.each { distro ->
-                        push_foreman_staging_rpms('katello', katello_version, distro)
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -62,7 +62,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Katello ${katello_version} pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

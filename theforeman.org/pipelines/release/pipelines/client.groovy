@@ -30,7 +30,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('foreman-client-staging', foreman_client_distros, foreman_version)
+                    parallel repoclosures("foreman-${env.PROJECT}-staging", foreman_client_distros, env.VERSION)
                 }
             }
             post {
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     foreman_client_distros.each { distro ->
-                        push_foreman_staging_rpms('client', foreman_version, distro)
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }

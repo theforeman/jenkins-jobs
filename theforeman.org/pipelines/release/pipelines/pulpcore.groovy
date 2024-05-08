@@ -30,7 +30,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('pulpcore-staging', foreman_el_releases, foreman_version)
+                    parallel repoclosures("${env.PROJECT}-staging", pulpcore_distros, env.VERSION)
                 }
             }
             post {
@@ -44,7 +44,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('pulpcore-rpm', pulpcore_version)
+                    runDuffyPipeline("${env.PROJECT}-rpm", env.VERSION)
                 }
             }
         }
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     pulpcore_distros.each { distro ->
-                        push_foreman_staging_rpms('pulpcore', pulpcore_version, distro)
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -62,7 +62,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Pulpcore ${pulpcore_version} RPM pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }
