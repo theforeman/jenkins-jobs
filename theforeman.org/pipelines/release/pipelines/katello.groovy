@@ -8,28 +8,21 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { katello_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'katello'
+    }
 
-                script {
-                    foreman_el_releases.each { distro ->
-                        sh "./build_stage_repository katello ${katello_version} ${distro} ${foreman_version}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
-            when {
-                expression { katello_version == 'nightly' }
-            }
+    script {
+        env.VERSION = katello_version
+    }
+
+    stages {
+        stage('staging-repository') {
+            when { environment name: 'VERSION', value: 'nightly' }
+
             steps {
                 script {
-                    rsync_to_yum_stage('katello', katello_version)
+                    rsync_to_yum_stage
                 }
             }
         }

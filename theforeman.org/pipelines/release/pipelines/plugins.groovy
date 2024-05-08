@@ -8,22 +8,21 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'plugins'
+    }
 
-                script {
-                    foreman_el_releases.each { distro ->
-                        sh "./build_stage_repository plugins ${foreman_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
+    script {
+        env.VERSION = foreman_version
+    }
+
+    stages {
+        stage('staging-repository') {
+            // No when condition because it's not signed
+
             steps {
                 script {
-                    rsync_to_yum_stage('plugins', foreman_version)
+                    rsync_to_yum_stage
                 }
             }
         }

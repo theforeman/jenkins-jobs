@@ -481,16 +481,12 @@ def rsync_debian(user, ssh_key, suite, component, deb_paths) {
     }
 }
 
-def rsync_to_yum_stage(collection, version) {
-    if (!fileExists('upload_stage_rpms')) {
-        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
-    }
+def rsync_to_yum_stage() {
+    git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+
+    sh "./generate_stage_repository"
 
     sshagent(['yum-stage']) {
-        sh """
-            export VERSION=${version}
-            export PROJECT=${collection}
-            ./upload_stage_rpms
-        """
+        sh "./upload_stage_rpms"
     }
 }
