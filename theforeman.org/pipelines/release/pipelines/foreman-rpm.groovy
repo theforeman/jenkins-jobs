@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent { label 'el8' }
 
     options {
         timestamps()
@@ -9,63 +9,58 @@ pipeline {
     }
 
     stages {
-        stage('staging') {
-            agent { label 'el8' }
-            stages {
-                stage('staging-build-repository') {
-                    when {
-                        expression { foreman_version == 'nightly' }
-                    }
-                    steps {
-                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+        stage('staging-build-repository') {
+            when {
+                expression { foreman_version == 'nightly' }
+            }
+            steps {
+                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
-                        script {
-                            foreman_el_releases.each { distro ->
-                                sh "./build_stage_repository foreman ${foreman_version} ${distro}"
-                            }
-                        }
+                script {
+                    foreman_el_releases.each { distro ->
+                        sh "./build_stage_repository foreman ${foreman_version} ${distro}"
                     }
                 }
-                stage('staging-copy-repository') {
-                    when {
-                        expression { foreman_version == 'nightly' }
-                    }
-                    steps {
-                        script {
-                            rsync_to_yum_stage('foreman', foreman_version)
-                        }
-                    }
+            }
+        }
+        stage('staging-copy-repository') {
+            when {
+                expression { foreman_version == 'nightly' }
+            }
+            steps {
+                script {
+                    rsync_to_yum_stage('foreman', foreman_version)
                 }
-                stage('staging-repoclosure') {
-                    steps {
-                        script {
-                            parallel repoclosures('foreman-staging', foreman_el_releases, foreman_version)
-                        }
-                    }
-                    post {
-                        always {
-                            deleteDir()
-                        }
-                    }
+            }
+        }
+        stage('staging-repoclosure') {
+            steps {
+                script {
+                    parallel repoclosures('foreman-staging', foreman_el_releases, foreman_version)
                 }
-                stage('staging-install-test') {
-                    agent any
+            }
+            post {
+                always {
+                    deleteDir()
+                }
+            }
+        }
+        stage('staging-install-test') {
+            agent any
 
-                    steps {
-                        script {
-                            runDuffyPipeline('foreman-rpm', foreman_version)
-                        }
-                    }
+            steps {
+                script {
+                    runDuffyPipeline('foreman-rpm', foreman_version)
                 }
-                stage('staging-push-rpms') {
-                    agent { label 'sshkey' }
+            }
+        }
+        stage('staging-push-rpms') {
+            agent { label 'sshkey' }
 
-                    steps {
-                        script {
-                            foreman_el_releases.each { distro ->
-                                push_foreman_staging_rpms('foreman', foreman_version, distro)
-                            }
-                        }
+            steps {
+                script {
+                    foreman_el_releases.each { distro ->
+                        push_foreman_staging_rpms('foreman', foreman_version, distro)
                     }
                 }
             }
