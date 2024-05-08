@@ -56,11 +56,7 @@ pipeline {
                     stage('Test installer configuration') {
                         steps {
                             bundleExec(ruby, "rake install PREFIX=${ruby}-${PUPPET_VERSION} --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
-                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
-                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario katello --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
-                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-installer --help --scenario foreman-proxy-content --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
-                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
-                            bundleExec(ruby, "${ruby}-${PUPPET_VERSION}/sbin/foreman-proxy-certs-generate --help|grep -q certs-update-server", "Gemfile.${ruby}-${PUPPET_VERSION}")
+                            bundleExec(ruby, "rake installation_tests PREFIX=${ruby}-${PUPPET_VERSION} --trace", "Gemfile.${ruby}-${PUPPET_VERSION}")
                         }
                     }
                 }
