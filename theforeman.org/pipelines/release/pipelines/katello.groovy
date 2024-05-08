@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent { label 'el8' }
 
     options {
         timestamps()
@@ -9,68 +9,63 @@ pipeline {
     }
 
     stages {
-        stage('staging') {
-            agent { label 'el8' }
-            stages {
-                stage('staging-build-repository') {
-                    when {
-                        expression { katello_version == 'nightly' }
-                    }
-                    steps {
-                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+        stage('staging-build-repository') {
+            when {
+                expression { katello_version == 'nightly' }
+            }
+            steps {
+                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
-                        script {
-                            foreman_el_releases.each { distro ->
-                                sh "./build_stage_repository katello ${katello_version} ${distro} ${foreman_version}"
-                            }
-                        }
+                script {
+                    foreman_el_releases.each { distro ->
+                        sh "./build_stage_repository katello ${katello_version} ${distro} ${foreman_version}"
                     }
                 }
-                stage('staging-copy-repository') {
-                    when {
-                        expression { katello_version == 'nightly' }
-                    }
-                    steps {
-                        script {
-                            rsync_to_yum_stage('katello', katello_version)
-                        }
-                    }
+            }
+        }
+        stage('staging-copy-repository') {
+            when {
+                expression { katello_version == 'nightly' }
+            }
+            steps {
+                script {
+                    rsync_to_yum_stage('katello', katello_version)
                 }
-                stage('staging-repoclosure') {
-                    steps {
-                        script {
-                            def parallelStagesMap = [:]
-                            def name = 'katello-staging'
-                            foreman_el_releases.each { distro ->
-                                parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
-                            }
-                            parallel parallelStagesMap
-                        }
+            }
+        }
+        stage('staging-repoclosure') {
+            steps {
+                script {
+                    def parallelStagesMap = [:]
+                    def name = 'katello-staging'
+                    foreman_el_releases.each { distro ->
+                        parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
                     }
-                    post {
-                        always {
-                            deleteDir()
-                        }
-                    }
+                    parallel parallelStagesMap
                 }
-                stage('staging-install-test') {
-                    agent any
+            }
+            post {
+                always {
+                    deleteDir()
+                }
+            }
+        }
+        stage('staging-install-test') {
+            agent any
 
-                    steps {
-                        script {
-                            runDuffyPipeline('katello-rpm', katello_version)
-                        }
-                    }
+            steps {
+                script {
+                    runDuffyPipeline('katello-rpm', katello_version)
                 }
-                stage('staging-push-rpms') {
-                    agent { label 'sshkey' }
+            }
+        }
+        stage('staging-push-rpms') {
+            agent { label 'sshkey' }
 
-                    steps {
-                        script {
-                            foreman_el_releases.each { distro ->
-                                push_foreman_staging_rpms('katello', katello_version, distro)
-                            }
-                        }
+            steps {
+                script {
+                    foreman_el_releases.each { distro ->
+                        push_foreman_staging_rpms('katello', katello_version, distro)
                     }
                 }
             }

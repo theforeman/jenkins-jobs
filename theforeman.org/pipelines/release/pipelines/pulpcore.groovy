@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent { label 'el8' }
 
     options {
         timestamps()
@@ -8,70 +8,64 @@ pipeline {
         ansiColor('xterm')
     }
 
-
     stages {
-        stage('staging') {
-            agent { label 'el8' }
-            stages {
-                stage('staging-build-repository') {
-                    when {
-                        expression { pulpcore_version == 'nightly' }
-                    }
-                    steps {
-                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+        stage('staging-build-repository') {
+            when {
+                expression { pulpcore_version == 'nightly' }
+            }
+            steps {
+                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
-                        script {
-                            pulpcore_distros.each { distro ->
-                                sh "./build_stage_repository pulpcore ${pulpcore_version} ${distro}"
-                            }
-                        }
+                script {
+                    pulpcore_distros.each { distro ->
+                        sh "./build_stage_repository pulpcore ${pulpcore_version} ${distro}"
                     }
                 }
-                stage('staging-copy-repository') {
-                    when {
-                        expression { pulpcore_version == 'nightly' }
-                    }
-                    steps {
-                        script {
-                            rsync_to_yum_stage('pulpcore', pulpcore_version)
-                        }
-                    }
+            }
+        }
+        stage('staging-copy-repository') {
+            when {
+                expression { pulpcore_version == 'nightly' }
+            }
+            steps {
+                script {
+                    rsync_to_yum_stage('pulpcore', pulpcore_version)
                 }
-                stage('staging-repoclosure') {
-                    steps {
-                        script {
-                            def parallelStagesMap = [:]
-                            def name = 'pulpcore-staging'
-                            pulpcore_distros.each { distro ->
-                                parallelStagesMap[distro] = { repoclosure(name, distro, pulpcore_version) }
-                            }
-                            parallel parallelStagesMap
-                        }
+            }
+        }
+        stage('staging-repoclosure') {
+            steps {
+                script {
+                    def parallelStagesMap = [:]
+                    def name = 'pulpcore-staging'
+                    pulpcore_distros.each { distro ->
+                        parallelStagesMap[distro] = { repoclosure(name, distro, pulpcore_version) }
                     }
-                    post {
-                        always {
-                            deleteDir()
-                        }
-                    }
+                    parallel parallelStagesMap
                 }
-                stage('staging-test') {
-                    agent any
+            }
+            post {
+                always {
+                    deleteDir()
+                }
+            }
+        }
+        stage('staging-test') {
+            agent any
 
-                    steps {
-                        script {
-                            runDuffyPipeline('pulpcore-rpm', pulpcore_version)
-                        }
-                    }
+            steps {
+                script {
+                    runDuffyPipeline('pulpcore-rpm', pulpcore_version)
                 }
-                stage('staging-push-rpms') {
-                    agent { label 'sshkey' }
+            }
+        }
+        stage('staging-push-rpms') {
+            agent { label 'sshkey' }
 
-                    steps {
-                        script {
-                            pulpcore_distros.each { distro ->
-                                push_foreman_staging_rpms('pulpcore', pulpcore_version, distro)
-                            }
-                        }
+            steps {
+                script {
+                    pulpcore_distros.each { distro ->
+                        push_foreman_staging_rpms('pulpcore', pulpcore_version, distro)
                     }
                 }
             }

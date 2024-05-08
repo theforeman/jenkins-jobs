@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent { label 'el8' }
 
     options {
         timestamps()
@@ -9,53 +9,48 @@ pipeline {
     }
 
     stages {
-        stage('staging') {
-            agent { label 'el8' }
-            stages {
-                stage('staging-build-repository') {
-                    steps {
-                        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+        stage('staging-build-repository') {
+            steps {
+                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
-                        script {
-                            foreman_el_releases.each { distro ->
-                                sh "./build_stage_repository plugins ${foreman_version} ${distro}"
-                            }
-                        }
+                script {
+                    foreman_el_releases.each { distro ->
+                        sh "./build_stage_repository plugins ${foreman_version} ${distro}"
                     }
                 }
-                stage('staging-copy-repository') {
-                    steps {
-                        script {
-                            rsync_to_yum_stage('plugins', foreman_version)
-                        }
-                    }
+            }
+        }
+        stage('staging-copy-repository') {
+            steps {
+                script {
+                    rsync_to_yum_stage('plugins', foreman_version)
                 }
-                stage('staging-repoclosure') {
-                    steps {
-                        script {
-                            def parallelStagesMap = [:]
-                            def name = 'plugins-staging'
-                            foreman_el_releases.each { distro ->
-                                parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
-                            }
-                            parallel parallelStagesMap
-                        }
+            }
+        }
+        stage('staging-repoclosure') {
+            steps {
+                script {
+                    def parallelStagesMap = [:]
+                    def name = 'plugins-staging'
+                    foreman_el_releases.each { distro ->
+                        parallelStagesMap[distro] = { repoclosure(name, distro, foreman_version) }
                     }
-                    post {
-                        always {
-                            deleteDir()
-                        }
-                    }
+                    parallel parallelStagesMap
                 }
-                stage('staging-push-rpms') {
-                    agent { label 'sshkey' }
+            }
+            post {
+                always {
+                    deleteDir()
+                }
+            }
+        }
+        stage('staging-push-rpms') {
+            agent { label 'sshkey' }
 
-                    steps {
-                        script {
-                            foreman_el_releases.each { distro ->
-                                push_foreman_staging_rpms('plugins', foreman_version, distro)
-                            }
-                        }
+            steps {
+                script {
+                    foreman_el_releases.each { distro ->
+                        push_foreman_staging_rpms('plugins', foreman_version, distro)
                     }
                 }
             }
