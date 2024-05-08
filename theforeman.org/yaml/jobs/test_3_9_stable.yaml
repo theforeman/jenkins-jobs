@@ -24,7 +24,6 @@
     builders:
       - test_develop
     publishers:
-      - gemset_cleanup
       - archive:
           artifacts: 'pkg/*,Gemfile.lock,package-lock.json'
           only-if-success: false

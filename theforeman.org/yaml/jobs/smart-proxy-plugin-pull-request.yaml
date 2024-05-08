@@ -31,8 +31,6 @@
             - '2.7.6'
     builders:
       - smart-proxy-plugin
-    publishers:
-      - gemset_cleanup
 
 
 - project:
