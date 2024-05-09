@@ -3,6 +3,6 @@
     project-type: pipeline
     sandbox: true
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/lib/rbenv.groovy
         - pipelines/test/simple-ruby.groovy

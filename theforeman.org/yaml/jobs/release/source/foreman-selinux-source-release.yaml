@@ -10,7 +10,7 @@
     triggers:
       - github
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/foreman-selinux-develop-release.groovy
         - pipelines/release/source/foreman-selinux.groovy
         - pipelines/lib/nightly_packaging.groovy

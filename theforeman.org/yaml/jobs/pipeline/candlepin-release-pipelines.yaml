@@ -5,7 +5,7 @@
     triggers:
       - timed: 'H 21 * * *'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/candlepin/{version}.groovy'
         - 'pipelines/release/pipelines/candlepin.groovy{empty}'
         - 'pipelines/lib/rbenv.groovy{empty}'

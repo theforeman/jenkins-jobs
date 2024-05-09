@@ -11,7 +11,7 @@
       - github_pr_rpm_copr_pulpcore:
           context: 'rpm-copr'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/test/rpm_copr_packaging.groovy
         - pipelines/lib/packaging.groovy
         - pipelines/lib/copr.groovy

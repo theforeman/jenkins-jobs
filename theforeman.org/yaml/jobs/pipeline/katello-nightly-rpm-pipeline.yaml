@@ -8,7 +8,7 @@
             - foreman-nightly-rpm-pipeline
           result: success
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/katello/nightly.groovy
         - pipelines/release/pipelines/katello.groovy
         - pipelines/lib/release.groovy

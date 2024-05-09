@@ -5,9 +5,9 @@
           #!/bin/bash -ex
 
           export PATH="$HOME/.rbenv/shims:$PATH"
-          export RBENV_VERSION=${ruby}
+          export RBENV_VERSION=${{ruby}}
 
-          if [ "${ruby}" = '2.7.6' ]
+          if [ "${{ruby}}" = '2.7.6' ]
           then
               gem install bundler -v 2.4.22 --no-document
           else

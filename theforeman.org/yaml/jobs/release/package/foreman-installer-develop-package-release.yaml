@@ -7,7 +7,7 @@
       - github:
           url: 'https://github.com/theforeman/foreman-installer'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/foreman-installer-develop-release.groovy
         - pipelines/vars/foreman/nightly.groovy
         - pipelines/release/foreman-x-develop-release.groovy

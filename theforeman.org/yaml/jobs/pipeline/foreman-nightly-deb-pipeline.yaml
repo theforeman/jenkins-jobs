@@ -5,7 +5,7 @@
     triggers:
       - timed: 'H 07 * * 1-5'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/foreman/nightly.groovy
         - pipelines/release/pipelines/foreman-deb.groovy
         - pipelines/lib/release.groovy

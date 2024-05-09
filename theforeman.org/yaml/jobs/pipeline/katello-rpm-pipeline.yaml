@@ -3,7 +3,7 @@
     project-type: pipeline
     sandbox: true
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/katello/{version}.groovy'
         - 'pipelines/release/pipelines/katello.groovy{empty}'
         - 'pipelines/lib/release.groovy{empty}'

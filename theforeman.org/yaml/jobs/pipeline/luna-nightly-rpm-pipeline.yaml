@@ -8,7 +8,7 @@
             - katello-nightly-rpm-pipeline
           result: success
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/katello/nightly.groovy
         - pipelines/release/pipelines/luna.groovy
         - pipelines/lib/ansible.groovy

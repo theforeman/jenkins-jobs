@@ -8,7 +8,7 @@
           description: 'The exact expected version'
           default: '{version}.'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/foreman-pipeline.groovy{empty}'
         - 'pipelines/lib/release.groovy{empty}'
@@ -27,7 +27,7 @@
     wrappers:
       - ansicolor
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/client.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
@@ -44,7 +44,7 @@
     triggers:
       - timed: 'H 21 * * *'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/plugins.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
@@ -59,7 +59,7 @@
     project-type: pipeline
     sandbox: true
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/plugins-rpm.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
@@ -75,7 +75,7 @@
             - foreman-{version}-deb-pipeline
           result: success
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/plugins-deb.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'

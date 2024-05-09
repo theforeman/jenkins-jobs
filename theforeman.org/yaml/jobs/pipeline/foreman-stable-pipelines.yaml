@@ -6,7 +6,7 @@
       - github:
           url: https://github.com/theforeman/smart-proxy
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/lib/stable/smart-proxy.groovy{empty}'
         - 'pipelines/test/smart-proxy.groovy{empty}'

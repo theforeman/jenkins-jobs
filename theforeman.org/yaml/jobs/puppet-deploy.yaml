@@ -10,6 +10,6 @@
       - pollscm:
           cron: 'H/5 * * * *'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/deploy/puppet.groovy
         - pipelines/lib/foreman_infra.groovy

@@ -9,7 +9,7 @@
     triggers:
       - github
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/katello-master-release.groovy
         - pipelines/release/source/katello.groovy
         - pipelines/lib/nightly_packaging.groovy

@@ -7,7 +7,7 @@
       - github:
           url: 'https://github.com/Katello/hammer-cli-katello'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/hammer-cli-katello-master.groovy
         - pipelines/release/foreman-x-develop-release.groovy
         - pipelines/lib/foreman_infra.groovy

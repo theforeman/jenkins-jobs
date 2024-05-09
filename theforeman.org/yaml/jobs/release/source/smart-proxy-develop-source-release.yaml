@@ -10,7 +10,7 @@
     triggers:
       - github
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/smart-proxy-develop-release.groovy
         - pipelines/release/source/smart-proxy.groovy
         - pipelines/lib/nightly_packaging.groovy

@@ -4,4 +4,4 @@
       - timed: 'H H * * 6'
     builders:
       - system-groovy:
-          command: !include-raw: scripts/admin_workspace_cleanup.groovy
+          command: !include-raw-verbatim: scripts/admin_workspace_cleanup.groovy

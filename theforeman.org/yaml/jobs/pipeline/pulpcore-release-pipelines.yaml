@@ -5,7 +5,7 @@
     triggers:
       - timed: 'H 21 * * *'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/pulpcore/{version}.groovy'
         - 'pipelines/release/pipelines/pulpcore.groovy{empty}'
         - 'pipelines/lib/rbenv.groovy{empty}'

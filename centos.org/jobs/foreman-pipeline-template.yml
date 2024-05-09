@@ -20,7 +20,7 @@
           artifact-days-to-keep: 3
           artifact-num-to-keep: 3
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - ../theforeman.org/pipelines/vars/{type}/{version}.groovy
         - ../theforeman.org/pipelines/vars/{type}/{flavor}.groovy
         - pipelines/lib/foremanDuffyJob.groovy{empty}

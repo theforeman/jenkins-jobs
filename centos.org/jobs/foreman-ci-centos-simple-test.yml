@@ -10,5 +10,5 @@
           default: simple
           description: 'A simple parameter for testing'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/test/simple.groovy

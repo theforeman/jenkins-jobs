@@ -11,7 +11,7 @@
       - github_pr:
           context: 'smart_proxy_{plugin}'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/lib/git.groovy{empty}
         - pipelines/lib/rbenv.groovy{empty}
         - pipelines/test/smart-proxy.groovy{empty}

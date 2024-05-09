@@ -10,7 +10,7 @@
     triggers:
       - github
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/vars/hammer-cli-master.groovy
         - pipelines/release/source/hammer-cli-x.groovy
         - pipelines/lib/nightly_packaging.groovy

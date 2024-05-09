@@ -11,7 +11,7 @@
       - github_pr_deb:
           context: 'deb'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/test/deb_packaging.groovy
         - pipelines/lib/packaging.groovy
         - pipelines/lib/git.groovy

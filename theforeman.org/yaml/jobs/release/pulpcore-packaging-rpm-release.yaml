@@ -18,7 +18,7 @@
     triggers:
         - github
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - 'pipelines/vars/pulpcore/{version}.groovy'
         - 'pipelines/release/pulpcore_packaging_rpm_copr_release.groovy{empty}'
         - 'pipelines/lib/git.groovy{empty}'

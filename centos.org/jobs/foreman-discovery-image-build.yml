@@ -17,7 +17,7 @@
           default: theforeman
           description: 'Name of the repository owner to use.'
     dsl:
-      !include-raw:
+      !include-raw-verbatim:
         - pipelines/foreman-discovery-image-build.groovy
         - ../theforeman.org/pipelines/lib/ansible.groovy
         - ../theforeman.org/pipelines/lib/duffy.groovy
