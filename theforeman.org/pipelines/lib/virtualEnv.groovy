@@ -1,6 +1,11 @@
-def virtEnv(path, command) {
+def virtEnv(path, command, python=null) {
     if(!fileExists("${path}/bin/activate")) {
-        sh "virtualenv ${path}"
+      if(python) {
+        cmd = "python${python}"
+      } else {
+        cmd = "python3"
+      }
+        sh "${cmd} -m venv ${path}"
     }
 
     sh """
