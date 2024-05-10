@@ -1,3 +1,4 @@
 jenkins-job-builder>=6.1.0
+python-jenkins @ git+https://github.com/evgeni/python-jenkins@all-All-all
 lxml
 requests
