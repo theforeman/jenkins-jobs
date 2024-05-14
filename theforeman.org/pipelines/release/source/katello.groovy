@@ -44,8 +44,8 @@ pipeline {
         stage('Install Foreman npm packages') {
             steps {
                 dir('foreman') {
-                    bundleExec(ruby, "npm install --package-lock-only --no-audit")
-                    bundleExec(ruby, "npm ci --no-audit")
+                    bundleExec(ruby, "npm install --package-lock-only --no-audit --legacy-peer-deps")
+                    bundleExec(ruby, "npm ci --no-audit --legacy-peer-deps")
                 }
             }
         }
@@ -70,9 +70,9 @@ pipeline {
                         expression { fileExists('package.json') }
                     }
                     steps {
-                        sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
+                        sh(script: "npm install --package-lock-only --no-audit --legacy-peer-deps", label: "npm install --package-lock-only")
                         archiveArtifacts(artifacts: 'package-lock.json')
-                        sh(script: "npm ci --no-audit", label: "npm ci")
+                        sh(script: "npm ci --no-audit --legacy-peer-deps", label: "npm ci")
                         sh(script: 'JEST_TIMEOUT=300000 npm test', label: "npm test")
                     }
                 }
@@ -80,13 +80,13 @@ pipeline {
                     steps {
                         script {
                             dir('engines/bastion') {
-                                sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
-                                sh(script: "npm ci --no-audit", label: "npm ci")
+                                sh(script: "npm install --package-lock-only --no-audit --legacy-peer-deps", label: "npm install --package-lock-only")
+                                sh(script: "npm ci --no-audit --legacy-peer-deps", label: "npm ci")
                                 sh(script: "grunt ci", label: "grunt ci")
                             }
                             dir('engines/bastion_katello') {
-                                sh(script: "npm install --package-lock-only --no-audit", label: "npm install --package-lock-only")
-                                sh(script: "npm ci --no-audit", label: "npm ci")
+                                sh(script: "npm install --package-lock-only --no-audit --legacy-peer-deps", label: "npm install --package-lock-only")
+                                sh(script: "npm ci --no-audit --legacy-peer-deps", label: "npm ci")
                                 sh(script: "grunt ci", label: "grunt ci")
                             }
                         }

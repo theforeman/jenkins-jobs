@@ -40,7 +40,7 @@ bundle exec rake rubocop
 ) > $APP_ROOT/config/database.yml
 
 # we need to install node modules for integration tests
-npm install --no-audit
+npm install --no-audit --legacy-peer-deps
 
 # Create DB first in development as migrate behaviour can change
 bundle exec rake db:drop >/dev/null 2>/dev/null || true

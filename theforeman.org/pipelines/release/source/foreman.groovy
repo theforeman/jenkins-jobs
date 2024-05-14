@@ -54,7 +54,7 @@ pipeline {
                                 git url: git_url, branch: git_ref
                                 databaseFile("${env.JOB_NAME}-${env.BUILD_ID}-ui")
                                 configureDatabase(env.RUBY_VER)
-                                withRuby(env.RUBY_VER, 'npm install --no-audit')
+                                withRuby(env.RUBY_VER, 'npm install --no-audit --legacy-peer-deps')
                                 archiveArtifacts(artifacts: 'package-lock.json')
                             }
                         }
@@ -86,7 +86,7 @@ pipeline {
                                 bundleInstall(env.RUBY_VER, '--without=development')
                                 sh "cp db/schema.rb.nulldb db/schema.rb"
                                 filter_package_json(env.RUBY_VER)
-                                withRuby(env.RUBY_VER, 'npm install --no-audit')
+                                withRuby(env.RUBY_VER, 'npm install --no-audit --legacy-peer-deps')
                             }
                         }
                         stage("assets-precompile-2.7-nulldb") {
