@@ -46,6 +46,8 @@ def convert_to_dist(chroot) {
         return 'el8'
     } else if(chroot == 'rhel-7-x86_64') {
         return 'el7'
+    } else if(chroot == 'opensuse-leap-15.5-x86_64') {
+       return 'leap155'
     } else {
         return null
     }
