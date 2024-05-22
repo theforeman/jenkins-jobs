@@ -15,6 +15,7 @@ cp $APP_ROOT/config/settings.yaml.example $APP_ROOT/config/settings.yaml
 echo "Setting up rbenv environment."
 export PATH="$HOME/.rbenv/shims:$PATH"
 export RBENV_VERSION=${ruby}
+export jobid=$(echo ${JOB_NAME} | cut -d/ -f1)-${EXECUTOR_NUMBER}
 
 if [ "${ruby}" = '2.7.6' ]
 then
@@ -32,11 +33,11 @@ bundle exec rake rubocop
 
 # Database environment
 (
-  sed "s/^test:/development:/; s/database:.*/database: ${gemset}-dev/" $HOME/postgresql.db.yaml
+  sed "s/^test:/development:/; s/database:.*/database: ${jobid}-dev/" $HOME/postgresql.db.yaml
   echo
-  sed "s/^test:/production:/; s/database:.*/database: ${gemset}-prod/" $HOME/postgresql.db.yaml
+  sed "s/^test:/production:/; s/database:.*/database: ${jobid}-prod/" $HOME/postgresql.db.yaml
   echo
-  sed "s/database:.*/database: ${gemset}-test/" $HOME/postgresql.db.yaml
+  sed "s/database:.*/database: ${jobid}-test/" $HOME/postgresql.db.yaml
 ) > $APP_ROOT/config/database.yml
 
 # we need to install node modules for integration tests
