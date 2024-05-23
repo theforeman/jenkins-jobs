@@ -40,15 +40,11 @@ def copr_repos(package_name) {
 }
 
 def convert_to_dist(chroot) {
-    if(chroot == 'rhel-9-x86_64') {
-        return 'el9'
-    } else if(chroot == 'rhel-8-x86_64') {
-        return 'el8'
-    } else if(chroot == 'rhel-7-x86_64') {
-        return 'el7'
-    } else if(chroot == 'opensuse-leap-15.5-x86_64') {
-       return 'leap155'
-    } else {
-        return null
-    }
+    def family_map = ['rhel': 'el', 'centos-stream': 'el', 'opensuse-leap': 'leap']
+
+    chroot_parts = chroot.split('-')
+    os = chroot_parts[0..-3].join('-')
+    version = chroot_parts[-2].replace('.', '')
+
+    return "${family_map[os]}${version}"
 }
