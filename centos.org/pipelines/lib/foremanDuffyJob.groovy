@@ -88,7 +88,7 @@ pipeline {
                             def username = "pipe-${os}-${action}"
                             def boxname = "${username}@duffy_box"
                             branches[name] = {
-                                def playBook = pipelineVars(action: action, type: params.type, version: params.version, os: os, extra_vars: ['expected_version': params.expected_version ?: ''])
+                                def playBook = pipelineVars(action: action, type: params.type, version: params.version, os: os, extra_vars: ['foreman_expected_version': params.expected_version ?: ''])
                                 def extra_vars = buildExtraVars(extraVars: playBook['extraVars'])
                                 def playbooks = duffy_ssh("ls forklift/pipelines/${playBook['pipeline']}", boxname, './', true)
                                 playbooks = playbooks.split("\n")
@@ -118,7 +118,7 @@ pipeline {
                         def username = "pipe-${os}-${action}"
                         def boxname = "${username}@duffy_box"
                         branches[name] = {
-                            def playBook = pipelineVars(action: action, type: params.type, version: params.version, os: os, extra_vars: ['expected_version': params.expected_version ?: ''])
+                            def playBook = pipelineVars(action: action, type: params.type, version: params.version, os: os, extra_vars: ['foreman_expected_version': params.expected_version ?: ''])
                             def extra_vars = buildExtraVars(extraVars: playBook['extraVars'])
                             try {
                                 duffy_ssh("source otel_env && cd forklift && ansible-playbook playbooks/collect_debug.yml --limit '${playBook['boxes'].join(',')}' ${extra_vars}", boxname, './')
