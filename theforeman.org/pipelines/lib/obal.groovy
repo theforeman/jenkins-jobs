@@ -8,9 +8,9 @@ def obal(args) {
     }
 
     if (env.NODE_LABELS.contains('el8')) {
-        python = 'python3.11'
+        python = 'python3.12'
     } else {
-        python = 'python'
+        python = 'python3'
     }
 
     def cmd = "${python} -m obal ${args.action} ${packages}"
