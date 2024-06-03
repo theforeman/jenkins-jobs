@@ -6,7 +6,8 @@ def candlepin_distros = [
 ]
 def pipelines = [
     'candlepin': [
-        'centos8-stream',
-        'centos9-stream'
+        'centos9-stream',
+        'almalinux8',
+        'almalinux9',
     ]
 ]
