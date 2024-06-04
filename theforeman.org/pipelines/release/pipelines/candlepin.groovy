@@ -10,7 +10,10 @@ pipeline {
 
     environment {
         PROJECT = 'candlepin'
-        VERSION = candlepin_version
+    }
+
+    script {
+        env.VERSION = candlepin_version
     }
 
     stages {

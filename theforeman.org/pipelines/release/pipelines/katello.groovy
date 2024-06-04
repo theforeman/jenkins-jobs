@@ -10,7 +10,10 @@ pipeline {
 
     environment {
         PROJECT = 'katello'
-        VERSION = katello_version
+    }
+
+    script {
+        env.VERSION = katello_version
     }
 
     stages {

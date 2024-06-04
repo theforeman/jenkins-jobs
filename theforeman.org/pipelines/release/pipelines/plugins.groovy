@@ -10,7 +10,10 @@ pipeline {
 
     environment {
         PROJECT = 'plugins'
-        VERSION = foreman_version
+    }
+
+    script {
+        env.VERSION = foreman_version
     }
 
     stages {

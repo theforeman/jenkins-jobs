@@ -10,7 +10,10 @@ pipeline {
 
     environment {
         PROJECT = 'pulpcore'
-        VERSION = pulpcore_version
+    }
+
+    script {
+        env.VERSION = pulpcore_version
     }
 
     stages {
