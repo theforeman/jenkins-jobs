@@ -8,35 +8,29 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { foreman_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'foreman'
+    }
 
-                script {
-                    foreman_el_releases.each { distro ->
-                        sh "./build_stage_repository foreman ${foreman_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
+    script {
+        env.VERSION = foreman_version
+    }
+
+    stages {
+        stage('staging-repository') {
             when {
-                expression { foreman_version == 'nightly' }
+                expression { env.VERSION == 'nightly' }
             }
             steps {
                 script {
-                    rsync_to_yum_stage('foreman', foreman_version)
+                    rsync_to_yum_stage
                 }
             }
         }
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('foreman-staging', foreman_el_releases, foreman_version)
+                    parallel repoclosures("${env.PROJECT}-staging", foreman_el_releases, env.VERSION)
                 }
             }
             post {
@@ -50,7 +44,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('foreman-rpm', foreman_version)
+                    runDuffyPipeline("${env.PROJECT}-rpm", env.VERSION)
                 }
             }
         }
@@ -60,7 +54,7 @@ pipeline {
             steps {
                 script {
                     foreman_el_releases.each { distro ->
-                        push_foreman_staging_rpms('foreman', foreman_version, distro)
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -68,7 +62,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, 'Foreman RPM nightly pipeline failed:', currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

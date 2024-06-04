@@ -8,29 +8,26 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'plugins'
+    }
 
-                script {
-                    foreman_el_releases.each { distro ->
-                        sh "./build_stage_repository plugins ${foreman_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
+    script {
+        env.VERSION = foreman_version
+    }
+
+    stages {
+        stage('staging-repository') {
             steps {
                 script {
-                    rsync_to_yum_stage('plugins', foreman_version)
+                    rsync_to_yum_stage
                 }
             }
         }
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('plugins-staging', foreman_el_releases, foreman_version)
+                    parallel repoclosures("${env.PROJECT}-staging", foreman_el_releases, env.VERSION)
                 }
             }
             post {
@@ -45,7 +42,7 @@ pipeline {
             steps {
                 script {
                     foreman_el_releases.each { distro ->
-                        push_foreman_staging_rpms('plugins', foreman_version, distro)
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -53,7 +50,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Plugins ${foreman_version} pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

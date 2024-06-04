@@ -8,28 +8,22 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { katello_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'katello'
+    }
 
-                script {
-                    foreman_el_releases.each { distro ->
-                        sh "./build_stage_repository katello ${katello_version} ${distro} ${foreman_version}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
+    script {
+        env.VERSION = katello_version
+    }
+
+    stages {
+        stage('staging-repository') {
             when {
-                expression { katello_version == 'nightly' }
+                expression { env.VERSION == 'nightly' }
             }
             steps {
                 script {
-                    rsync_to_yum_stage('katello', katello_version)
+                    rsync_to_yum_stage
                 }
             }
         }
@@ -50,7 +44,7 @@ pipeline {
 
             steps {
                 script {
-                    runDuffyPipeline('katello-rpm', katello_version)
+                    runDuffyPipeline("${env.PROJECT}-rpm", env.VERSION)
                 }
             }
         }
@@ -60,7 +54,7 @@ pipeline {
             steps {
                 script {
                     foreman_el_releases.each { distro ->
-                        push_foreman_staging_rpms('katello', katello_version, distro)
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -68,7 +62,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Katello ${katello_version} pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }
