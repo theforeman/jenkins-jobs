@@ -36,7 +36,7 @@ pipeline {
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('pulpcore-staging', foreman_el_releases, foreman_version)
+                    parallel repoclosures('pulpcore-staging', pulpcore_distros, pulpcore_version)
                 }
             }
             post {
