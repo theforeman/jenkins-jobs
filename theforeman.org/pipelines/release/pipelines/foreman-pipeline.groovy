@@ -10,7 +10,7 @@ pipeline {
 
     stages {
         stage('Staging Repoclosure') {
-            agent { label 'el8' }
+            agent { label 'el' }
 
             steps {
                 script {

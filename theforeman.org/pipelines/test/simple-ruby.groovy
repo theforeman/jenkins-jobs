@@ -1,7 +1,7 @@
 def ruby = '2.7.6'
 
 pipeline {
-    agent { label 'el8' }
+    agent { label 'el' }
     options {
         timeout(time: 1, unit: 'HOURS')
         ansiColor('xterm')
