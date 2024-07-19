@@ -61,11 +61,7 @@ production:
 }
 
 def filter_package_json(ruby) {
-    if (env.NODE_LABELS.contains('el8')) {
-        python = 'python3.12'
-    } else {
-        python = 'python3'
-    }
+    python = 'python3'
 
     sh "${python} script/filter-package-json.py"
 
