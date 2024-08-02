@@ -1,0 +1,21 @@
+#!/bin/bash
+
+CANDLEPIN_VERSION=$1
+
+if [[ -z $CANDLEPIN_VERSION ]] ; then
+	echo "Usage: $0 CANDLEPIN_VERSION"
+	exit 1
+fi
+
+set -e
+
+sed -e "/candlepin_version/ s/nightly/${CANDLEPIN_VERSION}/" \
+	-e "/packaging_branch/ s/develop/${CANDLEPIN_VERSION}/" \
+	theforeman.org/pipelines/vars/candlepin/nightly.groovy > "theforeman.org/pipelines/vars/candlepin/${CANDLEPIN_VERSION}.groovy"
+git add "theforeman.org/pipelines/vars/candlepin/${CANDLEPIN_VERSION}.groovy"
+
+echo "- '${CANDLEPIN_VERSION}'" >> theforeman.org/yaml/includes/candlepin_versions.yaml.inc
+git add theforeman.org/yaml/includes/candlepin_versions.yaml.inc
+
+sed -i "/nightly/i \ \ \ \ \ \ - '${CANDLEPIN_VERSION}'" centos.org/jobs/candlepin-pipelines.yml
+git add centos.org/jobs/candlepin-pipelines.yml
