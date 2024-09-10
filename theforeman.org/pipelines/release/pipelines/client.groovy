@@ -57,4 +57,9 @@ pipeline {
             }
         }
     }
+    post {
+        failure {
+            notifyDiscourse(env, "Foreman Client ${foreman_version} RPM pipeline failed:", currentBuild.description)
+        }
+    }
 }
