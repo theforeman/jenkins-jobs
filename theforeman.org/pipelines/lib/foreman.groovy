@@ -18,9 +18,9 @@ def configureDatabase(ruby) {
     bundleInstall(ruby, '--without=development')
     archiveArtifacts(artifacts: 'Gemfile.lock')
     bundleExec(ruby, 'rake db:drop >/dev/null 2>/dev/null || true')
-    bundleExec(ruby, 'rake db:create --trace')
+    bundleExec(ruby, 'rake db:create --trace RAILS_ENV=test')
     bundleExec(ruby, 'rake db:create --trace RAILS_ENV=production')
-    bundleExec(ruby, 'rake db:migrate --trace')
+    bundleExec(ruby, 'rake db:migrate --trace RAILS_ENV=test')
 }
 
 def cleanup(ruby) {
