@@ -9,6 +9,7 @@
           url: https://github.com/theforeman/smart-proxy
     triggers:
       - github
+      - timed: '@daily'
     dsl:
       !include-raw-verbatim:
         - pipelines/vars/smart-proxy-develop-release.groovy

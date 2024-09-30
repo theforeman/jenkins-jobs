@@ -9,6 +9,7 @@
           url: 'https://github.com/theforeman/hammer-cli'
     triggers:
       - github
+      - timed: '@daily'
     dsl:
       !include-raw-verbatim:
         - pipelines/vars/hammer-cli-master.groovy
