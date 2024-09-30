@@ -9,6 +9,7 @@
           url: 'https://github.com/Katello/hammer-cli-katello'
     triggers:
       - github
+      - timed: '@daily'
     dsl:
       !include-raw-verbatim:
         - pipelines/vars/hammer-cli-katello-master.groovy

@@ -8,6 +8,7 @@
           url: https://github.com/Katello/katello
     triggers:
       - github
+      - timed: '@daily'
     dsl:
       !include-raw-verbatim:
         - pipelines/vars/katello-master-release.groovy
