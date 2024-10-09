@@ -7,8 +7,7 @@ def foreman_client_distros = [
     'el7'
 ]
 def foreman_el_releases = [
-    'el9',
-    'el8'
+    'el9'
 ]
 def foreman_debian_releases = ['bullseye', 'bookworm', 'focal', 'jammy']
 
