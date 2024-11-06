@@ -37,7 +37,6 @@
     name: smart-proxy-plugin-pull-request
     plugin:
       - ansible
-      - openscap
       - remote_execution_ssh
     jobs:
       - 'smart-proxy-{plugin}-pull-request'
