@@ -44,7 +44,6 @@
           branch: develop # have to be the special child
       - monitoring
       - omaha
-      - openscap
       - pulp
       - remote_execution_ssh
       - salt
