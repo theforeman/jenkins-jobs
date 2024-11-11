@@ -78,25 +78,6 @@ Current PR test jobs (used on Foreman itself) support these commands:
 * `ok to test` - run tests for an unknown user, if the code within the patch is not malicious
 * `[test STATUS-NAME]`, e.g. `[test foreman]` to re-run a particular set of tests
 
-## Quick reference for plugin maintainers
-
-### Smart proxy plugin testing
-
-Proxy plugins are tested like ordinary gems with tests run entirely from the plugin directory, installing the smart proxy as a dependency (via bundler's git support).
-
-To add testing for a plugin `smart_proxy_example` do the following:
-
-* ensure plugin tests run when doing `bundle install` and `rake test`, see [testing a plugin](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Smart-Proxy_Plugin#Testing) for help
-* if different branches rely on different versions of smart proxy, specify `:branch` in Gemfile on those branches
-* add the project in [theforeman.org/yaml/jobs/smart-proxy-plugin.yaml](https://github.com/theforeman/jenkins-jobs/tree/master/theforeman.org/yaml/jobs/smart-proxy-plugin.yaml) to create a `smart-proxy-example-test` job in Jenkins to test the master branch.
-* add the project in [theforeman.org/yaml/jobs/smart-proxy-plugin-pr-test.yaml](https://github.com/theforeman/jenkins-jobs/tree/master/theforeman.org/yaml/jobs/tests/smart-proxy-plugin-pr-test.yaml) to create a `smart_proxy_example-pr-test` job in Jenkins to test PRs.
-* ensure the job is green by fixing bugs, installing dependencies etc.
-* add hook to GitHub repo, see [GitHub repo hook](#testing-develop)
-
-An org admin must then:
-
-* add the repo to the [Bots team](https://github.com/orgs/theforeman/teams/bots/repositories) with **write** access
-
 # Foreman's Other Tests
 
 Jenkins is not the only place tests are defined and executed.
