@@ -60,9 +60,8 @@ pipeline {
                 }
                 stage('rubocop') {
                     steps {
-                        dir('foreman') {
-                            bundleExec(ruby, 'rake katello:rubocop TESTOPTS="-v" --trace')
-                        }
+                        bundleInstall(ruby)
+                        bundleExec(ruby, 'rubocop --parallel')
                     }
                 }
                 stage('react-ui') {
