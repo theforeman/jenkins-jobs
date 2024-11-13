@@ -27,11 +27,9 @@ def pipelines_deb = [
 def pipelines_el = [
     'install': [
         'centos9-stream',
-        'almalinux9',
     ],
     'upgrade': [
         'centos9-stream',
-        'almalinux9',
     ]
 ]
 
