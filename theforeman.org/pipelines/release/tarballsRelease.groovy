@@ -89,7 +89,7 @@ void build_tarball(project, version, ruby_ver) {
         bundleExec(ruby_ver, "rake pkg:generate_source")
 
         sshagent(['deploy-downloads']) {
-            sh "rsync -v --ignore-existing pkg/* downloads@web01.osuosl.theforeman.org:${base_dir}/"
+            sh "rsync -v --ignore-existing pkg/* downloads@website01.osuosl.theforeman.org:${base_dir}/"
         }
     }
 }
