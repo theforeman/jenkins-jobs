@@ -11,7 +11,7 @@ pipeline {
     environment {
         ruby = '2.7.6'
         // Sync to the pivot-point on the web node
-        target_path = 'website@web01.osuosl.theforeman.org:rsync_cache/'
+        target_path = 'website@website01.osuosl.theforeman.org:rsync_cache/'
         rsync_log = 'deploy-website.log'
     }
 
