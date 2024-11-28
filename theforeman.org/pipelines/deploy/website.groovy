@@ -32,9 +32,7 @@ pipeline {
                     sh "/usr/bin/rsync --log-file '${rsync_log}' --log-file-format 'CHANGED %f' --archive --checksum --verbose --one-file-system --compress --stats --delete-after ./_site/ ${target_path}"
                 }
 
-                sh "cat '${rsync_log}'"
-                // this should become something like this later:
-                // sh "awk '/ CHANGED /{print $5}' '${rsync_log}' | xargs --no-run-if-empty fastly-purge 'https://theforeman.org/'"
+                sh "awk '/ CHANGED /{print \$5}' '${rsync_log}' | sed 's#_site/##' | xargs --no-run-if-empty fastly-purge 'https://theforeman.org/'"
                 sh "rm '${rsync_log}'"
             }
         }
