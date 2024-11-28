@@ -9,7 +9,7 @@
           url: https://github.com/theforeman/pulpcore-packaging
     triggers:
       - github_pr_rpm:
-          context: 'rpm-copr'
+          context: 'rpm'
     dsl:
       !include-raw-verbatim:
         - pipelines/test/rpm_copr_packaging.groovy
