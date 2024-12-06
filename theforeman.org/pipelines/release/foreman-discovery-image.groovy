@@ -46,7 +46,7 @@ pipeline {
                 script {
                     base_dir = "/var/www/vhosts/downloads/htdocs/discovery"
                     destination_user = 'downloads'
-                    destination_server = 'web01.osuosl.theforeman.org'
+                    destination_server = 'website01.osuosl.theforeman.org'
                     destination_dir = "${base_dir}/${output_dir}"
 
                     sshagent(['deploy-downloads']) {
