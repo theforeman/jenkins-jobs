@@ -469,7 +469,7 @@ def rsync_to_debian_release(suite, component, deb_paths) {
 }
 
 def rsync_debian(user, ssh_key, suite, component, deb_paths) {
-    def hosts = ["web01.osuosl.theforeman.org", "repo-deb01.osuosl.theforeman.org"]
+    def hosts = ["repo-deb01.osuosl.theforeman.org"]
 
     for(host in hosts) {
         def target_path = "${user}@${host}:rsync_cache/${suite}/${component}/"
