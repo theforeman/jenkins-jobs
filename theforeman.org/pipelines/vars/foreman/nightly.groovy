@@ -2,6 +2,7 @@ def foreman_version = 'nightly'
 def git_branch = "develop"
 
 def foreman_client_distros = [
+    'el10',
     'el9',
     'el8',
     'el7'
