@@ -10,7 +10,7 @@ void push_rpms_direct(repo_source, repo_dest, overwrite = true, merge = false) {
 
 void push_debs_direct(os, repo) {
     sshagent(['freight']) {
-        sh "ssh freight@web01.osuosl.theforeman.org deploy ${os} ${repo}"
+        sh "ssh freight@repo-deb01.osuosl.theforeman.org deploy ${os} ${repo}"
     }
 }
 
