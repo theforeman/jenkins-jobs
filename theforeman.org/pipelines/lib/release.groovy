@@ -4,7 +4,6 @@ void push_rpms(repo_src, repo_dest, version, distro, keep_old_files = false) {
 
 void push_rpms_direct(repo_source, repo_dest, overwrite = true, merge = false) {
     sshagent(['repo-sync']) {
-        sh "ssh yumrepo@web01.osuosl.theforeman.org ${repo_source} ${repo_dest} ${overwrite} ${merge}"
         sh "ssh yumrepo@repo-rpm01.osuosl.theforeman.org ${repo_source} ${repo_dest} ${overwrite} ${merge}"
     }
 }
