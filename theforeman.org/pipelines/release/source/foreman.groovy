@@ -8,98 +8,66 @@ pipeline {
         buildDiscarder(logRotator(daysToKeepStr: '7'))
     }
 
+    environment {
+        RUBY_VERSION = '2.7.6'
+        BUNDLE_WITHOUT = 'development'
+        TESTOPTS = '-v'
+    }
+
     stages {
         stage('Test Matrix') {
-            parallel {
-                stage('ruby-2.7-postgres') {
-                    agent { label 'fast' }
-                    environment {
-                        RUBY_VER = '2.7.6'
+            matrix {
+                agent { label 'fast' }
+                axes {
+                    axis {
+                        name 'RAKE_TASK'
+                        values 'jenkins:unit', 'jenkins:integration', 'assets:precompile'
                     }
-                    stages {
-                        stage("setup-2.7-postgres") {
-                            steps {
-                                git url: git_url, branch: git_ref
-                                script {
-                                    archive_git_hash()
+                }
+                environment {
+                    RAILS_ENV = railsEnvForTask(RAKE_TASK)
+                    DATABASE_URL = databaseUrlForTask(RAKE_TASK)
+                }
+                stages {
+                    stage('setup') {
+                        steps {
+                            git url: git_url, branch: git_ref
+                            script {
+                                archive_git_hash()
+                            }
+                            bundleInstall(RUBY_VERSION)
+                            archiveArtifacts(artifacts: 'Gemfile.lock')
+                            script {
+                                if (RAKE_TASK == 'assets:precompile') {
+                                    sh "cp db/schema.rb.nulldb db/schema.rb"
+                                    filter_package_json(RUBY_VERSION)
                                 }
-                                databaseFile("${env.JOB_NAME}-${env.BUILD_ID}")
-                                configureDatabase(env.RUBY_VER)
-                            }
-                        }
-                        stage("unit-tests-2.7-postgres") {
-                            steps {
-                                bundleExec(env.RUBY_VER, 'rake jenkins:unit TESTOPTS="-v" --trace')
+                                if (RAKE_TASK == 'jenkins:integration' || RAKE_TASK == 'assets:precompile' ){
+                                    withRuby(RUBY_VERSION, 'npm install --no-audit --legacy-peer-deps')
+                                    archiveArtifacts(artifacts: 'package-lock.json')
+                                }
                             }
                         }
                     }
-                    post {
-                        always {
-                            junit(testResults: 'jenkins/reports/unit/*.xml')
+                    stage('database') {
+                        steps {
+                            bundleExec(RUBY_VERSION, "rake db:create --trace")
+                            bundleExec(RUBY_VERSION, "rake db:migrate --trace")
                         }
-                        cleanup {
-                            cleanup(env.RUBY_VER)
-                            deleteDir()
+                    }
+                    stage('rake task') {
+                        steps {
+                            bundleExec(RUBY_VERSION, "rake ${RAKE_TASK} --trace")
                         }
                     }
                 }
-                stage('ruby-2.7-postgres-integrations') {
-                    agent { label 'fast' }
-                    environment {
-                        RUBY_VER = '2.7.6'
+                post {
+                    always {
+                        junit(testResults: 'jenkins/reports/*/*.xml', allowEmptyResults: RAKE_TASK == 'assets:precompile')
                     }
-                    stages {
-                        stage("setup-2.7-postgres-ui") {
-                            steps {
-                                git url: git_url, branch: git_ref
-                                databaseFile("${env.JOB_NAME}-${env.BUILD_ID}-ui")
-                                configureDatabase(env.RUBY_VER)
-                                withRuby(env.RUBY_VER, 'npm install --no-audit --legacy-peer-deps')
-                                archiveArtifacts(artifacts: 'package-lock.json')
-                            }
-                        }
-                        stage("integration-tests-2.7-postgres-ui") {
-                            steps {
-                                bundleExec(env.RUBY_VER, 'rake jenkins:integration TESTOPTS="-v" --trace')
-                            }
-                        }
-                    }
-                    post {
-                        always {
-                            junit(testResults: 'jenkins/reports/unit/*.xml')
-                        }
-                        cleanup {
-                            cleanup(env.RUBY_VER)
-                            deleteDir()
-                        }
-                    }
-                }
-                stage('ruby-2.7-nulldb-assets') {
-                    agent { label 'fast' }
-                    environment {
-                        RUBY_VER = '2.7.6'
-                    }
-                    stages {
-                        stage("setup-2.7-nulldb") {
-                            steps {
-                                git url: git_url, branch: git_ref
-                                bundleInstall(env.RUBY_VER, '--without=development')
-                                sh "cp db/schema.rb.nulldb db/schema.rb"
-                                filter_package_json(env.RUBY_VER)
-                                withRuby(env.RUBY_VER, 'npm install --no-audit --legacy-peer-deps')
-                            }
-                        }
-                        stage("assets-precompile-2.7-nulldb") {
-                            steps {
-                                bundleExec(env.RUBY_VER, 'rake assets:precompile RAILS_ENV=production DATABASE_URL=nulldb://nohost')
-                            }
-                        }
-                    }
-                    post {
-                        cleanup {
-                            cleanup(env.RUBY_VER)
-                            deleteDir()
-                        }
+                    cleanup {
+                        bundleExec(RUBY_VERSION, 'rake db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=true')
+                        deleteDir()
                     }
                 }
             }
@@ -110,7 +78,7 @@ pipeline {
                     git url: git_url, branch: git_ref
                 }
                 script {
-                    sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type)
+                    sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type, ruby_version: RUBY_VERSION)
                 }
             }
         }
