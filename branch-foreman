@@ -24,6 +24,3 @@ echo "- '${FOREMAN_VERSION}'" >> theforeman.org/yaml/includes/foreman_versions.y
 echo "- '${FOREMAN_VERSION}'" >> theforeman.org/yaml/includes/foreman_versions_copr.yaml.inc
 
 echo "      - '${KATELLO_VERSION}'" >> theforeman.org/yaml/jobs/pipeline/katello-rpm-pipeline.yaml
-
-# TODO This is a non-trivial addition to script
-echo "Add ${FOREMAN_VERSION%*.} as a minor to theforeman.org/yaml/views/release.yml"
