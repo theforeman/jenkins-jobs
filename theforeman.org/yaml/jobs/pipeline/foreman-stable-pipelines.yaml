@@ -1,4 +1,18 @@
 - job-template:
+    name: 'foreman-{version}-stable-test'
+    project-type: pipeline
+    sandbox: true
+    properties:
+      - github:
+          url: https://github.com/theforeman/foreman
+    dsl:
+      !include-raw-verbatim:
+        - 'pipelines/vars/foreman/{version}.groovy'
+        - 'pipelines/test/foreman.groovy{empty}'
+        - 'pipelines/lib/foreman.groovy{empty}'
+        - 'pipelines/lib/rbenv.groovy{empty}'
+
+- job-template:
     name: 'smart-proxy-{version}-stable-test'
     project-type: pipeline
     sandbox: true
@@ -14,6 +28,7 @@
 - project:
     name: foreman-stable
     jobs:
+      - 'foreman-{version}-stable-test'
       - 'smart-proxy-{version}-stable-test'
     empty: ''
     version:

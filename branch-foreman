@@ -25,8 +25,5 @@ echo "- '${FOREMAN_VERSION}'" >> theforeman.org/yaml/includes/foreman_versions_c
 
 echo "      - '${KATELLO_VERSION}'" >> theforeman.org/yaml/jobs/pipeline/katello-rpm-pipeline.yaml
 
-# TODO This should be a templated pipeline
-echo "Create theforeman.org/yaml/jobs/test_${FOREMAN_VERSION/./_}_stable.yaml"
-
 # TODO This is a non-trivial addition to script
 echo "Add ${FOREMAN_VERSION%*.} as a minor to theforeman.org/yaml/views/release.yml"
