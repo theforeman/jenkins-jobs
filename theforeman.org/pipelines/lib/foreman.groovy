@@ -10,10 +10,6 @@ def addGem() {
     }
 }
 
-def addSettings(settings) {
-    sh "cp config/settings.yaml.example config/settings.yaml"
-}
-
 def configureDatabase(ruby) {
     bundleInstall(ruby, '--without=development')
     archiveArtifacts(artifacts: 'Gemfile.lock')
