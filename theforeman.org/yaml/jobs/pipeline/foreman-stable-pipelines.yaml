@@ -30,6 +30,8 @@
     jobs:
       - 'foreman-{version}-stable-test'
       - 'smart-proxy-{version}-stable-test'
+    views:
+      - 'Foreman {version}'
     empty: ''
     version:
       !include: ../../includes/foreman_versions.yaml.inc

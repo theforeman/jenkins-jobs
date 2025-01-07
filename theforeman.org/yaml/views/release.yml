@@ -1,19 +1,8 @@
 - view-template:
-    name: 'Foreman {major}.{minor}'
-    description: 'Foreman {major}.{minor} jobs'
+    name: 'Foreman {version}'
+    description: 'Foreman {version} jobs'
     view-type: list
-    regex: '.*{major}[_\.]{minor}.*'
-
-- project:
-    name: 'foreman-releases'
-    views:
-        - 'Foreman {major}.{minor}'
-    major:
-        - '3'
-    minor:
-        - '12'
-        - '13'
-        - '14'
+    regex: '.*-{version}-.*'
 
 - view:
     name: 'Foreman Nightly'
