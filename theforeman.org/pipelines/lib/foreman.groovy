@@ -1,3 +1,16 @@
+def databaseUrlForTask(task) {
+    if (task == 'assets:precompile') {
+        return 'nulldb://nohost'
+    } else {
+        database = UUID.randomUUID().toString()
+        return "postgresql://foreman:foreman@localhost/foreman-${database}"
+    }
+}
+
+def railsEnvForTask(task) {
+    return task == 'assets:precompile' ? 'production' : 'test'
+}
+
 def databaseFile(id) {
     text = postgresqlTemplate(id)
     writeFile(file: 'config/database.yml', text: text)
