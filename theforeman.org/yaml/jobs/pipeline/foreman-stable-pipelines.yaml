@@ -8,7 +8,6 @@
     dsl:
       !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
-        - 'pipelines/lib/stable/smart-proxy.groovy{empty}'
         - 'pipelines/test/smart-proxy.groovy{empty}'
         - 'pipelines/lib/rbenv.groovy{empty}'
 
