@@ -17,6 +17,10 @@ pipeline {
         buildDiscarder(logRotator(daysToKeepStr: '7'))
     }
 
+    triggers {
+        upstream(upstreamProjects: source_project_name, threshold: hudson.model.Result.SUCCESS)
+    }
+
     stages {
         stage('Build Package') {
             parallel {
