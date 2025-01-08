@@ -2,7 +2,6 @@
     name: ghprb_defaults
     org-list:
       - theforeman
-      - katello
     white-list:
       - 'github-actions[bot]'
       - 'github-actions'
@@ -16,12 +15,6 @@
     started-status: 'Test running'
     status-add-test-results: true
     cancel-builds-on-update: true
-
-- trigger:
-    name: github_pr
-    triggers:
-      - github-pull-request:
-          <<: *ghprb_defaults
 
 - trigger:
     name: github_pr_deb
