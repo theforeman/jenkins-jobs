@@ -61,9 +61,7 @@ pipeline {
                 stages {
                     stage('Setup Git Repos') {
                         steps {
-                            script {
-                                git_checkout()
-                            }
+                            git branch: git_branch, url: 'https://github.com/theforeman/smart-proxy'
                         }
                     }
                     stage('Install dependencies') {
