@@ -3,7 +3,7 @@
 This repository contains all the job definitions and supporting code used in Jenkins jobs used by the Foreman project on it's own ci system [ci.theforeman.org](https://ci.theforeman.org) and [ci.centos.org](https://jenkins-foreman.apps.ocp.cloud.ci.centos.org/).
 We use Jenkins for our nightly and release package building.
 Those are composed in packaging release pipelines and tested by calling out to CentOS CI to provision VMs for end to end testing of installations.
-Then lastly there are a job to deploy our website and deploy our Puppet environment.
+Then lastly there are jobs to deploy our website, our Jenkins configuration and our Puppet environment.
 
 ## Jenkins Job Builder
 
