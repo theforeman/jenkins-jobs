@@ -1,12 +1,9 @@
 pipeline {
     agent none
+
     options {
         timeout(time: 1, unit: 'HOURS')
         ansiColor('xterm')
-    }
-    environment {
-        BUNDLE_JOBS = 4
-        BUNDLE_RETRY = 3
     }
 
     stages {
@@ -59,7 +56,7 @@ pipeline {
                     BUNDLE_WITHOUT = 'development'
                 }
                 stages {
-                    stage('Setup Git Repos') {
+                    stage("Clone repository") {
                         steps {
                             git branch: git_branch, url: 'https://github.com/theforeman/smart-proxy'
                         }
@@ -67,9 +64,10 @@ pipeline {
                     stage('Install dependencies') {
                         steps {
                             bundleInstall(ruby)
+                            archiveArtifacts(artifacts: 'Gemfile.lock')
                         }
                     }
-                    stage('Run Tests') {
+                    stage('Run tests') {
                         environment {
                             // ci_reporters gem
                             CI_REPORTS = 'jenkins/reports/unit'
@@ -89,7 +87,6 @@ pipeline {
                 }
                 post {
                     always {
-                        archiveArtifacts artifacts: 'Gemfile.lock'
                         deleteDir()
                     }
                 }
