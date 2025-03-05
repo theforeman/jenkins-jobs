@@ -37,6 +37,11 @@ pipeline {
                         }
                     }
                 }
+                post {
+                    always {
+                        deleteDir()
+                    }
+                }
             }
         }
         stage('Build and Archive Source') {
