@@ -1,5 +1,6 @@
 def foreman_version = '3.12'
 def git_branch = "${foreman_version}-stable"
+def ruby_version = '2.7.6'
 
 def foreman_client_distros = [
     'el9',
