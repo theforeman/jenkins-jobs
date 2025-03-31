@@ -47,6 +47,9 @@ pipeline {
                         }
                     }
                     stage('database') {
+                        when {
+                            expression { RAKE_TASK != 'assets:precompile' }
+                        }
                         steps {
                             bundleExec(RUBY_VERSION, "rake db:create --trace")
                             bundleExec(RUBY_VERSION, "rake db:migrate --trace")
