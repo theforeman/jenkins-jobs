@@ -8,35 +8,31 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { pulpcore_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'pulpcore'
+        PIPELINE = "${PROJECT}-rpm"
+        REPOCLOSURE = "${PROJECT}-staging"
+    }
 
-                script {
-                    pulpcore_distros.each { distro ->
-                        sh "./build_stage_repository pulpcore ${pulpcore_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
-            when {
-                expression { pulpcore_version == 'nightly' }
-            }
+    script {
+        env.DISTROS = pulpcore_distros
+        env.VERSION = pulpcore_version
+    }
+
+    stages {
+        stage('staging-repository') {
+            when { environment name: 'VERSION', value: 'nightly' }
+
             steps {
                 script {
-                    rsync_to_yum_stage('pulpcore', pulpcore_version)
+                    rsync_to_yum_stage
                 }
             }
         }
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('pulpcore-staging', pulpcore_distros, pulpcore_version)
+                    parallel repoclosures(env.REPOCLOSURE, env.DISTROS, env.VERSION)
                 }
             }
             post {
@@ -48,9 +44,11 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when { not { environment name: 'PIPELINE', value: '' } }
+
             steps {
                 script {
-                    runDuffyPipeline('pulpcore-rpm', pulpcore_version)
+                    runDuffyPipeline(env.PIPELINE, env.VERSION)
                 }
             }
         }
@@ -59,8 +57,8 @@ pipeline {
 
             steps {
                 script {
-                    pulpcore_distros.each { distro ->
-                        push_foreman_staging_rpms('pulpcore', pulpcore_version, distro)
+                    env.DISTROS.each { distro ->
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -68,7 +66,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Pulpcore ${pulpcore_version} RPM pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }
