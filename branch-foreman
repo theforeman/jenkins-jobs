@@ -21,6 +21,4 @@ sed -i "/nightly/i \ \ \ \ \ \ - '${KATELLO_VERSION}'" centos.org/jobs/katello-p
 
 echo "- '${FOREMAN_VERSION}'" >> theforeman.org/yaml/includes/foreman_versions.yaml.inc
 
-echo "- '${FOREMAN_VERSION}'" >> theforeman.org/yaml/includes/foreman_versions_copr.yaml.inc
-
 echo "      - '${KATELLO_VERSION}'" >> theforeman.org/yaml/jobs/pipeline/katello-rpm-pipeline.yaml
