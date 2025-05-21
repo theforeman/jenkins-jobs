@@ -5,6 +5,7 @@
       - 'foreman-pipeline-{type}-{flavor}-{version}'
     empty: ''
     version:
+      - '4.15'
       - '4.16'
       - '4.17'
       - 'nightly'
