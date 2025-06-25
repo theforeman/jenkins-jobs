@@ -46,6 +46,7 @@ pipeline {
                 dir('foreman') {
                     bundleExec(ruby, "npm install --package-lock-only --no-audit --legacy-peer-deps")
                     bundleExec(ruby, "npm ci --no-audit --legacy-peer-deps")
+                    archiveArtifacts(artifacts: 'package-lock.json')
                 }
             }
         }
@@ -69,10 +70,10 @@ pipeline {
                         expression { fileExists('package.json') }
                     }
                     steps {
-                        sh(script: "npm install --package-lock-only --no-audit --legacy-peer-deps", label: "npm install --package-lock-only")
-                        archiveArtifacts(artifacts: 'package-lock.json')
-                        sh(script: "npm ci --no-audit --legacy-peer-deps", label: "npm ci")
-                        sh(script: 'JEST_TIMEOUT=300000 npm test', label: "npm test")
+                        dir('foreman') {
+                            bundleInstall(ruby)
+                            bundleExec(ruby, 'JEST_TIMEOUT=300000 npm run test:plugins katello')
+                        }
                     }
                 }
                 stage('angular-ui') {
