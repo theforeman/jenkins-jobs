@@ -69,10 +69,12 @@ pipeline {
                     when {
                         expression { fileExists('package.json') }
                     }
+                    environment {
+                        JEST_TIMEOUT = 300000
+                    }
                     steps {
                         dir('foreman') {
-                            bundleInstall(ruby)
-                            bundleExec(ruby, 'JEST_TIMEOUT=300000 npm run test:plugins katello')
+                            bundleExec(ruby, 'npm run test:plugins katello')
                         }
                     }
                 }
