@@ -17,9 +17,9 @@ pipeline {
                 }
             }
         }
-        stage("test ruby 2.7 & puppet 7") {
+        stage("test ruby 3.2 & puppet 8") {
             steps {
-                run_test(ruby: '2.7.6', puppet: '7')
+                run_test(ruby: '3.2.9', puppet: '8')
             }
         }
         stage('Build and Archive Source') {
