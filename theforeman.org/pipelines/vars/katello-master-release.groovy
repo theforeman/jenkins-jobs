@@ -5,4 +5,4 @@ def project_name = 'katello'
 def build_rpm = true
 def build_deb = false
 def source_type = 'gem'
-def ruby = '2.7.6'
+def ruby = '3.0.4'

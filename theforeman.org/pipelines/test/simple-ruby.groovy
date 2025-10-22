@@ -1,4 +1,4 @@
-def ruby = '2.7.6'
+def ruby = '3.0.4'
 
 pipeline {
     agent { label 'el' }
