@@ -1,7 +1,7 @@
 def generate_sourcefiles(args) {
     def sourcefile_paths = []
     def project_name = args.project_name
-    def ruby_version = args.ruby_version ?: '2.7.6'
+    def ruby_version = args.ruby_version ?: '3.0.4'
     def source_type = args.source_type
 
     dir(project_name) {
