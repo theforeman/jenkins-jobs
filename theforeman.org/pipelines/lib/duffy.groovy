@@ -10,18 +10,12 @@ def setupDuffyClient() {
 }
 
 def provisionDuffy() {
-    fix_ansible_config()
     git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')
 
   	dir('jenkins-jobs/centos.org/ansible') {
         runPlaybook(playbook: 'provision_duffy.yml')
         archiveArtifacts artifacts: 'ssh_config'
     }
-}
-
-def fix_ansible_config() {
-    // the yaml stdout callback is gone in ansible-core
-    sh(script: "sed -i /stdout_callback/d ansible.cfg", label: 'fix ansible config')
 }
 
 def deprovisionDuffy() {
