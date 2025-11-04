@@ -39,7 +39,7 @@ pipeline {
                 stage('Foreman Installer') {
                     steps {
                         verify_tag('foreman-installer', version)
-                        build_tarball('foreman-installer', version, ruby_ver)
+                        build_tarball('foreman-installer', version, '3.2.9')
                     }
                 }
             }

@@ -28,7 +28,7 @@ pipeline {
                     git url: git_url, branch: git_ref
                 }
                 script {
-                    sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type)
+                    sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type, ruby_version: '3.2.9')
                 }
             }
         }
