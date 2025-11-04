@@ -11,7 +11,7 @@ pipeline {
             agent any
             environment {
                 BUNDLE_WITHOUT = 'bmc:development:dhcp_isc_inotify:dhcp_isc_kqueue:journald:krb5:libvirt:puppetca_token_whitelisting:realm_freeipa:windows'
-                RUBY_VERSION = '2.7.6'
+                RUBY_VERSION = '3.0.4'
             }
 
             stages {
@@ -49,7 +49,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ruby'
-                        values '2.7.6', '3.0.4', '3.1.0'
+                        values '3.0.4', '3.1.0'
                     }
                 }
                 environment {
