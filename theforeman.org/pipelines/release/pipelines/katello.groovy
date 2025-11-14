@@ -8,35 +8,31 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { katello_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'katello'
+        PIPELINE = "${PROJECT}-rpm"
+        REPOCLOSURE = "${PROJECT}-staging"
+    }
 
-                script {
-                    foreman_el_releases.each { distro ->
-                        sh "./build_stage_repository katello ${katello_version} ${distro} ${foreman_version}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
-            when {
-                expression { katello_version == 'nightly' }
-            }
+    script {
+        env.DISTROS = foreman_el_releases
+        env.VERSION = katello_version
+    }
+
+    stages {
+        stage('staging-repository') {
+            when { environment name: 'VERSION', value: 'nightly' }
+
             steps {
                 script {
-                    rsync_to_yum_stage('katello', katello_version)
+                    rsync_to_yum_stage
                 }
             }
         }
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('katello-staging', foreman_el_releases, foreman_version)
+                    parallel repoclosures(env.REPOCLOSURE, env.DISTROS, env.VERSION)
                 }
             }
             post {
@@ -48,9 +44,11 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when { not { environment name: 'PIPELINE', value: '' } }
+
             steps {
                 script {
-                    runDuffyPipeline('katello-rpm', katello_version)
+                    runDuffyPipeline(env.PIPELINE, env.VERSION)
                 }
             }
         }
@@ -59,8 +57,8 @@ pipeline {
 
             steps {
                 script {
-                    foreman_el_releases.each { distro ->
-                        push_foreman_staging_rpms('katello', katello_version, distro)
+                    env.DISTROS.each { distro ->
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -68,7 +66,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Katello ${katello_version} pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

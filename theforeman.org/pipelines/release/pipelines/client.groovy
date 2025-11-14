@@ -8,35 +8,31 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { foreman_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'client'
+        PIPELINE = ''
+        REPOCLOSURE = "foreman-${PROJECT}-staging"
+    }
 
-                script {
-                    foreman_client_distros.each { distro ->
-                        sh "./build_stage_repository client ${foreman_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
-            when {
-                expression { foreman_version == 'nightly' }
-            }
+    script {
+        env.DISTROS = foreman_client_distros
+        env.VERSION = foreman_version
+    }
+
+    stages {
+        stage('staging-repository') {
+            when { environment name: 'VERSION', value: 'nightly' }
+
             steps {
                 script {
-                    rsync_to_yum_stage('client', foreman_version)
+                    rsync_to_yum_stage
                 }
             }
         }
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('foreman-client-staging', foreman_client_distros, foreman_version)
+                    parallel repoclosures(env.REPOCLOSURE, env.DISTROS, env.VERSION)
                 }
             }
             post {
@@ -45,13 +41,24 @@ pipeline {
                 }
             }
         }
+        stage('staging-test') {
+            agent any
+
+            when { not { environment name: 'PIPELINE', value: '' } }
+
+            steps {
+                script {
+                    runDuffyPipeline(env.PIPELINE, env.VERSION)
+                }
+            }
+        }
         stage('staging-push-rpms') {
             agent { label 'sshkey' }
 
             steps {
                 script {
-                    foreman_client_distros.each { distro ->
-                        push_foreman_staging_rpms('client', foreman_version, distro)
+                    env.DISTROS.each { distro ->
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -59,7 +66,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Foreman Client ${foreman_version} RPM pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }

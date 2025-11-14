@@ -481,17 +481,12 @@ def rsync_debian(user, ssh_key, suite, component, deb_paths) {
     }
 }
 
-def rsync_to_yum_stage(collection, version) {
-    def ssh_key = '/home/jenkins/workspace/staging_key/rsync_yumrepostage_key'
+def rsync_to_yum_stage() {
+    git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
 
-    if (!fileExists('upload_stage_rpms')) {
-        git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    sh "./generate_stage_repository"
+
+    sshagent(['yum-stage']) {
+        sh "./upload_stage_rpms"
     }
-
-    sh """
-        export RSYNC_RSH="ssh -i ${ssh_key}"
-        export VERSION=${version}
-        export PROJECT=${collection}
-        ./upload_stage_rpms
-    """
 }
