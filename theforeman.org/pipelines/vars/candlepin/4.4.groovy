@@ -5,6 +5,5 @@ def pipelines = [
     'candlepin': [
         'centos9-stream',
         'almalinux8',
-        'almalinux9',
     ]
 ]
