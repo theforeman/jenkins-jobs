@@ -3,7 +3,7 @@
     project-type: pipeline
     sandbox: true
     triggers:
-      - timed: 'H 23 * * *'
+      - timed: 'H 3 * * *'
     dsl:
       !include-raw-verbatim:
         - pipelines/test/ci_centos_integration_test.groovy
