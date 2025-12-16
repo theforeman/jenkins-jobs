@@ -23,7 +23,7 @@
     project-type: pipeline
     sandbox: true
     triggers:
-      - timed: 'H 21 * * *'
+      - timed: 'H 1 * * *'
     wrappers:
       - ansicolor
     dsl:
@@ -42,7 +42,7 @@
     project-type: pipeline
     sandbox: true
     triggers:
-      - timed: 'H 21 * * *'
+      - timed: 'H 1 * * *'
     dsl:
       !include-raw-verbatim:
         - 'pipelines/vars/foreman/{version}.groovy'
