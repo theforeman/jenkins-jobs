@@ -18,5 +18,4 @@
       - 'katello-{version}-rpm-pipeline'
     empty: ''
     version:
-      - '4.18'
       - '4.19'
