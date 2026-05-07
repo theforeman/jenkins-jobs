@@ -31,6 +31,8 @@
       - build-discarder:
           days-to-keep: 3
           num-to-keep: 10
+          artifact-days-to-keep: 3
+          artifact-num-to-keep: 10
     dsl:
       !include-raw-verbatim:
         - pipelines/test/duffy_integration_test.groovy
