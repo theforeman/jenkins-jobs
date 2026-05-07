@@ -12,4 +12,6 @@
         - pipelines/vars/katello/nightly.groovy
         - pipelines/release/pipelines/luna.groovy
         - pipelines/lib/ansible.groovy
+        - pipelines/lib/duffy.groovy
+        - pipelines/lib/duffy_test.groovy
         - pipelines/lib/foreman_infra.groovy

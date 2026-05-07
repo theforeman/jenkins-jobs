@@ -17,5 +17,3 @@ git add "theforeman.org/pipelines/vars/candlepin/${CANDLEPIN_VERSION}.groovy"
 echo "- '${CANDLEPIN_VERSION}'" >> theforeman.org/yaml/includes/candlepin_versions.yaml.inc
 git add theforeman.org/yaml/includes/candlepin_versions.yaml.inc
 
-sed -i "/nightly/i \ \ \ \ \ \ - '${CANDLEPIN_VERSION}'" centos.org/jobs/candlepin-pipelines.yml
-git add centos.org/jobs/candlepin-pipelines.yml

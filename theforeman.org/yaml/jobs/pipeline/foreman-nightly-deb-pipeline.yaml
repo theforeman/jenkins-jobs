@@ -11,4 +11,6 @@
         - pipelines/lib/release.groovy
         - pipelines/lib/rbenv.groovy
         - pipelines/lib/ansible.groovy
+        - pipelines/lib/duffy.groovy
+        - pipelines/lib/duffy_test.groovy
         - pipelines/lib/foreman_infra.groovy

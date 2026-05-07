@@ -1,8 +1,8 @@
 # Foreman's Jenkins Jobs
 
-This repository contains all the job definitions and supporting code used in Jenkins jobs used by the Foreman project on it's own ci system [ci.theforeman.org](https://ci.theforeman.org) and [ci.centos.org](https://jenkins-foreman.apps.ocp.cloud.ci.centos.org/).
+This repository contains all the job definitions and supporting code used in Jenkins jobs used by the Foreman project on [ci.theforeman.org](https://ci.theforeman.org).
 We use Jenkins for our nightly and release package building.
-Those are composed in packaging release pipelines and tested by calling out to CentOS CI to provision VMs for end to end testing of installations.
+Those are composed in packaging release pipelines and tested using Duffy-provisioned VMs for end to end testing of installations.
 Then lastly there are jobs to deploy our website, our Jenkins configuration and our Puppet environment.
 
 ## Jenkins Job Builder
@@ -17,8 +17,6 @@ Useful resources:
 * [Modules, e.g. SCM, publishers, builders](https://docs.openstack.org/infra/jenkins-job-builder/definition.html#modules)
 
 ## Jenkins Job Naming conventions
-
-**Note** Because `centos.org` is a shared environment all jobs are prefixed by `foreman-` to denote they're ours.
 
 | **Name**                | **Convention**                                         | **Example 1**                   | **Example 2**                             |
 |-------------------------|--------------------------------------------------------|---------------------------------|-------------------------------------------|

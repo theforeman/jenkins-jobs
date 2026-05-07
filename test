@@ -8,9 +8,7 @@ test_project() {
 	local project=$1
 
 	if [[ $project == "theforeman.org" ]] ; then
-		local dir="."
-	elif [[ $project == "centos.org" ]] ; then
-		local dir="jobs"
+		local dir="yaml"
 	else
 		echo "Unknown project '${project}'"
 		exit 1
@@ -34,7 +32,6 @@ PROJECT=$1
 
 if [[ -z $PROJECT ]] ; then
 	test_project theforeman.org
-	test_project centos.org
 else
 	test_project "${PROJECT}"
 fi
