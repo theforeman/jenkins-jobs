@@ -1,0 +1,42 @@
+- job:
+    name: duffy-integration-test
+    project-type: pipeline
+    sandbox: true
+    parameters:
+      - choice:
+          name: type
+          choices:
+            - foreman
+            - katello
+            - candlepin
+            - pulpcore
+            - luna
+            - plugins
+          description: 'Project type to test'
+      - string:
+          name: version
+          default: 'nightly'
+          description: 'Version to test (e.g. nightly, 3.18, 4.20)'
+      - choice:
+          name: flavor
+          choices:
+            - rpm
+            - deb
+          description: 'Package flavor (only applies to foreman/plugins)'
+      - string:
+          name: expected_version
+          default: ''
+          description: 'Expected version string for validation'
+    properties:
+      - build-discarder:
+          days-to-keep: 3
+          num-to-keep: 10
+          artifact-days-to-keep: 3
+          artifact-num-to-keep: 10
+    dsl:
+      !include-raw-verbatim:
+        - pipelines/test/duffy_integration_test.groovy
+        - pipelines/lib/duffy_test.groovy
+        - pipelines/lib/duffy.groovy
+        - pipelines/lib/ansible.groovy
+        - pipelines/lib/foreman_infra.groovy

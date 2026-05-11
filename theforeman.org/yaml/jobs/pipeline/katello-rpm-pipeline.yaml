@@ -8,6 +8,8 @@
         - 'pipelines/release/pipelines/katello.groovy{empty}'
         - 'pipelines/lib/release.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
+        - 'pipelines/lib/duffy.groovy{empty}'
+        - 'pipelines/lib/duffy_test.groovy{empty}'
         - 'pipelines/lib/foreman_infra.groovy{empty}'
         - 'pipelines/lib/packaging.groovy{empty}'
         - 'pipelines/lib/obal.groovy{empty}'

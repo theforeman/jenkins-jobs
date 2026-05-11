@@ -15,10 +15,6 @@ sed -e "/foreman_version/ s/nightly/${FOREMAN_VERSION}/" \
 	-e "/katello_version/ s/nightly/${KATELLO_VERSION}/" \
 	theforeman.org/pipelines/vars/katello/nightly.groovy > theforeman.org/pipelines/vars/katello/$KATELLO_VERSION.groovy
 
-sed -i "/nightly/i \ \ \ \ \ \ - '${FOREMAN_VERSION}'" centos.org/jobs/foreman-pipelines.yml
-
-sed -i "/nightly/i \ \ \ \ \ \ - '${KATELLO_VERSION}'" centos.org/jobs/katello-pipelines.yml
-
 echo "- '${FOREMAN_VERSION}'" >> theforeman.org/yaml/includes/foreman_versions.yaml.inc
 
 echo "      - '${KATELLO_VERSION}'" >> theforeman.org/yaml/jobs/pipeline/katello-rpm-pipeline.yaml

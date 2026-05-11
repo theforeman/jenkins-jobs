@@ -13,6 +13,8 @@
         - pipelines/release/pipelines/katello.groovy
         - pipelines/lib/release.groovy
         - pipelines/lib/ansible.groovy
+        - pipelines/lib/duffy.groovy
+        - pipelines/lib/duffy_test.groovy
         - pipelines/lib/foreman_infra.groovy
         - pipelines/lib/packaging.groovy
         - pipelines/lib/obal.groovy

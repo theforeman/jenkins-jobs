@@ -12,26 +12,26 @@ def setupDuffyClient() {
 def provisionDuffy() {
     git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')
 
-  	dir('jenkins-jobs/centos.org/ansible') {
+  	dir('jenkins-jobs/theforeman.org/ansible') {
         runPlaybook(playbook: 'provision_duffy.yml')
         archiveArtifacts artifacts: 'ssh_config'
     }
 }
 
 def deprovisionDuffy() {
-    if (fileExists('jenkins-jobs/centos.org/ansible/duffy_session')) {
-        dir('jenkins-jobs/centos.org/ansible') {
+    if (fileExists('jenkins-jobs/theforeman.org/ansible/duffy_session')) {
+        dir('jenkins-jobs/theforeman.org/ansible') {
             runPlaybook(playbook: 'deprovision_duffy.yml')
       	}
     }
 }
 
 def duffy_inventory(relative_dir = '') {
-    return relative_dir + 'jenkins-jobs/centos.org/ansible/foreman.duffy.yml'
+    return relative_dir + 'jenkins-jobs/theforeman.org/ansible/foreman.duffy.yml'
 }
 
 def ssh_config(relative_dir = '') {
-    return relative_dir + 'jenkins-jobs/centos.org/ansible/ssh_config'
+    return relative_dir + 'jenkins-jobs/theforeman.org/ansible/ssh_config'
 }
 
 def color_shell(command = '', returnStdout = false) {

@@ -16,6 +16,8 @@
         - 'pipelines/lib/packaging.groovy{empty}'
         - 'pipelines/lib/rbenv.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
+        - 'pipelines/lib/duffy.groovy{empty}'
+        - 'pipelines/lib/duffy_test.groovy{empty}'
         - 'pipelines/lib/foreman_infra.groovy{empty}'
 
 - job-template:
@@ -63,6 +65,8 @@
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/plugins-rpm.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
+        - 'pipelines/lib/duffy.groovy{empty}'
+        - 'pipelines/lib/duffy_test.groovy{empty}'
         - 'pipelines/lib/foreman_infra.groovy{empty}'
 
 - job-template:
@@ -79,6 +83,8 @@
         - 'pipelines/vars/foreman/{version}.groovy'
         - 'pipelines/release/pipelines/plugins-deb.groovy{empty}'
         - 'pipelines/lib/ansible.groovy{empty}'
+        - 'pipelines/lib/duffy.groovy{empty}'
+        - 'pipelines/lib/duffy_test.groovy{empty}'
         - 'pipelines/lib/foreman_infra.groovy{empty}'
 
 - project:

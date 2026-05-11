@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'cico-workspace' }
+    agent { label 'el' }
 
     environment {
         proxy_repository = env.getProperty('proxy_repository')
@@ -24,7 +24,7 @@ pipeline {
         stage('Install Pipeline Requirements') {
             steps {
                 script {
-                    def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
+                    def duffy_session = readFile(file: 'jenkins-jobs/theforeman.org/ansible/duffy_session')
 
                     runPlaybook(
                         playbook: 'playbooks/setup_pipeline_users.yml',

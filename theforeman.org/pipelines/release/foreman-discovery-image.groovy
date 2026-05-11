@@ -14,15 +14,12 @@ pipeline {
                 deleteDir()
                 dir('build') {
                     script {
-                        job_parameters = [
-                            proxy_repository: env.proxy_repository,
-                            branch: env.branch,
+                        def fdi_build = build job: 'foreman-discovery-image-build', parameters: [
+                            string(name: 'proxy_repository', value: env.proxy_repository),
+                            string(name: 'branch', value: env.branch),
+                            string(name: 'repo_owner', value: env.repo_owner ?: 'theforeman'),
                         ]
-                        job_extra_vars = [
-                            jenkins_download_artifacts: 'true',
-                            jenkins_artifacts_directory: "${env.WORKSPACE}/artifacts/",
-                        ]
-                        runCicoJob("foreman-discovery-image-build", job_parameters, job_extra_vars)
+                        copyArtifacts projectName: 'foreman-discovery-image-build', selector: specific("${fdi_build.number}"), target: 'artifacts', optional: true
                     }
                 }
             }
