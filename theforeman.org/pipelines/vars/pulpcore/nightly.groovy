@@ -4,6 +4,5 @@ def packaging_branch = 'rpm/develop'
 def pipelines = [
     'pulpcore': [
         'centos9-stream',
-        'almalinux9',
     ]
 ]
