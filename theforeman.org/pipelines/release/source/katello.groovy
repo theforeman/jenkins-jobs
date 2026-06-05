@@ -60,6 +60,9 @@ pipeline {
                     }
                 }
                 stage('rubocop') {
+                    environment {
+                        BUNDLE_PATH = "${env.WORKSPACE}/.rubocop_bundle"
+                    }
                     steps {
                         dir('foreman') {
                             bundleExec(ruby, "rubocop --parallel ../${project_name}")
