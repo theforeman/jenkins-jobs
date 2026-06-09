@@ -64,9 +64,8 @@ pipeline {
                         BUNDLE_PATH = "${env.WORKSPACE}/.rubocop_bundle"
                     }
                     steps {
-                        dir('foreman') {
-                            bundleExec(ruby, "rubocop --parallel ../${project_name}")
-                        }
+                        bundleInstall(ruby)
+                        bundleExec(ruby, 'rubocop --parallel')
                     }
                 }
                 stage('react-ui') {
