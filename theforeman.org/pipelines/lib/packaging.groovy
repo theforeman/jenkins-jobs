@@ -429,9 +429,11 @@ def inject_debian_release_version(os) {
         'bookworm': 'debian12',
         'trixie': 'debian13',
         'forky': 'debian14',
+        'duke': 'debian15',
         'focal': 'ubuntu2004',
         'jammy': 'ubuntu2204',
         'noble': 'ubuntu2404',
+        'resolute': 'ubuntu2604',
     ]
     def suffix="+${debian_release_to_version[os]}"
     sh(script: "sed -i '1 s/)/${suffix})/' debian/changelog", label: "inject Debian release into package version")
