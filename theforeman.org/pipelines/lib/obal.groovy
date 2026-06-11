@@ -31,6 +31,12 @@ def obal(args) {
     }
 }
 
+def archive_copr_build_info() {
+    if (fileExists('copr_build_info')) {
+        archiveArtifacts artifacts: 'copr_build_info/**'
+    }
+}
+
 def setup_obal() {
     dir("${env.WORKSPACE}/obsah") {
         checkout(

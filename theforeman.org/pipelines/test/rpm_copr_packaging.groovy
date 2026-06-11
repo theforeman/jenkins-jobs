@@ -179,6 +179,7 @@ pipeline {
     post {
         always {
             status_copr_links(ghprbGhRepository.split('/')[1])
+            archive_copr_build_info()
         }
     }
 }
