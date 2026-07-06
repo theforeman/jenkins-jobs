@@ -65,6 +65,17 @@ pipeline {
                 }
             }
         }
+        stage('trigger-konflux-rebuild') {
+            when {
+                expression { binding.hasVariable('konflux_components') && konflux_components }
+            }
+
+            steps {
+                script {
+                    retrigger_konflux_components(konflux_components)
+                }
+            }
+        }
     }
     post {
         failure {
