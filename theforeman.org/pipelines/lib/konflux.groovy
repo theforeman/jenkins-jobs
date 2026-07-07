@@ -9,6 +9,7 @@ def retrigger_konflux_components(components) {
 
     def oc_dir = "${env.WORKSPACE}/bin"
     def oc_bin = "${oc_dir}/oc"
+    def kubeconfig = "${oc_dir}/kubeconfig"
 
     sh(
         label: 'download oc client',
@@ -19,25 +20,30 @@ def retrigger_konflux_components(components) {
         """
     )
 
-    try {
-        withCredentials([string(credentialsId: 'konflux-jenkins-trigger-token', variable: 'KONFLUX_TOKEN')]) {
-            sh(
-                label: 'oc login to konflux (token hidden)',
-                script: """
-                    set +x
-                    ${oc_bin} login --token=\$KONFLUX_TOKEN --server=${konflux_api_server}
-                    set -x
-                """
-            )
-        }
+    // Runs on fixed, non-ephemeral 'el' agents, so the kubeconfig is scoped to
+    // the workspace (wiped below) instead of the shared ~/.kube/config.
+    withEnv(["KUBECONFIG=${kubeconfig}"]) {
+        try {
+            withCredentials([string(credentialsId: 'konflux-jenkins-trigger-token', variable: 'KONFLUX_TOKEN')]) {
+                sh(
+                    label: 'oc login to konflux (token hidden)',
+                    script: """
+                        set +x
+                        ${oc_bin} login --token=\$KONFLUX_TOKEN --server=${konflux_api_server}
+                        set -x
+                    """
+                )
+            }
 
-        components.each { component ->
-            sh(
-                label: "trigger konflux rebuild: ${component}",
-                script: "${oc_bin} annotate component ${component} --overwrite --namespace ${konflux_namespace} build.appstudio.openshift.io/request=trigger-rebuild"
-            )
+            components.each { component ->
+                sh(
+                    label: "trigger konflux rebuild: ${component}",
+                    script: "${oc_bin} annotate component ${component} --overwrite --namespace ${konflux_namespace} build.appstudio.openshift.io/request=trigger-rebuild"
+                )
+            }
+        } finally {
+            sh(label: 'oc logout from konflux', script: "${oc_bin} logout || true")
+            sh(label: 'remove oc client and kubeconfig', script: "rm -rf ${oc_dir}")
         }
-    } finally {
-        sh(label: 'remove oc client', script: "rm -rf ${oc_dir}")
     }
 }
