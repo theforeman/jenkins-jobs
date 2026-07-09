@@ -67,7 +67,13 @@ pipeline {
         }
         stage('trigger-konflux-rebuild') {
             when {
-                expression { binding.hasVariable('konflux_components') && konflux_components }
+                expression {
+                    try {
+                        konflux_components as boolean
+                    } catch (MissingPropertyException ignored) {
+                        false
+                    }
+                }
             }
 
             steps {
