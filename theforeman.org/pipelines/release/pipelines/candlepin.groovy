@@ -8,35 +8,31 @@ pipeline {
         ansiColor('xterm')
     }
 
-    stages {
-        stage('staging-build-repository') {
-            when {
-                expression { candlepin_version == 'nightly' }
-            }
-            steps {
-                git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
+    environment {
+        PROJECT = 'candlepin'
+        PIPELINE = "${PROJECT}-rpm"
+        REPOCLOSURE = PROJECT
+    }
 
-                script {
-                    candlepin_distros.each { distro ->
-                        sh "./build_stage_repository candlepin ${candlepin_version} ${distro}"
-                    }
-                }
-            }
-        }
-        stage('staging-copy-repository') {
-            when {
-                expression { candlepin_version == 'nightly' }
-            }
+    script {
+        env.DISTROS = candlepin_distros
+        env.VERSION = candlepin_version
+    }
+
+    stages {
+        stage('staging-repository') {
+            when { environment name: 'VERSION', value: 'nightly' }
+
             steps {
                 script {
-                    rsync_to_yum_stage('candlepin', candlepin_version)
+                    rsync_to_yum_stage
                 }
             }
         }
         stage('staging-repoclosure') {
             steps {
                 script {
-                    parallel repoclosures('candlepin', candlepin_distros, candlepin_version)
+                    parallel repoclosures(env.REPOCLOSURE, env.DISTROS, env.VERSION)
                 }
             }
             post {
@@ -48,9 +44,11 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when { not { environment name: 'PIPELINE', value: '' } }
+
             steps {
                 script {
-                    runDuffyPipeline('candlepin-rpm', candlepin_version)
+                    runDuffyPipeline(env.PIPELINE, env.VERSION)
                 }
             }
         }
@@ -59,8 +57,8 @@ pipeline {
 
             steps {
                 script {
-                    candlepin_distros.each { distro ->
-                        push_foreman_staging_rpms('candlepin', candlepin_version, distro)
+                    env.DISTROS.each { distro ->
+                        push_foreman_staging_rpms(env.PROJECT, env.VERSION, distro)
                     }
                 }
             }
@@ -68,7 +66,7 @@ pipeline {
     }
     post {
         failure {
-            notifyDiscourse(env, "Candlepin ${candlepin_version} RPM pipeline failed:", currentBuild.description)
+            notifyDiscourse(env, "${env.PROJECT} ${env.VERSION} RPM pipeline failed:", currentBuild.description)
         }
     }
 }
