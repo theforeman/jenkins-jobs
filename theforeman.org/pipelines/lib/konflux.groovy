@@ -1,11 +1,11 @@
-def konflux_api_server = 'https://api.kflux-fedora-01.84db.p1.openshiftapps.com:6443'
-def konflux_namespace = 'theforeman-org-tenant'
-def konflux_oc_channel = 'stable'
-
 def retrigger_konflux_components(components) {
     if (!components) {
         return
     }
+
+    def konflux_api_server = 'https://api.kflux-fedora-01.84db.p1.openshiftapps.com:6443'
+    def konflux_namespace = 'theforeman-org-tenant'
+    def konflux_oc_channel = 'stable'
 
     def oc_dir = "${env.WORKSPACE}/bin"
     def oc_bin = "${oc_dir}/oc"
