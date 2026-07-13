@@ -38,7 +38,7 @@ def retrigger_konflux_components(components) {
             components.each { component ->
                 sh(
                     label: "trigger konflux rebuild: ${component}",
-                    script: "${oc_bin} annotate component ${component} --overwrite --namespace ${konflux_namespace} build.appstudio.openshift.io/request=trigger-rebuild"
+                    script: "${oc_bin} annotate component ${component} --overwrite --namespace ${konflux_namespace} build.appstudio.openshift.io/request=trigger-pac-build"
                 )
             }
         } finally {
