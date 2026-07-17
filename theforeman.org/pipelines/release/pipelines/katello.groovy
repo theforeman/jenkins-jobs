@@ -65,6 +65,40 @@ pipeline {
                 }
             }
         }
+        stage('capture-konflux-snapshots') {
+            // Captured here, before the rebuild is triggered, and passed to the
+            // konflux_gate_job_name job as a build parameter — not recomputed by that
+            // job once it starts. Konflux build+snapshot latency isn't bounded tightly
+            // enough to trust "whatever's latest when the gate job happens to start" as
+            // "the pre-rebuild snapshot": a fast build could already have landed by
+            // then, making previous == latest and stalling the gate's wait loop forever
+            // waiting for something newer that will never come.
+            when {
+                expression {
+                    try {
+                        konflux_components as boolean
+                    } catch (MissingPropertyException ignored) {
+                        false
+                    }
+                }
+            }
+
+            steps {
+                script {
+                    try {
+                        konflux_login()
+
+                        def previous = [:]
+                        konflux_gate_applications.each { app, components ->
+                            previous[app] = konflux_latest_snapshot(app)
+                        }
+                        env.KONFLUX_PREVIOUS_SNAPSHOTS = writeJSON(returnText: true, json: previous)
+                    } finally {
+                        konflux_logout()
+                    }
+                }
+            }
+        }
         stage('trigger-konflux-rebuild') {
             when {
                 expression {
@@ -79,6 +113,11 @@ pipeline {
             steps {
                 script {
                     retrigger_konflux_components(konflux_components)
+                    build(
+                        job: konflux_gate_job_name,
+                        wait: false,
+                        parameters: [string(name: 'PREVIOUS_SNAPSHOTS', value: env.KONFLUX_PREVIOUS_SNAPSHOTS)]
+                    )
                 }
             }
         }
