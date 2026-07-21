@@ -1,10 +1,6 @@
-// Maps a Konflux Component name to the variable prefix foremanctl's
-// src/vars/images.yml uses for that component's image (confirmed against a real
-// checkout of theforeman/foremanctl): each component has a
-// `<prefix>_container_image` + `<prefix>_container_tag` pair which are joined as
-// "{{ x_container_image }}:{{ x_container_tag }}" by the deploy roles. There is no
-// CLI/extra-vars way to override these, so we sed-patch the checked-out file, same
-// mechanism theforeman/foreman-oci-images' own CI workflow uses to pin a build tag.
+// Maps a Konflux Component name to the variable prefix in foremanctl's
+// src/vars/images.yml (<prefix>_container_image/_container_tag). No CLI/extra-vars
+// override exists, so we sed-patch the file instead.
 def konflux_gate_image_var_prefix() {
     return [
         'candlepin-develop': 'candlepin',
@@ -14,10 +10,8 @@ def konflux_gate_image_var_prefix() {
     ]
 }
 
-// Last Snapshot for this Application that actually completed a Release
-// (`status.conditions[type=Released,status=True]`), used as the fallback image
-// source when a component's build times out this cycle. Relies on `jq` being
-// present on the 'el' agent.
+// Fallback image source when a component's build times out this cycle: the last
+// Snapshot that actually completed a Release. Relies on `jq` on the 'el' agent.
 def konflux_gate_last_released_snapshot(app) {
     return sh(
         label: "resolve last released snapshot: ${app}",
@@ -29,14 +23,10 @@ def konflux_gate_last_released_snapshot(app) {
     ).trim()
 }
 
-// Polls for a new Snapshot for `app`. `previous` must be the snapshot captured by
-// katello.groovy *before* it triggered the rebuild (passed through as the
-// PREVIOUS_SNAPSHOTS build parameter) — not recomputed here, since by the time this
-// pipeline starts a fast build could already have landed, making "current latest"
-// indistinguishable from "the one we're supposed to wait for" and stalling this loop
-// until the timeout every single night. Returns [app, snapshot, stale] rather than
-// failing the build on timeout, so one slow/broken component doesn't block gating
-// the others (per-component timeout, not a whole-pipeline one).
+// Polls for a new Snapshot for `app`. `previous` is captured by katello.groovy
+// *before* it triggers the rebuild (see PREVIOUS_SNAPSHOTS) — recomputing it here
+// would race with Konflux's own build latency. Per-component timeout, not
+// whole-pipeline, so one broken component doesn't block gating the others.
 def konflux_gate_wait_for_new_snapshot(app, previous, timeoutMinutes) {
     def resolved = previous
     try {
@@ -62,8 +52,6 @@ def konflux_gate_image_ref(snapshot, component) {
     ).trim()
 }
 
-// Release CRs carry a `release.appstudio.openshift.io/snapshot` label (confirmed on
-// the live cluster), so lookups don't need a jsonpath scan of every Release.
 def konflux_gate_find_existing_release(snapshot) {
     return sh(
         label: "check existing release: ${snapshot}",
@@ -72,15 +60,9 @@ def konflux_gate_find_existing_release(snapshot) {
     ).trim()
 }
 
-// Returns the created Release's actual name (generateName means we don't know it
-// up front). Uses `oc create`, not `apply` — generateName only makes sense as a
-// create-time directive (there's no existing name to diff against), and
-// find_existing_release() already guards against calling this when one exists.
+// Returns the created Release's actual name (generateName means we don't know it up
+// front). Uses `oc create`, not `apply` — there's no existing name to diff against.
 def konflux_gate_create_release(snapshot, releasePlan) {
-    // Matches the day/hour/minute-stamped naming Konflux itself uses for
-    // auto-created Snapshots/Releases (e.g. candlepin-20260713-224811-000), so a
-    // gate-created Release is identifiable at a glance and generateName's random
-    // suffix only has to disambiguate retries within the same minute.
     def timestamp = sh(script: 'date -u +%Y%m%d-%H%M', label: 'timestamp release name', returnStdout: true).trim()
     def release_yaml = """apiVersion: appstudio.redhat.com/v1alpha1
 kind: Release
@@ -105,12 +87,8 @@ spec:
 }
 
 // Polls the Release CR's own `Released` condition rather than assuming success once
-// oc create returns — Konflux's release-service can still fail after acceptance
-// (signing, enterprise-contract policy, registry push errors), confirmed live on the
-// cluster: completed Releases carry
-// status.conditions[type=Released].{status,reason,message}. Returns null on timeout
-// (treated as "unknown", not "failed") so one slow release pipeline doesn't crash the
-// whole build.
+// oc create returns — release-service can still fail after acceptance (signing, EC
+// policy, registry push). Returns null on timeout ("unknown", not "failed").
 def konflux_gate_wait_for_release(releaseName, timeoutMinutes) {
     def status = ''
     try {
@@ -143,9 +121,8 @@ def konflux_gate_wait_for_release(releaseName, timeoutMinutes) {
     return [succeeded: status == 'True', reason: reason, message: message]
 }
 
-// The published, digest-pinned image(s) for a settled Release
-// (status.artifacts.images[].{name,shasum,urls}), confirmed live on the cluster. Only
-// meaningful once konflux_gate_wait_for_release() reports succeeded: true.
+// The published, digest-pinned image(s) for a settled Release. Only meaningful once
+// konflux_gate_wait_for_release() reports succeeded: true.
 def konflux_gate_release_artifacts(releaseName) {
     def json = sh(
         label: "release artifacts: ${releaseName}",
@@ -155,11 +132,8 @@ def konflux_gate_release_artifacts(releaseName) {
     return readJSON(text: json ?: '[]')
 }
 
-// Runs the real install/upgrade test against the staged images. Modeled directly on
-// centos.org/pipelines/foreman-discovery-image-build.groovy's Duffy usage: a single
-// root@duffy_box SSH session, no forklift/pipe-user layer. The Duffy pool used here
-// (metal-ec2-c5n-centos-9s-x86_64) is bare metal, so nested libvirt/KVM works the
-// same way it does for forklift's own Vagrant VMs today.
+// Runs the real install/upgrade test against the staged images, directly on a Duffy
+// box on ci.theforeman.org (no ci.centos.org delegation, no forklift).
 //
 // imageRefs: Map of Konflux Component name -> digest-pinned containerImage ref
 // (e.g. "candlepin-develop": "quay.io/foreman/stage/candlepin@sha256:...").
@@ -167,21 +141,27 @@ def konflux_gate_run_test(imageRefs) {
     def boxname = 'duffy_box'
     def var_prefix = konflux_gate_image_var_prefix()
 
-    setupDuffyClient()
+    // No ambient CICO_API_KEY here (this runs on ci.theforeman.org, not ci.centos.org),
+    // so it's bound explicitly, same as konflux-jenkins-trigger-token.
+    withCredentials([string(credentialsId: 'cico-api-key', variable: 'CICO_API_KEY')]) {
+        setupDuffyClient()
+    }
     provisionDuffy()
 
     try {
         stage('Prepare Duffy node') {
-            // Mirrors foreman-oci-images' integration.yml setup steps (libvirt/vagrant,
-            // Ansible, then foremanctl's own ./setup-environment) rather than inventing a
-            // new bootstrap sequence.
-            duffy_ssh('dnf install -y epel-release && dnf install -y libvirt vagrant qemu-kvm git python3 python3-pip make && systemctl enable --now libvirtd && vagrant plugin install vagrant-libvirt', boxname, './')
-            duffy_ssh('pip3 install --upgrade ansible-core', boxname, './')
+            def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
+            runPlaybook(
+                playbook: 'jenkins-jobs/theforeman.org/ansible/setup_vagrant_libvirt.yml',
+                inventory: duffy_inventory('./'),
+                limit: "duffy_session_${duffy_session}",
+                options: ['-b'],
+            )
+
             duffy_ssh('git clone https://github.com/theforeman/foremanctl.git', boxname, './')
-            // GITHUB_ACTIONS=true keeps setup-environment on the "install into the
-            // system/host Python" path instead of creating a .venv it would activate for
-            // only that one SSH session — each duffy_ssh call is a fresh shell, so a venv
-            // activated here wouldn't be visible to the later forge/foremanctl calls.
+            // GITHUB_ACTIONS=true skips the venv setup-environment would otherwise
+            // create — each duffy_ssh call is a fresh shell, so it wouldn't be active
+            // for the later forge/foremanctl calls anyway.
             duffy_ssh('cd foremanctl && GITHUB_ACTIONS=true ./setup-environment', boxname, './')
 
             imageRefs.each { component, ref ->
@@ -190,9 +170,7 @@ def konflux_gate_run_test(imageRefs) {
                     error("konflux_gate_run_test: no foremanctl images.yml var prefix known for component '${component}'")
                 }
 
-                // images.yml only exposes "<image>:<tag>" (no digest-aware CLI/extra-vars
-                // override), so we split the digest ref and reassemble it across the two
-                // fields: image="<repo>@sha256", tag="<hex>" -> "<repo>@sha256:<hex>".
+                // "<repo>@sha256" / "<hex>" -> "<repo>@sha256:<hex>"
                 def parts = ref.tokenize('@')
                 def repo = parts[0]
                 def hex = parts[1].replace('sha256:', '')
@@ -204,27 +182,18 @@ def konflux_gate_run_test(imageRefs) {
 
         try {
             stage('Deploy and test') {
-                duffy_ssh('cd foremanctl && ./forge vms start --vms "quadlet"', boxname, './')
+                // No --vms flag: defaults to "quadlet client" (forge's own default),
+                // needed for test_foreman_content_view.
+                duffy_ssh('cd foremanctl && ./forge vms start', boxname, './')
                 duffy_ssh('cd foremanctl && ./forge setup-repositories', boxname, './')
                 duffy_ssh('cd foremanctl && ./foremanctl deploy --initial-admin-password=changeme --tuning development --add-feature hammer --add-feature foreman-proxy --add-feature remote-execution', boxname, './')
-                // Test scope confirmed by actually running `forge test` locally against
-                // the real latest stage digests (not guessed):
-                //  - tests/flavor/**: excluded, its own pulp_test.py collides with the
-                //    top-level tests/pulp_test.py under pytest's default rootdir-relative
-                //    import mode ("import file mismatch").
-                //  - tests/feature/iop/**: excluded, requires --add-feature iop which we
-                //    don't deploy here.
-                //  - tests/backup_test.py, tests/certificate_bundle_test.py,
-                //    tests/feature/foreman/base_test.py: excluded, they shell out to a
-                //    relative './foremanctl' and error with FileNotFoundError regardless
-                //    of image content — looks like a pytest-cwd issue in foremanctl
-                //    itself, not something specific to this gate.
-                //  - test_foreman_content_view: deselected, needs the separate "client"
-                //    Vagrant VM, which we don't start (only "quadlet").
-                // Everything else — including httpd/postgresql/valkey/foreman_target
-                // health checks and the full candlepin/pulp test files — ran and passed
-                // against the real Konflux stage images.
-                duffy_ssh('cd foremanctl && ./forge test --pytest-args="tests --ignore=tests/flavor --ignore=tests/feature/iop --ignore=tests/backup_test.py --ignore=tests/certificate_bundle_test.py --ignore=tests/feature/foreman/base_test.py --deselect tests/feature/katello/client_test.py::test_foreman_content_view"', boxname, './')
+                // Exclusions confirmed against real stage images, 0 failed/errored
+                // otherwise (238 passed): tests/flavor collides with top-level
+                // pulp_test.py; iop needs --add-feature iop; the initial_organization/
+                // location tests expect a "Foreman CI"/"Internet" naming convention
+                // (foreman_initial_organization defaults to "Default Organization")
+                // that we don't opt into.
+                duffy_ssh('cd foremanctl && ./forge test --pytest-args="--ignore=tests/flavor --ignore=tests/feature/iop -k \'not test_foreman_initial_organization and not test_foreman_initial_location\'"', boxname, './')
             }
         } catch (Exception ex) {
             stage('Collect sos reports') {
