@@ -8,6 +8,7 @@ def foreman_client_distros = [
     'el8',
 ]
 def foreman_el_releases = [
+    'el10',
     'el9'
 ]
 def foreman_debian_releases = ['bookworm', 'jammy']
@@ -25,10 +26,14 @@ def pipelines_deb = [
 
 def pipelines_el = [
     'install': [
+        'centos10-stream',
+        'almalinux10',
         'centos9-stream',
         'almalinux9',
     ],
     'upgrade': [
+        'centos10-stream',
+        'almalinux10',
         'centos9-stream',
         'almalinux9',
     ]
