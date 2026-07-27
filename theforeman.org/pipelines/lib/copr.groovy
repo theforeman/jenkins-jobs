@@ -46,5 +46,5 @@ def convert_to_dist(chroot) {
     os = chroot_parts[0..-3].join('-')
     version = chroot_parts[-2].replace('.', '')
 
-    return "${family_map[os]}${version}"
+    return "${family_map[os]}${version}".toString()
 }
