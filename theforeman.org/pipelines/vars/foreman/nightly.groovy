@@ -10,12 +10,13 @@ def foreman_client_distros = [
 def foreman_el_releases = [
     'el9'
 ]
-def foreman_debian_releases = ['bookworm', 'jammy']
+def foreman_debian_releases = ['bookworm', 'jammy', 'noble']
 
 def pipelines_deb = [
     'install': [
         'debian12',
-        'ubuntu2204'
+        'ubuntu2204',
+        'ubuntu2404'
     ],
     'upgrade': [
         'debian12',
