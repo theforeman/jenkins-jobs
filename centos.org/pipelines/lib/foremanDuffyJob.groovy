@@ -26,6 +26,8 @@ pipeline {
         stage('Provision Node') {
             steps {
                 provisionDuffy()
+
+                duffy_ssh('dnf install -y https://yum.theforeman.org/nightly/el9/x86_64/foreman-release.rpm', 'duffy_box', './')
             }
         }
         stage('Install Pipeline Requirements') {
