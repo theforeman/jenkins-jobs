@@ -1,0 +1,15 @@
+- job:
+    name: foreman-nightly-el9-rpm-pipeline
+    project-type: pipeline
+    sandbox: true
+    triggers:
+      - timed: 'H 1 * * *'
+    dsl:
+      !include-raw-verbatim:
+        - pipelines/vars/foreman/nightly-el9.groovy
+        - pipelines/release/pipelines/foreman-rpm.groovy
+        - pipelines/lib/release.groovy
+        - pipelines/lib/ansible.groovy
+        - pipelines/lib/foreman_infra.groovy
+        - pipelines/lib/packaging.groovy
+        - pipelines/lib/obal.groovy

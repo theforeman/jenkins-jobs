@@ -1,15 +1,15 @@
 - job:
-    name: luna-nightly-rpm-pipeline
+    name: luna-nightly-el9-rpm-pipeline
     project-type: pipeline
     sandbox: true
     triggers:
       - reverse:
           jobs:
-            - katello-nightly-rpm-pipeline
+            - katello-nightly-el9-rpm-pipeline
           result: success
     dsl:
       !include-raw-verbatim:
-        - pipelines/vars/katello/nightly.groovy
+        - pipelines/vars/katello/nightly-el9.groovy
         - pipelines/release/pipelines/luna.groovy
         - pipelines/lib/ansible.groovy
         - pipelines/lib/foreman_infra.groovy

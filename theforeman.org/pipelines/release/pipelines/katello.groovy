@@ -48,6 +48,9 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when {
+                expression { foreman_el_releases.contains('el9') }
+            }
             steps {
                 script {
                     runDuffyPipeline('katello-rpm', katello_version)
