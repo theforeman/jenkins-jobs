@@ -156,23 +156,18 @@ pipeline {
             steps {
 
                 script {
-                    def skip_repoclosure_dists = ['el10']
                     for(String package_name: packages_to_build) {
                         repos = copr_repos(package_name)
 
                         for(Map repo: repos) {
-                            if (skip_repoclosure_dists.contains(repo['dist'])) {
-                                echo "Skipping repoclosure for ${package_name} on ${repo['dist']}"
-                            } else {
-                                obal(
-                                    action: "repoclosure",
-                                    packages: package_name,
-                                    extraVars: [
-                                        'repoclosure_check_repos': [repo['url']],
-                                        'repoclosure_target_dist': repo['dist']
-                                    ]
-                                )
-                            }
+                            obal(
+                                action: "repoclosure",
+                                packages: package_name,
+                                extraVars: [
+                                    'repoclosure_check_repos': [repo['url']],
+                                    'repoclosure_target_dist': repo['dist']
+                                ]
+                            )
                         }
                     }
                 }
