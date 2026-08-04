@@ -1,15 +1,19 @@
 - job:
-    name: foreman-nightly-el10-rpm-pipeline
+    name: katello-nightly-rpm-pipeline
     project-type: pipeline
     sandbox: true
     triggers:
-      - timed: 'H 1 * * *'
+      - reverse:
+          jobs:
+            - foreman-nightly-rpm-pipeline
+          result: success
     dsl:
       !include-raw-verbatim:
-        - pipelines/vars/foreman/nightly-el10.groovy
-        - pipelines/release/pipelines/foreman-rpm.groovy
+        - pipelines/vars/katello/nightly.groovy
+        - pipelines/release/pipelines/katello.groovy
         - pipelines/lib/release.groovy
         - pipelines/lib/ansible.groovy
         - pipelines/lib/foreman_infra.groovy
         - pipelines/lib/packaging.groovy
         - pipelines/lib/obal.groovy
+        - pipelines/lib/konflux.groovy
