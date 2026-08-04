@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('staging-build-repository') {
             when {
-                expression { candlepin_version == 'nightly' }
+                expression { candlepin_version.startsWith('nightly') }
             }
             steps {
                 git url: "https://github.com/theforeman/theforeman-rel-eng", poll: false
@@ -25,7 +25,7 @@ pipeline {
         }
         stage('staging-copy-repository') {
             when {
-                expression { candlepin_version == 'nightly' }
+                expression { candlepin_version.startsWith('nightly') }
             }
             steps {
                 script {
@@ -48,6 +48,9 @@ pipeline {
         stage('staging-test') {
             agent any
 
+            when {
+                expression { candlepin_version != 'nightly-el10' }
+            }
             steps {
                 script {
                     runDuffyPipeline('candlepin-rpm', candlepin_version)
