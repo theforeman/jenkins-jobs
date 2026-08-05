@@ -1,0 +1,28 @@
+- job:
+    name: konflux-gate-nightly-pipeline
+    project-type: pipeline
+    sandbox: true
+    # No `triggers:` block: this job is started explicitly by
+    # katello-nightly-rpm-pipeline's trigger-konflux-rebuild stage via
+    # `build job: 'konflux-gate-nightly-pipeline', parameters: [...]`, not by a
+    # reverse trigger. A reverse trigger can't carry the PREVIOUS_SNAPSHOTS parameter
+    # that capture-konflux-snapshots captures, and without it this job would have to
+    # recompute "previous" itself once started, which races with Konflux's own build
+    # latency (see wait-for-snapshots in konflux-gate.groovy).
+    #
+    # Named "...-nightly-..." (not just "konflux-gate-pipeline") to match the
+    # nightly.groovy vs 3.19.groovy/4.21.groovy convention used by
+    # pipelines/vars/{foreman,katello}/ — the pipeline body
+    # (pipelines/release/pipelines/konflux-gate.groovy) and lib
+    # (pipelines/lib/konflux_gate.groovy) are meant to be reused as-is for a future
+    # branched-version gate (e.g. konflux-gate-3-19-pipeline.yaml including a new
+    # pipelines/vars/konflux/3-19.groovy instead of nightly.groovy).
+    dsl:
+      !include-raw-verbatim:
+        - pipelines/vars/konflux/nightly.groovy
+        - pipelines/release/pipelines/konflux-gate.groovy
+        - pipelines/lib/konflux.groovy
+        - pipelines/lib/konflux_gate.groovy
+        - pipelines/lib/duffy.groovy
+        - pipelines/lib/foreman_infra.groovy
+        - pipelines/lib/ansible.groovy
