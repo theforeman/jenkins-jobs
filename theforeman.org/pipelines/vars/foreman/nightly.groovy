@@ -11,11 +11,12 @@ def foreman_el_releases = [
     'el10',
     'el9'
 ]
-def foreman_debian_releases = ['bookworm', 'jammy', 'noble']
+def foreman_debian_releases = ['bookworm', 'jammy', 'noble', 'trixie']
 
 def pipelines_deb = [
     'install': [
         'debian12',
+        'debian13',
         'ubuntu2204',
         'ubuntu2404'
     ],
