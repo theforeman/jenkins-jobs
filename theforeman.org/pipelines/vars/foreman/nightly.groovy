@@ -22,6 +22,7 @@ def pipelines_deb = [
     ],
     'upgrade': [
         'debian12',
+        'debian13',
         'ubuntu2204',
         'ubuntu2404'
     ]
