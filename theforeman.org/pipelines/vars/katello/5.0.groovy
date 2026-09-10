@@ -1,7 +1,7 @@
 def foreman_version = '5.0'
 def katello_version = '5.0'
 def konflux_components = ['candlepin-5-0', 'foreman-5-0', 'foreman-proxy-5-0', 'pulp-5-0']
-def konflux_gate_job_name = 'konflux-gate-5-0-pipeline'
+def konflux_gate_job_name = 'konflux-gate-5.0-pipeline'
 def konflux_gate_applications = [
     'candlepin-5-0': ['candlepin-5-0'],
     'foreman-5-0': ['foreman-5-0', 'foreman-proxy-5-0'],
