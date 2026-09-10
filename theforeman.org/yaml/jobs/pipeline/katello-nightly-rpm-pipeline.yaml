@@ -10,7 +10,6 @@
     dsl:
       !include-raw-verbatim:
         - pipelines/vars/katello/nightly.groovy
-        - pipelines/vars/konflux/nightly.groovy
         - pipelines/release/pipelines/katello.groovy
         - pipelines/lib/release.groovy
         - pipelines/lib/ansible.groovy

@@ -19,7 +19,7 @@
     # pipelines/vars/konflux/3-19.groovy instead of nightly.groovy).
     dsl:
       !include-raw-verbatim:
-        - pipelines/vars/konflux/nightly.groovy
+        - pipelines/vars/katello/nightly.groovy
         - pipelines/release/pipelines/konflux-gate.groovy
         - pipelines/lib/konflux.groovy
         - pipelines/lib/konflux_gate.groovy
