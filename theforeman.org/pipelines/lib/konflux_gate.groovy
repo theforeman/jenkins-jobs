@@ -32,8 +32,13 @@ def konflux_gate_wait_for_new_snapshot(app, previous, timeoutMinutes) {
     try {
         timeout(time: timeoutMinutes, unit: 'MINUTES') {
             waitUntil {
-                resolved = konflux_latest_snapshot(app)
-                return resolved && resolved != previous
+                try {
+                    resolved = konflux_latest_snapshot(app)
+                    return resolved && resolved != previous
+                } catch (Exception ex) {
+                    echo "Unable to resolve the latest Konflux Snapshot for '${app}'; retrying: ${ex.message}"
+                    return false
+                }
             }
         }
         return [app: app, snapshot: resolved, stale: false]
@@ -141,9 +146,7 @@ def konflux_gate_run_test(imageRefs) {
     def boxname = 'duffy_box'
     def var_prefix = konflux_gate_image_var_prefix()
 
-    // No ambient CICO_API_KEY here (this runs on ci.theforeman.org, not ci.centos.org),
-    // so it's bound explicitly, same as konflux-jenkins-trigger-token.
-    withCredentials([string(credentialsId: 'cico-api-key', variable: 'CICO_API_KEY')]) {
+    withCredentials([string(credentialsId: 'theforeman-duffy', variable: 'CICO_API_KEY')]) {
         setupDuffyClient()
     }
     provisionDuffy()

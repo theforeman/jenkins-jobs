@@ -79,7 +79,7 @@ pipeline {
             when {
                 expression {
                     try {
-                        konflux_components as boolean
+                        konflux_gate_applications as boolean
                     } catch (MissingPropertyException ignored) {
                         false
                     }

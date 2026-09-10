@@ -136,5 +136,8 @@ pipeline {
         failure {
             notifyDiscourse(env, 'Konflux gate pipeline failed:', currentBuild.description)
         }
+        unstable {
+            notifyDiscourse(env, 'Konflux gate pipeline is unstable:', currentBuild.description)
+        }
     }
 }
