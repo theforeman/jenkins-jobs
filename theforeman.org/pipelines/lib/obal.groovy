@@ -47,7 +47,7 @@ def setup_obal() {
                 branches: [[name: 'master']],
                 extensions: [[$class: 'CleanCheckout']],
                 userRemoteConfigs: [
-                    [url: 'https://github.com/theforeman/obsah']
+                    [credentialsId: 'github-login', url: 'https://github.com/theforeman/obsah']
                 ]
             ]
         )
@@ -62,7 +62,7 @@ def setup_obal() {
                 branches: [[name: 'master']],
                 extensions: [[$class: 'CleanCheckout']],
                 userRemoteConfigs: [
-                    [url: 'https://github.com/theforeman/obal']
+                    [credentialsId: 'github-login', url: 'https://github.com/theforeman/obal']
                 ]
             ]
         )
