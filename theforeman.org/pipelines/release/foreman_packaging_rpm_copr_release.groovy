@@ -22,7 +22,7 @@ pipeline {
                     branches : [[name: "*/${foreman_branch}"]],
                     extensions: [[$class: 'CleanCheckout']],
                     userRemoteConfigs: [
-                        [url: 'https://github.com/theforeman/foreman-packaging']
+                        [credentialsId: 'github-login', url: 'https://github.com/theforeman/foreman-packaging']
                     ]
                 ])
 
