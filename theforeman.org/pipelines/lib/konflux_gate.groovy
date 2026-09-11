@@ -149,21 +149,26 @@ def konflux_gate_release_artifacts(releaseName) {
 def konflux_gate_run_test(imageRefs) {
     def boxname = 'duffy_box'
     def var_prefix = konflux_gate_image_var_prefix()
-
-    withCredentials([string(credentialsId: 'theforeman-duffy', variable: 'CICO_API_KEY')]) {
-        setupDuffyClient()
-    }
-    provisionDuffy()
+    def duffy_home = pwd(tmp: true)
 
     try {
+        withEnv(["HOME=${duffy_home}"]) {
+            withCredentials([string(credentialsId: 'theforeman-duffy', variable: 'CICO_API_KEY')]) {
+                setupDuffyClient()
+            }
+            provisionDuffy()
+        }
+
         stage('Prepare Duffy node') {
-            def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
-            runPlaybook(
-                playbook: 'jenkins-jobs/theforeman.org/ansible/setup_vagrant_libvirt.yml',
-                inventory: duffy_inventory('./'),
-                limit: "duffy_session_${duffy_session}",
-                options: ['-b'],
-            )
+            withEnv(["HOME=${duffy_home}"]) {
+                def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
+                runPlaybook(
+                    playbook: 'jenkins-jobs/theforeman.org/ansible/setup_vagrant_libvirt.yml',
+                    inventory: duffy_inventory('./'),
+                    limit: "duffy_session_${duffy_session}",
+                    options: ['-b'],
+                )
+            }
 
             duffy_ssh('git clone https://github.com/theforeman/foremanctl.git', boxname, './')
             // GITHUB_ACTIONS=true skips the venv setup-environment would otherwise
@@ -211,6 +216,12 @@ def konflux_gate_run_test(imageRefs) {
             throw ex
         }
     } finally {
-        deprovisionDuffy()
+        try {
+            withEnv(["HOME=${duffy_home}"]) {
+                deprovisionDuffy()
+            }
+        } finally {
+            sh(label: 'remove Duffy home', script: "rm -rf '${duffy_home}'")
+        }
     }
 }
