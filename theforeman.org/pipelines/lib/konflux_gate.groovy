@@ -7,6 +7,10 @@ def konflux_gate_image_var_prefix() {
         'foreman-develop': 'foreman',
         'foreman-proxy-develop': 'foreman_proxy',
         'pulp-develop': 'pulp',
+        'candlepin-5-0': 'candlepin',
+        'foreman-5-0': 'foreman',
+        'foreman-proxy-5-0': 'foreman_proxy',
+        'pulp-5-0': 'pulp',
     ]
 }
 

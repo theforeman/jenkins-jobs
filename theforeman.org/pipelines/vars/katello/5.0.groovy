@@ -8,9 +8,9 @@ def konflux_gate_applications = [
     'pulp-5-0': ['pulp-5-0'],
 ]
 def konflux_gate_release_plans = [
-    'candlepin-5-0': 'release-candlepin-5-0-production',
-    'foreman-5-0': 'release-foreman-5-0-production',
-    'pulp-5-0': 'release-pulp-5-0-production',
+    'candlepin-5-0': 'release-candlepin-5-0',
+    'foreman-5-0': 'release-foreman-5-0',
+    'pulp-5-0': 'release-pulp-5-0',
 ]
 def snapshot_wait_timeout_minutes = 60
 def release_wait_timeout_minutes = 30
