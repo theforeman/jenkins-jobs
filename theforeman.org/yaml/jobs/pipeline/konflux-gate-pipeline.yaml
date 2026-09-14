@@ -1,0 +1,22 @@
+- job-template:
+    name: 'konflux-gate-{version}-pipeline'
+    project-type: pipeline
+    sandbox: true
+    dsl:
+      !include-raw-verbatim:
+        - 'pipelines/vars/katello/{version}.groovy'
+        - 'pipelines/release/pipelines/konflux-gate.groovy{empty}'
+        - 'pipelines/lib/konflux.groovy{empty}'
+        - 'pipelines/lib/konflux_gate.groovy{empty}'
+        - 'pipelines/lib/duffy.groovy{empty}'
+        - 'pipelines/lib/foreman_infra.groovy{empty}'
+        - 'pipelines/lib/ansible.groovy{empty}'
+
+- project:
+    name: konflux-gate
+    jobs:
+      - 'konflux-gate-{version}-pipeline'
+    empty: ''
+    version:
+      - nightly
+      - '5.0'

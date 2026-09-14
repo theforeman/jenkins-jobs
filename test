@@ -8,7 +8,7 @@ test_project() {
 	local project=$1
 
 	if [[ $project == "theforeman.org" ]] ; then
-		local dir="."
+		local dir="yaml"
 	elif [[ $project == "centos.org" ]] ; then
 		local dir="jobs"
 	else
