@@ -12,13 +12,13 @@ pipeline {
         stage('Setup Git Repos') {
             steps {
                 deleteDir()
-                git url: git_url, branch: git_ref
+                git url: git_url, branch: git_ref, credentialsId: 'github-login'
                 script {
                     archive_git_hash()
                 }
 
                 dir('foreman') {
-                   git url: "https://github.com/theforeman/foreman", branch: 'develop', poll: false, changelog: false
+                   git url: "https://github.com/theforeman/foreman", branch: 'develop', credentialsId: 'github-login', poll: false, changelog: false
                 }
             }
         }
@@ -131,7 +131,7 @@ pipeline {
         stage('Build and Archive Source') {
             steps {
                 dir(project_name) {
-                    git url: git_url, branch: git_ref
+                    git url: git_url, branch: git_ref, credentialsId: 'github-login'
                 }
                 script {
                     generate_sourcefiles(project_name: project_name, source_type: source_type)

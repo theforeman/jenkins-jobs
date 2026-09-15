@@ -31,7 +31,7 @@ pipeline {
                 stages {
                     stage('setup') {
                         steps {
-                            git url: git_url, branch: git_ref
+                            git url: git_url, branch: git_ref, credentialsId: 'github-login'
                             script {
                                 archive_git_hash()
                             }
@@ -80,7 +80,7 @@ pipeline {
 
             steps {
                 dir(project_name) {
-                    git url: git_url, branch: git_ref
+                    git url: git_url, branch: git_ref, credentialsId: 'github-login'
                 }
                 script {
                     sourcefile_paths = generate_sourcefiles(project_name: project_name, source_type: source_type, ruby_version: RUBY_VERSION)
