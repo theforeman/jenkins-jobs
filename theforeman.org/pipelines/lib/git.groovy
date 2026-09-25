@@ -1,12 +1,26 @@
-def ghprb_git_checkout() {
+def ghprb_git_checkout(fetch_annex = false) {
+    def refspec = '+refs/heads/${ghprbTargetBranch}:refs/remotes/origin/${ghprbTargetBranch} +refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*'
+    if (fetch_annex) {
+        refspec += ' +refs/heads/synced/git-annex:refs/remotes/origin/synced/git-annex'
+    }
+
     checkout changelog: true, poll: false, scm: [
         $class: 'GitSCM',
         branches: [[name: '${sha1}']],
         doGenerateSubmoduleConfigurations: false,
-        extensions: [[$class: 'PreBuildMerge', options: [fastForwardMode: 'FF', mergeRemote: 'origin', mergeTarget: '${ghprbTargetBranch}']]],
+        extensions: [
+            [
+                $class: 'CloneOption',
+                depth: 2,
+                honorRefspec: true,
+                noTags: true,
+                shallow: true
+            ],
+            [$class: 'PreBuildMerge', options: [fastForwardMode: 'FF', mergeRemote: 'origin', mergeTarget: '${ghprbTargetBranch}']]
+        ],
         submoduleCfg: [],
         userRemoteConfigs: [
-            [credentialsId: 'github-login', refspec: '+refs/heads/${ghprbTargetBranch}:refs/remotes/origin/${ghprbTargetBranch} +refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*', url: 'https://github.com/${ghprbGhRepository}']
+            [credentialsId: 'github-login', refspec: refspec, url: 'https://github.com/${ghprbGhRepository}']
         ]
     ]
 }

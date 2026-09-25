@@ -19,7 +19,7 @@ pipeline {
             steps {
 
                 deleteDir()
-                ghprb_git_checkout()
+                ghprb_git_checkout(ghprbGhRepository == 'theforeman/foreman-packaging')
                 setup_obal()
 
             }
