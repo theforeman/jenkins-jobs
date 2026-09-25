@@ -39,7 +39,7 @@ pipeline {
                         stage('Setup Environment') {
                             steps {
                                 dir('foreman-packaging') {
-                                    git(url: 'https://github.com/theforeman/foreman-packaging.git', branch: 'rpm/develop', poll: false)
+                                    shallow_packaging_checkout('rpm/develop', true)
                                 }
                                 setup_obal()
                             }
@@ -78,7 +78,7 @@ pipeline {
                         stage('Clone Packaging') {
                             steps {
                                 dir('foreman-packaging') {
-                                    git(url: 'https://github.com/theforeman/foreman-packaging.git', branch: 'deb/develop', poll: false)
+                                    shallow_packaging_checkout('deb/develop')
                                 }
                             }
                         }
@@ -141,4 +141,27 @@ pipeline {
             notifyDiscourse(env, "${project_name} package release pipeline failed:", currentBuild.description)
         }
     }
+}
+
+def shallow_packaging_checkout(branch, fetch_annex = false) {
+    def refspec = "+refs/heads/${branch}:refs/remotes/origin/${branch}"
+    if (fetch_annex) {
+        refspec += ' +refs/heads/synced/git-annex:refs/remotes/origin/synced/git-annex'
+    }
+
+    checkout changelog: false, poll: false, scm: [
+        $class: 'GitSCM',
+        branches: [[name: branch]],
+        extensions: [[
+            $class: 'CloneOption',
+            depth: 1,
+            honorRefspec: true,
+            noTags: true,
+            shallow: true
+        ]],
+        userRemoteConfigs: [[
+            refspec: refspec,
+            url: 'https://github.com/theforeman/foreman-packaging.git'
+        ]]
+    ]
 }
