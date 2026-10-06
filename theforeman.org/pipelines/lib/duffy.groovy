@@ -39,7 +39,8 @@ def color_shell(command = '', returnStdout = false) {
 }
 
 def duffy_ssh(command, box_name, relative_dir = '', returnStdout = false) {
-    color_shell("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -F ${ssh_config(relative_dir)} ${box_name} '${command}'", returnStdout)
+    def quoted_command = "'" + command.replace("'", "'\"'\"'") + "'"
+    color_shell("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -F ${ssh_config(relative_dir)} ${box_name} ${quoted_command}", returnStdout)
 }
 
 def duffy_scp(file_path, file_dest, box_name, relative_dir = '') {
