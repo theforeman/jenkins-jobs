@@ -1,3 +1,16 @@
+def konflux_gate_image_var_prefix() {
+    return [
+        'candlepin-develop': 'candlepin',
+        'foreman-develop': 'foreman',
+        'foreman-proxy-develop': 'foreman_proxy',
+        'pulp-develop': 'pulp',
+        'candlepin-5-0': 'candlepin',
+        'foreman-5-0': 'foreman',
+        'foreman-proxy-5-0': 'foreman_proxy',
+        'pulp-5-0': 'pulp',
+    ]
+}
+
 def konflux_gate_last_released_snapshot(app) {
     return sh(
         label: "resolve last released snapshot: ${app}",
@@ -234,4 +247,88 @@ def konflux_gate_release_artifacts(releaseName) {
         returnStdout: true
     ).trim()
     return readJSON(text: json ?: '[]')
+}
+
+def konflux_gate_run_test(imageRefs, foremanctlBranch, pytestArgs) {
+    def boxname = 'duffy_box'
+    def var_prefix = konflux_gate_image_var_prefix()
+    def duffy_tmp = pwd(tmp: true)
+    def imageVars = [:]
+    imageRefs.each { component, ref ->
+        def prefix = var_prefix[component]
+        if (!prefix) {
+            error("konflux_gate_run_test: no foremanctl image variables known for component '${component}'")
+        }
+        if (!(ref ==~ /[a-z0-9._:\/-]+@sha256:[0-9a-f]{64}/)) {
+            error("konflux_gate_run_test: expected a digest-pinned image for '${component}', got '${ref}'")
+        }
+        def parts = ref.tokenize('@')
+        imageVars["${prefix}_container_image"] = "${parts[0]}@sha256"
+        imageVars["${prefix}_container_tag"] = parts[1].substring(7)
+    }
+    def imageArgs = "--extra-vars '${writeJSON(returnText: true, json: imageVars)}'"
+    def foremanctl = 'OBSAH_ALLOW_EXTRA_VARS=true ./foremanctl'
+    def duffy_home = ''
+
+    try {
+        withEnv(["DUFFY_TMP=${duffy_tmp}"]) {
+            duffy_home = sh(label: 'create Duffy home', script: 'mkdir -p "$DUFFY_TMP" && umask 077 && mktemp -d "$DUFFY_TMP/duffy-home.XXXXXX"', returnStdout: true).trim()
+        }
+        withEnv(["HOME=${duffy_home}"]) {
+            withCredentials([string(credentialsId: 'theforeman-duffy', variable: 'CICO_API_KEY')]) {
+                setupDuffyClient()
+            }
+            provisionDuffy()
+        }
+
+        stage('Prepare Duffy node') {
+            withEnv(["HOME=${duffy_home}"]) {
+                def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
+                runPlaybook(
+                    playbook: 'jenkins-jobs/centos.org/ansible/setup_vagrant_libvirt.yml',
+                    inventory: duffy_inventory('./'),
+                    limit: "duffy_session_${duffy_session}",
+                    options: ['-b'],
+                )
+            }
+
+            duffy_ssh("git clone --depth 1 --branch '${foremanctlBranch}' https://github.com/theforeman/foremanctl.git", boxname, './')
+            duffy_ssh('cd foremanctl && GITHUB_ACTIONS=true ./setup-environment', boxname, './')
+        }
+
+        try {
+            stage('Deploy and test') {
+                duffy_ssh('cd foremanctl && ./forge vms start', boxname, './')
+                duffy_ssh('cd foremanctl && ./forge setup-repositories', boxname, './')
+                duffy_ssh("cd foremanctl && ${foremanctl} pull-images ${imageArgs}", boxname, './')
+                duffy_ssh("cd foremanctl && ${foremanctl} deploy ${imageArgs} --initial-admin-password=changeme --initial-organization \"Foreman CI\" --initial-location \"Internet\" --tuning development --content-import-path /custom/import --content-export-path /custom/export", boxname, './')
+                duffy_ssh("cd foremanctl && ${foremanctl} deploy ${imageArgs} --add-feature hammer --add-feature foreman-proxy --add-feature azure-rm --add-feature google --add-feature remote-execution --add-feature ansible --add-feature bmc --add-feature webhooks", boxname, './')
+                imageRefs.each { component, ref ->
+                    def imageName = var_prefix[component].replace('_', '-')
+                    duffy_ssh("cd foremanctl && vagrant ssh quadlet -c \"sudo grep -Fx 'Image=${ref}' /etc/containers/systemd/${imageName}.image\"", boxname, './')
+                }
+                duffy_ssh("cd foremanctl && ${foremanctl} health ${imageArgs}", boxname, './')
+                duffy_ssh("cd foremanctl && ./forge test --pytest-args=\"${pytestArgs}\"", boxname, './')
+            }
+        } catch (Exception ex) {
+            stage('Collect sos reports') {
+                duffy_ssh('cd foremanctl && ./forge sos', boxname, './')
+                duffy_scp('foremanctl/sos', "${env.WORKSPACE}/sos", boxname, './')
+                archiveArtifacts artifacts: 'sos/**', allowEmptyArchive: true
+            }
+            throw ex
+        }
+    } finally {
+        if (duffy_home) {
+            try {
+                withEnv(["HOME=${duffy_home}"]) {
+                    deprovisionDuffy()
+                }
+            } finally {
+                withEnv(["DUFFY_HOME=${duffy_home}"]) {
+                    sh(label: 'remove Duffy home', script: 'rm -rf -- "$DUFFY_HOME"')
+                }
+            }
+        }
+    }
 }
