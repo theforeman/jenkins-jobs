@@ -250,6 +250,12 @@ def konflux_gate_release_artifacts(releaseName) {
 }
 
 def konflux_gate_run_test(imageRefs, foremanctlBranch, pytestArgs) {
+    withCredentials([file(credentialsId: 'theforeman-duffy', variable: 'DUFFY_CONFIG')]) {
+        konflux_gate_run_test_with_duffy_config(imageRefs, foremanctlBranch, pytestArgs)
+    }
+}
+
+def konflux_gate_run_test_with_duffy_config(imageRefs, foremanctlBranch, pytestArgs) {
     def boxname = 'duffy_box'
     def var_prefix = konflux_gate_image_var_prefix()
     def duffy_tmp = pwd(tmp: true)
@@ -275,9 +281,12 @@ def konflux_gate_run_test(imageRefs, foremanctlBranch, pytestArgs) {
             duffy_home = sh(label: 'create Duffy home', script: 'mkdir -p "$DUFFY_TMP" && umask 077 && mktemp -d "$DUFFY_TMP/duffy-home.XXXXXX"', returnStdout: true).trim()
         }
         withEnv(["HOME=${duffy_home}"]) {
-            withCredentials([string(credentialsId: 'theforeman-duffy', variable: 'CICO_API_KEY')]) {
-                setupDuffyClient()
-            }
+            sh(label: 'configure Duffy from secret file', script: '''
+                set +x
+                mkdir -p "$HOME/.config"
+                ln -s "$DUFFY_CONFIG" "$HOME/.config/duffy"
+            ''')
+            installDuffyCollection()
             provisionDuffy()
         }
 
