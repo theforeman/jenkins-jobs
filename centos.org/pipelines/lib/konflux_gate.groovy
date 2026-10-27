@@ -33,7 +33,8 @@ def konflux_gate_shell_quote(value) {
 }
 
 def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
-    def boxname = 'duffy_box'
+    def boxname = 'pipe-konflux-gate@duffy_box'
+    def inForemanctl = 'cd foremanctl && . .venv/bin/activate &&'
     def var_prefix = konflux_gate_image_var_prefix()
     def imageVars = [:]
     imageRefs.each { component, ref ->
@@ -51,32 +52,45 @@ def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
         }
         stage('Prepare Duffy node') {
             def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session').trim()
-            runPlaybook(
-                playbook: 'jenkins-jobs/centos.org/ansible/setup_vagrant_libvirt.yml',
-                inventory: duffy_inventory('./'),
-                limit: "duffy_session_${duffy_session}",
-                options: ['-b'],
-            )
+            dir('forklift') {
+                git url: 'https://github.com/theforeman/forklift.git'
+                runPlaybook(
+                    playbook: 'playbooks/setup_pipeline_users.yml',
+                    inventory: duffy_inventory('../'),
+                    limit: "duffy_session_${duffy_session}",
+                    remote_user: 'root',
+                    options: ['-b'],
+                    extraVars: [pipeline_users: ['pipe-konflux-gate']],
+                )
+                runPlaybook(
+                    playbook: '../jenkins-jobs/centos.org/ansible/setup_vagrant_libvirt.yml',
+                    inventory: duffy_inventory('../'),
+                    limit: "duffy_session_${duffy_session}",
+                    remote_user: 'root',
+                    options: ['-b'],
+                    extraVars: [konflux_gate: true],
+                )
+            }
 
             duffy_ssh("git clone --depth 1 --branch ${konflux_gate_shell_quote(foremanctlBranch)} https://github.com/theforeman/foremanctl.git", boxname, './')
-            duffy_ssh('cd foremanctl && GITHUB_ACTIONS=true ./setup-environment', boxname, './')
+            duffy_ssh('cd foremanctl && python3 -m venv .venv && . .venv/bin/activate && ./setup-environment', boxname, './')
         }
 
         try {
             stage('Deploy and test') {
-                duffy_ssh('cd foremanctl && ./forge vms start', boxname, './')
-                duffy_ssh('cd foremanctl && ./forge setup-repositories', boxname, './')
-                duffy_ssh("cd foremanctl && ${foremanctl} pull-images ${imageArgs}", boxname, './')
-                duffy_ssh("cd foremanctl && ${foremanctl} deploy ${imageArgs} --initial-admin-password=changeme --initial-organization \"Foreman CI\" --initial-location \"Internet\" --tuning development --content-import-path /custom/import --content-export-path /custom/export", boxname, './')
-                duffy_ssh("cd foremanctl && ${foremanctl} deploy ${imageArgs} --add-feature hammer --add-feature foreman-proxy --add-feature azure-rm --add-feature google --add-feature remote-execution --add-feature ansible --add-feature bmc --add-feature webhooks", boxname, './')
+                duffy_ssh("${inForemanctl} ./forge vms start", boxname, './')
+                duffy_ssh("${inForemanctl} ./forge setup-repositories", boxname, './')
+                duffy_ssh("${inForemanctl} ${foremanctl} pull-images ${imageArgs}", boxname, './')
+                duffy_ssh("${inForemanctl} ${foremanctl} deploy ${imageArgs} --initial-admin-password=changeme --initial-organization \"Foreman CI\" --initial-location \"Internet\" --tuning development --content-import-path /custom/import --content-export-path /custom/export", boxname, './')
+                duffy_ssh("${inForemanctl} ${foremanctl} deploy ${imageArgs} --add-feature hammer --add-feature foreman-proxy --add-feature azure-rm --add-feature google --add-feature remote-execution --add-feature ansible --add-feature bmc --add-feature webhooks", boxname, './')
                 imageRefs.each { component, ref ->
                     def imageName = var_prefix[component].replace('_', '-')
-                    duffy_ssh("cd foremanctl && vagrant ssh quadlet -c \"sudo grep -Fx 'Image=${ref}' /etc/containers/systemd/${imageName}.image\"", boxname, './')
+                    duffy_ssh("${inForemanctl} vagrant ssh quadlet -c \"sudo grep -Fx 'Image=${ref}' /etc/containers/systemd/${imageName}.image\"", boxname, './')
                 }
-                duffy_ssh("cd foremanctl && ${foremanctl} health ${imageArgs}", boxname, './')
+                duffy_ssh("${inForemanctl} ${foremanctl} health ${imageArgs}", boxname, './')
                 try {
                     def testArgs = konflux_gate_shell_quote("${pytestArgs ?: ''} --junitxml=gate-results.xml".trim())
-                    duffy_ssh("cd foremanctl && ./forge test --pytest-args=${testArgs}", boxname, './')
+                    duffy_ssh("${inForemanctl} ./forge test --pytest-args=${testArgs}", boxname, './')
                 } finally {
                     // Publish results even when pytest fails. Missing results must also fail the gate.
                     duffy_scp('foremanctl/gate-results.xml', "${env.WORKSPACE}/gate-results.xml", boxname, './')
@@ -92,7 +106,7 @@ def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
             stage('Collect sos reports') {
                 try {
                     timeout(time: 3, unit: 'MINUTES') {
-                        duffy_ssh('cd foremanctl && ./forge sos', boxname, './')
+                        duffy_ssh("${inForemanctl} ./forge sos", boxname, './')
                         duffy_scp('foremanctl/sos', "${env.WORKSPACE}/sos", boxname, './')
                         archiveArtifacts artifacts: 'sos/**', allowEmptyArchive: true
                     }
