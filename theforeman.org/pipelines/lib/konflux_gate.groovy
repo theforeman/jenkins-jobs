@@ -249,13 +249,24 @@ def konflux_gate_release_artifacts(releaseName) {
     return readJSON(text: json ?: '[]')
 }
 
-def konflux_gate_run_test(imageRefs, foremanctlBranch, pytestArgs) {
-    withCredentials([file(credentialsId: 'theforeman-duffy', variable: 'DUFFY_CONFIG')]) {
-        konflux_gate_run_test_with_duffy_config(imageRefs, foremanctlBranch, pytestArgs)
+def konflux_gate_with_duffy_config(duffyHome, body) {
+    withEnv(["HOME=${duffyHome}"]) {
+        withCredentials([file(credentialsId: 'theforeman-duffy', variable: 'DUFFY_CONFIG')]) {
+            try {
+                sh(label: 'configure Duffy from secret file', script: '''
+                    set +x
+                    mkdir -p "$HOME/.config"
+                    ln -s "$DUFFY_CONFIG" "$HOME/.config/duffy"
+                ''')
+                body()
+            } finally {
+                sh(label: 'remove Duffy config link', script: 'rm -f -- "$HOME/.config/duffy"')
+            }
+        }
     }
 }
 
-def konflux_gate_run_test_with_duffy_config(imageRefs, foremanctlBranch, pytestArgs) {
+def konflux_gate_run_test(imageRefs, foremanctlBranch, pytestArgs) {
     def boxname = 'duffy_box'
     def var_prefix = konflux_gate_image_var_prefix()
     def duffy_tmp = pwd(tmp: true)
@@ -281,17 +292,14 @@ def konflux_gate_run_test_with_duffy_config(imageRefs, foremanctlBranch, pytestA
             duffy_home = sh(label: 'create Duffy home', script: 'mkdir -p "$DUFFY_TMP" && umask 077 && mktemp -d "$DUFFY_TMP/duffy-home.XXXXXX"', returnStdout: true).trim()
         }
         withEnv(["HOME=${duffy_home}"]) {
-            sh(label: 'configure Duffy from secret file', script: '''
-                set +x
-                mkdir -p "$HOME/.config"
-                ln -s "$DUFFY_CONFIG" "$HOME/.config/duffy"
-            ''')
             installDuffyCollection()
+        }
+        konflux_gate_with_duffy_config(duffy_home) {
             provisionDuffy()
         }
 
         stage('Prepare Duffy node') {
-            withEnv(["HOME=${duffy_home}"]) {
+            konflux_gate_with_duffy_config(duffy_home) {
                 def duffy_session = readFile(file: 'jenkins-jobs/centos.org/ansible/duffy_session')
                 runPlaybook(
                     playbook: 'jenkins-jobs/centos.org/ansible/setup_vagrant_libvirt.yml',
@@ -330,8 +338,10 @@ def konflux_gate_run_test_with_duffy_config(imageRefs, foremanctlBranch, pytestA
     } finally {
         if (duffy_home) {
             try {
-                withEnv(["HOME=${duffy_home}"]) {
-                    deprovisionDuffy()
+                if (fileExists('jenkins-jobs/centos.org/ansible/duffy_session')) {
+                    konflux_gate_with_duffy_config(duffy_home) {
+                        deprovisionDuffy()
+                    }
                 }
             } finally {
                 withEnv(["DUFFY_HOME=${duffy_home}"]) {
