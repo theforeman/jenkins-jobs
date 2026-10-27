@@ -9,7 +9,6 @@
     jenkins_job_token: ''
     jenkins_download_artifacts: false
     jenkins_artifacts_directory: './artifacts'
-    jenkins_success_results: ['SUCCESS', 'UNSTABLE']
   tasks:
     - name: "Start Jenkins job"
       uri:
@@ -108,5 +107,7 @@
 
     - name: "Fail if the build failed"
       fail:
-        msg: "Build job returned {{ build_job_result.json.result }}; required {{ jenkins_success_results | join(' or ') }}"
-      when: build_job_result.json.result not in jenkins_success_results
+        msg: "Build Job Failed"
+      when:
+        - build_job_result.json.result != 'SUCCESS'
+        - build_job_result.json.result != 'UNSTABLE'
