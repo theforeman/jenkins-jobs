@@ -17,7 +17,7 @@ def provisionDuffy() {
     git_clone_jenkins_jobs(target_dir: 'jenkins-jobs')
 
   	dir('jenkins-jobs/centos.org/ansible') {
-        runPlaybook(playbook: 'provision_duffy.yml')
+        runPlaybook(playbook: 'provision_duffy.yml', inventory: 'localhost,')
         archiveArtifacts artifacts: 'ssh_config'
     }
 }
@@ -25,7 +25,7 @@ def provisionDuffy() {
 def deprovisionDuffy() {
     if (fileExists('jenkins-jobs/centos.org/ansible/duffy_session')) {
         dir('jenkins-jobs/centos.org/ansible') {
-            runPlaybook(playbook: 'deprovision_duffy.yml')
+            runPlaybook(playbook: 'deprovision_duffy.yml', inventory: 'localhost,')
       	}
     }
 }
