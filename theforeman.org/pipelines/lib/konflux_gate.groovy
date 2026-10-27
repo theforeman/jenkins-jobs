@@ -286,7 +286,6 @@ def konflux_gate_centos_playbook(playbook, extraVars) {
     withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift-cloud', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
         runPlaybook(
             playbook: "centos.org/ansible/${playbook}",
-            inventory: 'localhost,',
             extraVars: extraVars,
             sensitiveExtraVars: [jenkins_username: env.USERNAME, jenkins_password: env.PASSWORD],
         )
