@@ -84,12 +84,18 @@ def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
                     junit testResults: 'gate-results.xml'
                 }
             }
+        } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException ex) {
+            // Parent cancellation and the child timeout should retire the node
+            // immediately, without starting optional diagnostic collection.
+            throw ex
         } catch (Exception ex) {
             stage('Collect sos reports') {
                 try {
-                    duffy_ssh('cd foremanctl && ./forge sos', boxname, './')
-                    duffy_scp('foremanctl/sos', "${env.WORKSPACE}/sos", boxname, './')
-                    archiveArtifacts artifacts: 'sos/**', allowEmptyArchive: true
+                    timeout(time: 3, unit: 'MINUTES') {
+                        duffy_ssh('cd foremanctl && ./forge sos', boxname, './')
+                        duffy_scp('foremanctl/sos', "${env.WORKSPACE}/sos", boxname, './')
+                        archiveArtifacts artifacts: 'sos/**', allowEmptyArchive: true
+                    }
                 } catch (Exception diagnosticsError) {
                     echo "Unable to collect sos reports: ${diagnosticsError.message}"
                 }

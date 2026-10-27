@@ -236,16 +236,57 @@ def konflux_gate_release_artifacts(releaseName) {
     return readJSON(text: json ?: '[]')
 }
 
-// The same bridge used by the RPM pipelines, with a stricter release-gate result policy.
+// Keep the gate's strict result and cancellation policy out of the RPM job bridge.
 def konflux_gate_run_test(version, imageRefs, foremanctlBranch, pytestArgs) {
     def job = "foreman-konflux-gate-${version}"
-    runCicoJob(job, [
-        IMAGE_REFS: writeJSON(returnText: true, json: imageRefs),
-        FOREMANCTL_BRANCH: foremanctlBranch,
-        PYTEST_ARGS: pytestArgs,
-    ], [
+    def linkFile = "${env.WORKSPACE}/jobs/${job}"
+    def artifacts = "artifacts/${job}"
+    def extraVars = [
+        jenkins_job_name: job,
+        jenkins_job_link_file: linkFile,
+        jenkins_job_queue_file: "${linkFile}.queue",
+        jenkins_job_parameters: [
+            IMAGE_REFS: writeJSON(returnText: true, json: imageRefs),
+            FOREMANCTL_BRANCH: foremanctlBranch,
+            PYTEST_ARGS: pytestArgs,
+        ],
         jenkins_download_artifacts: true,
-        jenkins_artifacts_directory: "${env.WORKSPACE}/artifacts/${job}/",
-        jenkins_success_results: ['SUCCESS'],
-    ])
+        jenkins_artifacts_directory: "${env.WORKSPACE}/${artifacts}/",
+    ]
+    def status = 'failed'
+    git_clone_jenkins_jobs()
+    try {
+        try {
+            konflux_gate_centos_playbook('konflux_gate_job.yml', extraVars)
+            status = 'passed'
+        } catch (Exception ex) {
+            if (fileExists(extraVars.jenkins_job_queue_file)) {
+                try {
+                    timeout(time: 10, unit: 'MINUTES') {
+                        konflux_gate_centos_playbook('konflux_gate_cancel_job.yml', extraVars)
+                    }
+                } catch (Exception cleanupError) {
+                    echo "Unable to confirm CentOS job cancellation/cleanup for ${job}: ${cleanupError.message}"
+                }
+            }
+            throw ex
+        } finally {
+            archiveArtifacts artifacts: "${artifacts}/**", allowEmptyArchive: true
+            junit testResults: "${artifacts}/**/gate-results.xml", allowEmptyResults: true
+            set_job_build_description(job, status, linkFile)
+        }
+    } finally {
+        deleteDir()
+    }
+}
+
+def konflux_gate_centos_playbook(playbook, extraVars) {
+    withCredentials([usernamePassword(credentialsId: 'centos-jenkins-openshift-cloud', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        runPlaybook(
+            playbook: "centos.org/ansible/${playbook}",
+            inventory: 'localhost,',
+            extraVars: extraVars,
+            sensitiveExtraVars: [jenkins_username: env.USERNAME, jenkins_password: env.PASSWORD],
+        )
+    }
 }

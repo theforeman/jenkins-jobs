@@ -51,10 +51,15 @@ pipeline {
         cleanup {
             script {
                 try {
-                    // This job uses the existing per-pod CICO_API_KEY, not a Foreman secret.
-                    sh(label: 'remove Duffy client config', script: 'rm -f -- "$HOME/.config/duffy"')
+                    // Retirement is idempotent. Retry here if the runner's
+                    // finally was interrupted or its first API call failed.
+                    deprovisionDuffy()
                 } finally {
-                    deleteDir()
+                    try {
+                        sh(label: 'remove Duffy client config', script: 'rm -f -- "$HOME/.config/duffy"')
+                    } finally {
+                        deleteDir()
+                    }
                 }
             }
         }
