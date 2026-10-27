@@ -4,6 +4,10 @@
     project-type: pipeline
     sandbox: true
     parameters:
+      - string:
+          name: GATE_REQUEST_ID
+          default: ''
+          description: 'Unique dispatch identifier supplied by the parent for cancellation recovery.'
       - text:
           name: IMAGE_REFS
           default: '{{}}'

@@ -4,82 +4,18 @@
   gather_facts: false
   vars:
     jenkins_host: 'https://jenkins-foreman.apps.ocp.cloud.ci.centos.org/'
-  module_defaults:
-    ansible.builtin.uri:
-      force_basic_auth: true
-      user: "{{ jenkins_username }}"
-      password: "{{ jenkins_password }}"
-      return_content: true
-      timeout: 10
   tasks:
-    - name: Check whether the child build URL was recorded
-      stat:
-        path: "{{ jenkins_job_link_file }}"
-      register: build_link
+    - name: Cancel this dispatch and wait for the child's cleanup
+      konflux_gate_cancel:
+        url: "{{ jenkins_host }}"
+        url_username: "{{ jenkins_username }}"
+        url_password: "{{ jenkins_password }}"
+        job: "{{ jenkins_job_name }}"
+        request_id: "{{ jenkins_gate_request_id }}"
+      register: child_cleanup
 
-    - name: Read the recorded build URL
-      set_fact:
-        child_build_url: "{{ lookup('file', jenkins_job_link_file) | trim }}"
-      when: build_link.stat.exists
-
-    - name: Cancel a queued child or find the build that started
-      when: not build_link.stat.exists
-      block:
-        - name: Read queue state
-          uri:
-            url: "{{ lookup('file', jenkins_job_queue_file) | trim }}api/json"
-          register: queue_state
-
-        - name: Cancel the queue item if it has not started
-          uri:
-            url: "{{ jenkins_host }}/queue/cancelItem?id={{ queue_state.json.id }}"
-            method: POST
-            status_code: [200, 302]
-          when:
-            - queue_state.json.executable is not defined
-            - not (queue_state.json.cancelled | default(false))
-
-        # The executor may have picked up the job while cancellation was sent.
-        - name: Check whether queue cancellation raced with starting the child
-          uri:
-            url: "{{ lookup('file', jenkins_job_queue_file) | trim }}api/json"
-          register: settled_queue
-          until: (settled_queue.json.cancelled | default(false)) or (settled_queue.json.executable is defined)
-          retries: 10
-          delay: 2
-
-        - name: Remember the child that started
-          set_fact:
-            child_build_url: "{{ settled_queue.json.executable.url }}"
-          when: settled_queue.json.executable is defined
-
-    - name: Stop the child and wait for its cleanup
-      when: child_build_url is defined
-      block:
-        - name: Record the child URL for the parent build link
-          copy:
-            dest: "{{ jenkins_job_link_file }}"
-            content: "{{ child_build_url }}"
-
-        - name: Read child build state
-          uri:
-            url: "{{ child_build_url }}api/json"
-          register: child_state
-
-        - name: Stop the child so its Duffy teardown runs
-          uri:
-            url: "{{ child_build_url }}stop"
-            method: POST
-            status_code: [200, 302]
-          when: child_state.json.building
-
-        - name: Wait for the child including finally and post actions to finish
-          uri:
-            url: "{{ child_build_url }}api/json"
-          register: stopped_child
-          until: not stopped_child.json.building
-          retries: 100
-          delay: 5
-
-        - debug:
-            msg: "CentOS child finished with {{ stopped_child.json.result }}: {{ child_build_url }}"
+    - name: Record the recovered child URL for the parent build link
+      copy:
+        dest: "{{ jenkins_job_link_file }}"
+        content: "{{ child_cleanup.builds[0].url }}"
+      when: child_cleanup.builds | length > 0

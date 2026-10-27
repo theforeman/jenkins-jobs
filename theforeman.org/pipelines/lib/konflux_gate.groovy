@@ -241,11 +241,15 @@ def konflux_gate_run_test(version, imageRefs, foremanctlBranch, pytestArgs) {
     def job = "foreman-konflux-gate-${version}"
     def linkFile = "${env.WORKSPACE}/jobs/${job}"
     def artifacts = "artifacts/${job}"
+    // Generated before dispatch, so cleanup can find a child even if the POST
+    // succeeded but the parent never received or saved its queue URL.
+    def requestId = UUID.randomUUID().toString()
     def extraVars = [
         jenkins_job_name: job,
         jenkins_job_link_file: linkFile,
-        jenkins_job_queue_file: "${linkFile}.queue",
+        jenkins_gate_request_id: requestId,
         jenkins_job_parameters: [
+            GATE_REQUEST_ID: requestId,
             IMAGE_REFS: writeJSON(returnText: true, json: imageRefs),
             FOREMANCTL_BRANCH: foremanctlBranch,
             PYTEST_ARGS: pytestArgs,
@@ -260,14 +264,12 @@ def konflux_gate_run_test(version, imageRefs, foremanctlBranch, pytestArgs) {
             konflux_gate_centos_playbook('konflux_gate_job.yml', extraVars)
             status = 'passed'
         } catch (Exception ex) {
-            if (fileExists(extraVars.jenkins_job_queue_file)) {
-                try {
-                    timeout(time: 10, unit: 'MINUTES') {
-                        konflux_gate_centos_playbook('konflux_gate_cancel_job.yml', extraVars)
-                    }
-                } catch (Exception cleanupError) {
-                    echo "Unable to confirm CentOS job cancellation/cleanup for ${job}: ${cleanupError.message}"
+            try {
+                timeout(time: 10, unit: 'MINUTES') {
+                    konflux_gate_centos_playbook('konflux_gate_cancel_job.yml', extraVars)
                 }
+            } catch (Exception cleanupError) {
+                echo "Unable to confirm CentOS job cancellation/cleanup for ${job} (${requestId}): ${cleanupError.message}"
             }
             throw ex
         } finally {
