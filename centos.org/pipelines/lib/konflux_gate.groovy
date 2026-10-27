@@ -34,7 +34,7 @@ def konflux_gate_shell_quote(value) {
 
 def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
     def boxname = 'pipe-konflux-gate@duffy_box'
-    def inForemanctl = 'cd foremanctl && . .venv/bin/activate &&'
+    def inForemanctl = 'cd foremanctl && . .venv/bin/activate && export FOREMANCTL_BASE_BOX=centos/stream10 &&'
     def var_prefix = konflux_gate_image_var_prefix()
     def imageVars = [:]
     imageRefs.each { component, ref ->
@@ -63,12 +63,11 @@ def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
                     extraVars: [pipeline_users: ['pipe-konflux-gate']],
                 )
                 runPlaybook(
-                    playbook: '../jenkins-jobs/centos.org/ansible/setup_vagrant_libvirt.yml',
+                    playbook: '../jenkins-jobs/centos.org/ansible/setup_konflux_gate.yml',
                     inventory: duffy_inventory('../'),
                     limit: "duffy_session_${duffy_session}",
                     remote_user: 'root',
                     options: ['-b'],
-                    extraVars: [konflux_gate: true],
                 )
             }
 
@@ -78,7 +77,7 @@ def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
 
         try {
             stage('Deploy and test') {
-                duffy_ssh("${inForemanctl} ./forge vms start", boxname, './')
+                duffy_ssh("${inForemanctl} ./forge vms start --vms 'quadlet client'", boxname, './')
                 duffy_ssh("${inForemanctl} ./forge setup-repositories", boxname, './')
                 duffy_ssh("${inForemanctl} ${foremanctl} pull-images ${imageArgs}", boxname, './')
                 duffy_ssh("${inForemanctl} ${foremanctl} deploy ${imageArgs} --initial-admin-password=changeme --initial-organization \"Foreman CI\" --initial-location \"Internet\" --tuning development --content-import-path /custom/import --content-export-path /custom/export", boxname, './')
