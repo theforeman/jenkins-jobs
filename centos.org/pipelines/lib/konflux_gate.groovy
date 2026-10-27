@@ -12,7 +12,7 @@ def konflux_gate_image_var_prefix() {
 }
 
 def konflux_gate_validate_inputs(imageRefs, components, foremanctlBranch) {
-    if (!(imageRefs instanceof Map) || imageRefs.keySet().sort() != components.sort(false)) {
+    if (!(imageRefs instanceof Map) || imageRefs.size() != components.size() || !imageRefs.keySet().containsAll(components)) {
         error('IMAGE_REFS must contain exactly the components for this stream')
     }
     imageRefs.each { component, ref ->
