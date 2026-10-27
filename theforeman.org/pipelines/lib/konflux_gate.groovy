@@ -311,6 +311,8 @@ def konflux_gate_run_test(imageRefs, foremanctlBranch, pytestArgs) {
                     inventory: duffy_inventory('./'),
                     limit: "duffy_session_${duffy_session}",
                     options: ['-b'],
+                    // The Duffy inventory defaults to the node's private IP.
+                    extraVars: [ansible_host: '{{ inventory_hostname }}'],
                 )
             }
 
