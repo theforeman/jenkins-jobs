@@ -1,0 +1,28 @@
+---
+- import_playbook: setup_vagrant_libvirt.yml
+
+- hosts: all
+  become: true
+  roles:
+    - role: libvirt
+  tasks:
+    - name: Create the gate user's Vagrant configuration directory
+      file:
+        path: /home/pipe-konflux-gate/.vagrant.d
+        state: directory
+        owner: pipe-konflux-gate
+        group: pipe-konflux-gate
+        mode: '0755'
+
+    - name: Disable the default synced folder as in Forklift CI
+      copy:
+        dest: /home/pipe-konflux-gate/.vagrant.d/Vagrantfile
+        owner: pipe-konflux-gate
+        group: pipe-konflux-gate
+        mode: '0644'
+        content: |
+          Vagrant.configure("2") do |config|
+            config.vm.provider :libvirt do |libvirt, override|
+              override.vm.synced_folder ".", "/vagrant", disabled: true
+            end
+          end

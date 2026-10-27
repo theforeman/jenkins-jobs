@@ -35,8 +35,3 @@
         name: libvirtd
         state: started
         enabled: true
-
-    - name: Configure libvirt for pipeline users as in Forklift
-      include_role:
-        name: libvirt
-      when: konflux_gate | default(false) | bool
