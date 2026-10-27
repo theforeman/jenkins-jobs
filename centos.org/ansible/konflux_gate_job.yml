@@ -10,14 +10,17 @@
     jenkins_download_artifacts: false
     jenkins_artifacts_directory: './artifacts'
   tasks:
-    - name: Remove previous cancellation tracking files
+    - name: Require the parent's dispatch ID before starting a child
+      assert:
+        that:
+          - jenkins_gate_request_id is defined
+          - jenkins_gate_request_id | length > 0
+          - jenkins_job_parameters.GATE_REQUEST_ID == jenkins_gate_request_id
+
+    - name: Remove the previous child build link
       file:
-        path: "{{ item }}"
+        path: "{{ jenkins_job_link_file }}"
         state: absent
-      loop:
-        - "{{ jenkins_job_queue_file | default('') }}"
-        - "{{ jenkins_job_link_file | default('') }}"
-      when: jenkins_job_queue_file is defined
 
     - name: Create folder for job link files
       file:
@@ -39,12 +42,6 @@
       vars:
         jenkins_build_url: "{{ jenkins_host }}/job/{{ jenkins_job_name }}/buildWithParameters?TOKEN={{ jenkins_job_token }}&{{ jenkins_job_parameters|default('')|urlencode }}"
       register: start_job_result
-
-    - name: Record queue URL for parent cancellation
-      copy:
-        dest: "{{ jenkins_job_queue_file }}"
-        content: "{{ start_job_result.location }}"
-      when: jenkins_job_queue_file is defined
 
     - debug:
         msg: "{{ start_job_result }}"
