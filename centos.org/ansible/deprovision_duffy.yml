@@ -1,6 +1,8 @@
 ---
 - hosts: localhost
+  connection: local
   vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
     duffy_session: "{{ lookup('file', './duffy_session') }}"
   tasks:
     - name: 'Destroy node'

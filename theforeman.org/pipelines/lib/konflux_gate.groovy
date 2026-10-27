@@ -250,7 +250,7 @@ def konflux_gate_release_artifacts(releaseName) {
 }
 
 def konflux_gate_with_duffy_config(duffyHome, body) {
-    withEnv(["HOME=${duffyHome}"]) {
+    withEnv(["HOME=${duffyHome}", "PATH+DUFFY=${duffyHome}/venv/bin"]) {
         withCredentials([file(credentialsId: 'theforeman-duffy', variable: 'DUFFY_CONFIG')]) {
             try {
                 sh(label: 'configure Duffy from secret file', script: '''
@@ -291,7 +291,12 @@ def konflux_gate_run_test(imageRefs, foremanctlBranch, pytestArgs) {
         withEnv(["DUFFY_TMP=${duffy_tmp}"]) {
             duffy_home = sh(label: 'create Duffy home', script: 'mkdir -p "$DUFFY_TMP" && umask 077 && mktemp -d "$DUFFY_TMP/duffy-home.XXXXXX"', returnStdout: true).trim()
         }
-        withEnv(["HOME=${duffy_home}"]) {
+        withEnv(["HOME=${duffy_home}", "PATH+DUFFY=${duffy_home}/venv/bin"]) {
+            sh(label: 'install Duffy Python runtime', script: '''
+                python3 -m venv "$HOME/venv"
+                # evgeni.duffy expects model objects; Duffy 3.4 returns dictionaries.
+                "$HOME/venv/bin/python" -m pip install ansible-core 'duffy[client]>=3.3,<3.4'
+            ''')
             installDuffyCollection()
         }
         konflux_gate_with_duffy_config(duffy_home) {
