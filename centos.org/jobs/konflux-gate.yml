@@ -1,0 +1,37 @@
+---
+- job-template:
+    name: 'foreman-konflux-gate-{version}'
+    project-type: pipeline
+    sandbox: true
+    parameters:
+      - text:
+          name: IMAGE_REFS
+          default: '{{}}'
+          description: 'JSON object mapping every stream component to its digest-pinned image, selected by the Foreman Konflux gate.'
+      - string:
+          name: FOREMANCTL_BRANCH
+          default: '{foremanctl_branch}'
+      - string:
+          name: PYTEST_ARGS
+          default: '{pytest_args}'
+    dsl:
+      !include-raw-verbatim:
+        - ../theforeman.org/pipelines/vars/katello/{version}.groovy
+        - pipelines/konflux-gate.groovy{empty}
+        - pipelines/lib/konflux_gate.groovy{empty}
+        - ../theforeman.org/pipelines/lib/duffy.groovy{empty}
+        - ../theforeman.org/pipelines/lib/ansible.groovy{empty}
+        - ../theforeman.org/pipelines/lib/foreman_infra.groovy{empty}
+
+- project:
+    name: foreman-konflux-gate
+    empty: ''
+    jobs:
+      - 'foreman-konflux-gate-{version}'
+    version:
+      - nightly:
+          foremanctl_branch: master
+          pytest_args: '--featureset=default'
+      - '5.0':
+          foremanctl_branch: '3.3-stable'
+          pytest_args: ''

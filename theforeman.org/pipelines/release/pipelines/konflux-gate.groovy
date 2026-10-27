@@ -89,7 +89,7 @@ pipeline {
             when { expression { konflux_gate_rebuild || GATE_HAS_UPDATES } }
             steps {
                 script {
-                    konflux_gate_run_test(GATE_IMAGE_REFS, konflux_gate_foremanctl_branch, konflux_gate_pytest_args)
+                    konflux_gate_run_test(katello_version, GATE_IMAGE_REFS, konflux_gate_foremanctl_branch, konflux_gate_pytest_args)
                 }
             }
         }
