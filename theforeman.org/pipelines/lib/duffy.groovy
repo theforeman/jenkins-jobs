@@ -1,5 +1,9 @@
-def setupDuffyClient() {
+def installDuffyCollection() {
     sh(label: 'duffy collection install', script: 'ansible-galaxy collection install --collections-path ~/.ansible/collections git+https://github.com/evgeni/evgeni.duffy ansible.posix')
+}
+
+def setupDuffyClient() {
+    installDuffyCollection()
 
     sh label: 'configure duffy', script: '''
     # we do not want to leak the key to the logs
