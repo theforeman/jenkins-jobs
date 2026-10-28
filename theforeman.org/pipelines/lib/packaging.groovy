@@ -96,6 +96,7 @@ def query_rpmspec(specfile, queryformat) {
 
 def repoclosure(repo, dist, version) {
     version = version == 'nightly' ? 'develop' : version
+    def branch = "rpm/${version}"
 
     if (repo.contains('pulpcore')) {
         git_repo = 'pulpcore-packaging'
@@ -107,7 +108,21 @@ def repoclosure(repo, dist, version) {
 
     ws(dist) {
         dir('packaging') {
-            git url: "https://github.com/theforeman/${git_repo}", branch: "rpm/${version}", poll: false
+            checkout changelog: false, poll: false, scm: [
+                $class: 'GitSCM',
+                branches: [[name: branch]],
+                extensions: [[
+                    $class: 'CloneOption',
+                    depth: 1,
+                    honorRefspec: true,
+                    noTags: true,
+                    shallow: true
+                ]],
+                userRemoteConfigs: [[
+                    refspec: "+refs/heads/${branch}:refs/remotes/origin/${branch}",
+                    url: "https://github.com/theforeman/${git_repo}"
+                ]]
+            ]
             setup_obal()
             obal(
                 action: 'repoclosure',
