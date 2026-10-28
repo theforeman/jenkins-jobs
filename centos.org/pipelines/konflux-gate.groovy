@@ -32,8 +32,8 @@ pipeline {
             steps {
                 sh(label: 'install Duffy Python runtime', script: '''
                     python3.12 -m venv duffy-venv
-                    # evgeni.duffy expects model objects; Duffy 3.4 returns dictionaries.
-                    duffy-venv/bin/python -m pip install ansible-core 'duffy[client]>=3.3,<3.4'
+                    # evgeni.duffy now expects the dictionary responses from Duffy 3.4.
+                    duffy-venv/bin/python -m pip install ansible-core 'duffy[client]>=3.4,<3.5'
                 ''')
                 setupDuffyClient()
             }
