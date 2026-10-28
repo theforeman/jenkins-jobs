@@ -72,7 +72,7 @@ def konflux_gate_test_on_duffy(imageRefs, foremanctlBranch, pytestArgs) {
             }
 
             duffy_ssh("git clone --depth 1 --branch ${konflux_gate_shell_quote(foremanctlBranch)} https://github.com/theforeman/foremanctl.git", boxname, './')
-            duffy_ssh('cd foremanctl && python3 -m venv .venv && . .venv/bin/activate && ./setup-environment', boxname, './')
+            duffy_ssh('cd foremanctl && python3.12 -m venv .venv && . .venv/bin/activate && ./setup-environment', boxname, './')
         }
 
         try {

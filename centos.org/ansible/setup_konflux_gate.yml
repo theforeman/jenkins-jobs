@@ -6,6 +6,13 @@
   roles:
     - role: libvirt
   tasks:
+    - name: Install Python 3.12 for Foremanctl and Forge
+      package:
+        name:
+          - python3.12
+          - python3.12-pip
+        state: present
+
     - name: Create the gate user's Vagrant configuration directory
       file:
         path: /home/pipe-konflux-gate/.vagrant.d
