@@ -1,5 +1,8 @@
 plugin: evgeni.duffy.inventory
 
+compose:
+  ansible_host: duffy_data.provision.public_ipaddress
+
 keyed_groups:
   - key: duffy_session|string
     prefix: duffy_session
