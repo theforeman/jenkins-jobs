@@ -70,11 +70,11 @@ pipeline {
 
                         def refs = [:]
                         GATE_RESULTS.each { app, result ->
-                            if (!result.snapshot) {
+                            if (!result.snapshot && !result.imageRefs) {
                                 error("Cannot test the image set without a complete Snapshot for '${app}'")
                             }
                             konflux_gate_applications[app].each { component ->
-                                refs[component] = konflux_gate_image_ref(result.snapshot, component)
+                                refs[component] = result.imageRefs ? result.imageRefs[component] : konflux_gate_image_ref(result.snapshot, component)
                                 echo "${component}: ${refs[component]}"
                             }
                         }
