@@ -13,6 +13,32 @@ def compile_catalogs(ruby_version) {
     }
 }
 
+// Refuse to publish a gem whose own gettext catalogs are missing. This checks
+// the finished .gem, so it holds regardless of how or where it was built: for
+// every locale/<lang>/<domain>.po there must be a non-empty
+// locale/<lang>/LC_MESSAGES/<domain>.mo. Gems packaging no such .po pass, and
+// .po files of other i18n systems (for example under engines/) are ignored.
+def verify_gem_catalogs(gems) {
+    for (gem in gems) {
+        sh(script: """set -e
+missing=\$(tar -xOf '${gem}' data.tar.gz | tar -tzv | awk '
+  { size = \$3; name = \$NF
+    have[name] = size
+    if (name ~ /^locale\\/[^\\/]+\\/[^\\/]+\\.po\$/ && name !~ /\\.edit\\.po\$/) {
+      n = split(name, p, "/")
+      domain = substr(p[3], 1, length(p[3]) - 3)
+      want[p[1] "/" p[2] "/LC_MESSAGES/" domain ".mo"] = name
+    }
+  }
+  END { for (mo in want) if (!(mo in have) || have[mo] + 0 == 0) print want[mo] }' | sort)
+if [ -n "\$missing" ]; then
+  echo 'ERROR: ${gem} is missing compiled gettext catalogs:' >&2
+  echo "\$missing" | sed 's/^/  /' >&2
+  exit 1
+fi""")
+    }
+}
+
 def generate_sourcefiles(args) {
     def sourcefile_paths = []
     def project_name = args.project_name
@@ -26,6 +52,7 @@ def generate_sourcefiles(args) {
             compile_catalogs(ruby_version)
             withRuby(ruby_version, "gem build *.gemspec")
             sourcefiles = list_files('./').findAll { "${it}".endsWith('.gem') }
+            verify_gem_catalogs(sourcefiles)
             archiveArtifacts(artifacts: sourcefiles.join(','))
             sourcefile_paths = sourcefiles.collect { "${pwd()}/${it}" }
         } else {
