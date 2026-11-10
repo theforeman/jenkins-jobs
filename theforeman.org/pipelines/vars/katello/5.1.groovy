@@ -1,22 +1,8 @@
 def foreman_version = '5.1'
 def katello_version = '5.1'
-def konflux_components = ['candlepin-develop', 'foreman-develop', 'foreman-proxy-develop', 'pulp-develop']
-def konflux_gate_job_name = 'konflux-gate-nightly-pipeline'
-def konflux_gate_rebuild = true
-def konflux_gate_foremanctl_branch = 'master'
-def konflux_gate_pytest_args = '--featureset=default'
-def konflux_gate_applications = [
-    'candlepin': ['candlepin-develop'],
-    'foreman': ['foreman-develop', 'foreman-proxy-develop'],
-    'pulp': ['pulp-develop'],
-]
-def konflux_gate_release_plans = [
-    'candlepin': 'release-candlepin-develop-nightly',
-    'foreman': 'release-foreman-develop-nightly',
-    'pulp': 'release-pulp-develop-nightly',
-]
-def snapshot_wait_timeout_minutes = 60
-def release_wait_timeout_minutes = 30
+// Enable the OCI rebuild and gate only after the versioned 5.1 resources are ready.
+def konflux_gate_rebuild = false
+def konflux_gate_applications = [:]
 def foreman_el_releases = [
     'el10',
     'el9'
