@@ -1,0 +1,45 @@
+def foreman_version = '5.1'
+def git_branch = "${foreman_version}-stable"
+def ruby_version = '3.0.4'
+
+def foreman_client_distros = [
+    'el10',
+    'el9',
+    'el8',
+]
+def foreman_el_releases = [
+    'el10',
+    'el9'
+]
+def foreman_debian_releases = ['bookworm', 'jammy', 'noble', 'trixie']
+
+def pipelines_deb = [
+    'install': [
+        'debian12',
+        'debian13',
+        'ubuntu2204',
+        'ubuntu2404'
+    ],
+    'upgrade': [
+        'debian12',
+        'debian13',
+        'ubuntu2204',
+        'ubuntu2404'
+    ]
+]
+
+def pipelines_el = [
+    'install': [
+        'centos9-stream',
+        'almalinux9',
+    ],
+    'upgrade': [
+        'centos9-stream',
+        'almalinux9',
+    ]
+]
+
+def pipelines = [
+    'install': pipelines_deb['install'] + pipelines_el['install'],
+    'upgrade': pipelines_deb['upgrade'] + pipelines_el['upgrade'],
+]
