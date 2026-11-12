@@ -1,0 +1,11 @@
+def pulpcore_version = '3.118'
+def pulpcore_distros = ['el10', 'el9']
+def packaging_branch = 'rpm/3.118'
+def pipelines = [
+    'pulpcore': [
+        'centos10-stream',
+        'almalinux10',
+        'centos9-stream',
+        'almalinux9',
+    ]
+]
