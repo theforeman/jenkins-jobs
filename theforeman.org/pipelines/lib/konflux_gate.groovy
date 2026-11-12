@@ -151,10 +151,9 @@ def konflux_gate_existing_snapshot(app, components, releasePlan) {
     }
     if (!snapshot) {
         echo "No complete accepted Snapshot available for '${app}'"
-        return [app: app, snapshot: '', stale: true]
     }
 
-    def releases = konflux_gate_releases(snapshot.metadata.name, releasePlan)
+    def releases = snapshot ? konflux_gate_releases(snapshot.metadata.name, releasePlan) : []
     if (releases.any { release -> release.status?.conditions?.any { it.type == 'Released' && it.status == 'True' } }) {
         return [app: app, snapshot: snapshot.metadata.name, stale: true]
     }
@@ -168,10 +167,24 @@ def konflux_gate_existing_snapshot(app, components, releasePlan) {
     if (plan.spec.application != app) {
         error("ReleasePlan '${releasePlan}' does not target application '${app}'")
     }
+    def publishedRefs = [:]
     def published = components.every { component ->
         def mapping = plan.spec.data.mapping.components.find { it.name == component }
         def repositories = mapping?.repositories?.collect { it.url } ?: (mapping?.repository ? [mapping.repository] : [])
-        konflux_gate_image_published(images[component], repositories)
+        if (!konflux_gate_image_published(images[component], repositories)) {
+            return false
+        }
+        publishedRefs[component] = "${repositories[0]}@${images[component].tokenize('@')[-1]}".toString()
+        return true
+    }
+    if (!snapshot) {
+        if (published) {
+            // Published images outlive their Snapshot/Release records. Use those
+            // exact digests for testing unchanged applications, without releasing them.
+            echo "Using published image digests for '${app}' without a retained Snapshot"
+            return [app: app, snapshot: '', imageRefs: publishedRefs, stale: true]
+        }
+        return [app: app, snapshot: '', stale: true]
     }
     return [app: app, snapshot: snapshot.metadata.name, stale: published]
 }
