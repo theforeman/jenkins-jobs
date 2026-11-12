@@ -160,14 +160,18 @@ pipeline {
                         repos = copr_repos(package_name)
 
                         for(Map repo: repos) {
-                            obal(
-                                action: "repoclosure",
-                                packages: package_name,
-                                extraVars: [
-                                    'repoclosure_check_repos': [repo['url']],
-                                    'repoclosure_target_dist': repo['dist']
-                                ]
-                            )
+                            retry(3) {
+                                // COPR builds can finish before all RPMs are visible in repository metadata.
+                                sleep(time: 60, unit: 'SECONDS')
+                                obal(
+                                    action: "repoclosure",
+                                    packages: package_name,
+                                    extraVars: [
+                                        'repoclosure_check_repos': [repo['url']],
+                                        'repoclosure_target_dist': repo['dist']
+                                    ]
+                                )
+                            }
                         }
                     }
                 }
